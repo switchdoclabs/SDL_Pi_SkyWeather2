@@ -10,6 +10,7 @@
 
 # imports
 # Check for user imports
+from __future__ import print_function
 try:
 	import conflocal as config
 except ImportError:
@@ -18,20 +19,27 @@ except ImportError:
 
 config.SWVERSION = "001"
 
+# system imports
+
 import time
+from apscheduler.schedulers.background import BackgroundScheduler
+import apscheduler.events
+
+import subprocess
+import pclogging
 
 
+# user defined imports
+import updateBlynk
 import state
 import tasks
 import wirelessSensors
-
-from apscheduler.schedulers.background import BackgroundScheduler
-
-import apscheduler.events
+import sendemail
+import watchDog
+import DustSensor
+import util
 
 # Scheduler Helpers
-
-
 
 # print out faults inside events
 def ap_my_listener(event):
@@ -40,8 +48,31 @@ def ap_my_listener(event):
               print (event.traceback)
 
 
+# helper functions
+
+	
+def shutdownPi(why):
+
+   pclogging.log(pclogging.INFO, __name__, "Pi Shutting Down: %s" % why)
+   sendemail.sendEmail("test", "SkyWeather Shutting down:"+ why, "The SkyWeather Raspberry Pi shutting down.", config.notifyAddress,  config.fromAddress, "");
+   sys.stdout.flush()
+   time.sleep(10.0)
+
+   os.system("sudo shutdown -h now")
+
+def rebootPi(why):
+
+   pclogging.log(pclogging.INFO, __name__, "Pi Rebooting: %s" % why)
+   if (config.USEBLYNK):
+     updateBlynk.blynkEventUpdate("Pi Rebooting: %s" % why)
+     updateBlynk.blynkStatusTerminalUpdate("Pi Rebooting: %s" % why)
+   pclogging.log(pclogging.INFO, __name__, "Pi Rebooting: %s" % why)
+   os.system("sudo shutdown -r now")
 
 
+
+
+# main program
 print ("")
 
 print ("##########################################################")
@@ -52,6 +83,47 @@ print ("##########################################################")
 print ("")
 
 
+# calculate device present variables
+
+
+print("----------------------")
+print(util.returnStatusLine("BMP280",config.BMP280_Present))
+print(util.returnStatusLine("SkyCam",config.Camera_Present))
+print(util.returnStatusLine("HDC1080",config.HDC1080_Present))
+print(util.returnStatusLine("AS3935",config.AS3935_Present))
+print(util.returnStatusLine("OLED",config.OLED_Present))
+print(util.returnStatusLine("SunAirPlus/SunControl",config.SunAirPlus_Present))
+print(util.returnStatusLine("SolarMAX",config.SolarMAX_Present))
+print(util.returnStatusLine("DustSensor",config.DustSensor_Present))
+print()
+print(util.returnStatusLine("UseBlynk",config.USEBLYNK))
+print(util.returnStatusLine("UseMySQL",config.enable_MySQL_Logging))
+print(util.returnStatusLine("Check WLAN",config.enable_WLAN_Detection))
+print(util.returnStatusLine("WeatherUnderground",config.WeatherUnderground_Present))
+print(util.returnStatusLine("UseWeatherStem",config.USEWEATHERSTEM))
+print("----------------------")
+
+# startup
+
+
+pclogging.log(pclogging.INFO, __name__, "SkyWeather Startup Version"+config.SWVERSION )
+
+if (config.USEBLYNK):
+     updateBlynk.blynkEventUpdate("SW Startup Version "+config.SWVERSION)
+     updateBlynk.blynkStatusTerminalUpdate("SW Startup Version "+config.SWVERSION) 
+
+subjectText = "The "+ config.STATIONKEY + " SkyWeather Raspberry Pi has #rebooted."
+ipAddress = subprocess.check_output(['hostname',  '-I'])
+bodyText = "SkyWeather Version "+config.SWVERSION+ " Startup \n"+ipAddress.decode()+"\n"
+if (config.SunAirPlus_Present):
+	sampleSunAirPlus()
+	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)
+
+sendemail.sendEmail("test", bodyText, subjectText ,config.notifyAddress,  config.fromAddress, "");
+
+
+if (config.USEBLYNK):
+     updateBlynk.blynkInit()
 
 
 
@@ -74,8 +146,27 @@ scheduler.add_job(wirelessSensors.readSensors) # run in background
 
 if (config.SWDEBUG):
     # print state
-    
     scheduler.add_job(state.printState, 'interval', seconds=60)
+
+if (config.USEBLYNK):
+    scheduler.add_job(updateBlynk.blynkStateUpdate, 'interval', seconds=15)
+        
+scheduler.add_job(watchDog.patTheDog, 'interval', seconds=10)   # reset the WatchDog Timer
+
+
+# every 5 days at 00:04, reboot
+scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day Reboot"]) 
+	
+#check for Barometric Trend (every 15 minutes)
+scheduler.add_job(util.barometricTrend, 'interval', seconds=15*60)
+
+if (config.DustSensor_Present):
+    scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*15)
+    
+# sky camera
+if (config.Camera_Present):
+    scheduler.add_job(SkyCamera.takeSkyPicture, 'interval', seconds=config.INTERVAL_CAM_PICS__SECONDS) 
+
 
 # start scheduler
 scheduler.start()

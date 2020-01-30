@@ -8,7 +8,7 @@
 
 SWDEBUG = False
 
-SWVERSION = "000" # set in SkyWeather.py
+SWVERSION = "001" # set in SkyWeather.py
 import uuid 
   
 # printing the value of unique MAC 
@@ -40,7 +40,6 @@ runLEDs = False
 
 # WXLink and SolarMAX configuration
 SolarMAX_Present = False
-Dual_MAX_WXLink = False
 
 # SolarMAX_Type = "LEAD" for SolarMAX Lead Acid
 # SolarMAX_Type = "LIPO" for SolarMAX LiPo
@@ -85,31 +84,17 @@ BMP280_Altitude_Meters = 328.0
 
 
 Camera_Present = False
-TCA9545_I2CMux_Present = False
 SunAirPlus_Present = False
 AS3935_Present = False
-DS3231_Present = False
 BMP280_Present = False
-BME680_Present = False
 HDC1080_Present = False
-SHT30_Present = False
-AM2315_Present = False
-ADS1015_Present = False
-ADS1115_Present = False
 OLED_Present = False
-OLED_Originally_Present = False
-WXLink_Present = False
 Sunlight_Present = False
-TSL2591_Present = False
 DustSensor_Present = True
 
 # set Sunlight High Gain (indoors - 1) or Low Gain (outdoors - 0)
 Sunlight_Gain = 0
 
-
-# if the WXLink has stopped transmitting, == False
-WXLink_Data_Fresh = False
-WXLink_LastMessageID = 0
 
 # Pin definitions
 pixelPin = 21

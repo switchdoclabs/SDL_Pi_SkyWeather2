@@ -78,7 +78,7 @@ AS3935_Lightning_Config = [2,1,3,0,3,3]
 
 # for barometeric pressure - needed to calculate sealevel equivalent - set your weatherstation elevation here
 
-BMP280_Altitude_Meters = 328.0
+BMP280_Altitude_Meters = 626.0
 
 # device present global variables
 

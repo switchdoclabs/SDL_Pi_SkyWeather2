@@ -284,7 +284,7 @@ def blynkStateUpdate():
         if (state.EnglishMetric == 1):
             tval = "{0:0.2f}hPa".format(state.currentSeaLevel) 
         else:
-            tval = "{0:0.2f}in".format((state.currentSeaLevel * 0.2953)/10.0) 
+            tval = "{0:0.2f}in".format((state.currentSeaLevel * 0.2953)) 
         put_body = json.dumps([tval])
         r = requests.put(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V40', data=put_body, headers=put_header)
 
@@ -292,7 +292,7 @@ def blynkStateUpdate():
         if (state.EnglishMetric == 1):
             tval = "{0:0.2f}".format(state.currentSeaLevel) 
         else:
-            tval = "{0:0.2f}".format((state.currentSeaLevel * 0.2953)/10.0) 
+            tval = "{0:0.2f}".format((state.currentSeaLevel * 0.2953)) 
         put_body = json.dumps([tval])
         r = requests.put(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V41', data=put_body, headers=put_header)
 

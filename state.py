@@ -33,6 +33,7 @@ ScurrentWindGust  = 0
 ScurrentWindDirection  = 0.2
 currentTotalRain  = 0
 
+currentBarometricTemperature = 0
 currentBarometricPressure = 0
 currentAltitude = 0 
 currentSeaLevel = 0
@@ -117,6 +118,7 @@ def printState():
     print("ScurrentWindDirection  = ",  ScurrentWindDirection )
     print("currentTotalRain  = ", currentTotalRain  )
 
+    print ("currentBarometricTemperature = ", currentBarometricTemperature )
     print ("currentBarometricPressure = ", currentBarometricPressure )
     print ("currentAltitude = ", currentAltitude )
     print ("currentSeaLevel = ", currentSeaLevel )

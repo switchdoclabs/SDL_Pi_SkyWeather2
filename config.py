@@ -87,7 +87,6 @@ Camera_Present = False
 SunAirPlus_Present = False
 AS3935_Present = False
 BMP280_Present = False
-HDC1080_Present = False
 OLED_Present = False
 Sunlight_Present = False
 DustSensor_Present = True

@@ -27,6 +27,8 @@ import apscheduler.events
 
 import subprocess
 import pclogging
+import traceback
+import sys
 
 
 # user defined imports
@@ -34,10 +36,12 @@ import updateBlynk
 import state
 import tasks
 import wirelessSensors
+import wiredSensors
 import sendemail
 import watchDog
 import DustSensor
 import util
+import BMP280
 
 # Scheduler Helpers
 
@@ -82,14 +86,31 @@ print ("Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S"))
 print ("##########################################################")
 print ("")
 
+# detect devices
 
-# calculate device present variables
+
+################
+# BMP280 Setup 
+################
+bmp280 = BMP280.BMP280()
+
+try:
+        bmp280 = BMP280.BMP280()
+        config.BMP280_Present = True
+except Exception as e: 
+        if (config.SWDEBUG):
+            print ("I/O error({0}): {1}".format(e.errno, e.strerror))
+            print(traceback.format_exc())
+
+        config.BMP280_Present = False
+
+
+# display device present variables
 
 
 print("----------------------")
 print(util.returnStatusLine("BMP280",config.BMP280_Present))
 print(util.returnStatusLine("SkyCam",config.Camera_Present))
-print(util.returnStatusLine("HDC1080",config.HDC1080_Present))
 print(util.returnStatusLine("AS3935",config.AS3935_Present))
 print(util.returnStatusLine("OLED",config.OLED_Present))
 print(util.returnStatusLine("SunAirPlus/SunControl",config.SunAirPlus_Present))
@@ -137,12 +158,17 @@ scheduler.add_listener(ap_my_listener, apscheduler.events.EVENT_JOB_ERROR)
 ##############
 # setup tasks
 ##############
+hdc1080 = None
+wiredSensors.readWiredSensors(bmp280, hdc1080)
 
 # prints out the date and time to console
 scheduler.add_job(tasks.tick, 'interval', seconds=60)
 
 # read wireless sensor package
 scheduler.add_job(wirelessSensors.readSensors) # run in background
+
+# read wired sensor package
+scheduler.add_job(wiredSensors.readWiredSensors, 'interval', args=[bmp280, hdc1080], seconds = 30) 
 
 if (config.SWDEBUG):
     # print state

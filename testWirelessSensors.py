@@ -74,5 +74,6 @@ while True:
         if ( sLine.find('F007TH') != -1):
             sys.stdout.write('This is the raw data: ' + sLine + '\n')
 
+
     sys.stdout.flush()
 

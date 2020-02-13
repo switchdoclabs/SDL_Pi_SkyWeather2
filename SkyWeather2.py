@@ -17,7 +17,7 @@ except ImportError:
 	import config
 
 
-config.SWVERSION = "001"
+config.SWVERSION = "002"
 
 # system imports
 
@@ -29,7 +29,7 @@ import subprocess
 import pclogging
 import traceback
 import sys
-
+import picamera
 
 # user defined imports
 import updateBlynk
@@ -42,6 +42,7 @@ import watchDog
 import DustSensor
 import util
 import BMP280
+import SkyCamera
 
 # Scheduler Helpers
 
@@ -58,7 +59,7 @@ def ap_my_listener(event):
 def shutdownPi(why):
 
    pclogging.log(pclogging.INFO, __name__, "Pi Shutting Down: %s" % why)
-   sendemail.sendEmail("test", "SkyWeather Shutting down:"+ why, "The SkyWeather Raspberry Pi shutting down.", config.notifyAddress,  config.fromAddress, "");
+   sendemail.sendEmail("test", "SkyWeather2 Shutting down:"+ why, "The SkyWeather2 Raspberry Pi shutting down.", config.notifyAddress,  config.fromAddress, "");
    sys.stdout.flush()
    time.sleep(10.0)
 
@@ -86,8 +87,14 @@ print ("Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S"))
 print ("##########################################################")
 print ("")
 
-# detect devices
+#
+if (config.SWDEBUG):
+    print("Starting pigpio daemon")
 
+cmd = [ '/usr/bin/pigpiod' ]
+output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+
+# detect devices
 
 ################
 # BMP280 Setup 
@@ -103,6 +110,26 @@ except Exception as e:
             print(traceback.format_exc())
 
         config.BMP280_Present = False
+
+################
+# SkyCamera Setup 
+################
+
+
+#Establish WeatherSTEMHash
+if (config.USEWEATHERSTEM == True):
+    state.WeatherSTEMHash = SkyCamera.SkyWeatherKeyGeneration(config.STATIONKEY)
+
+#Detect Camera WeatherSTEMHash
+try:
+
+    with picamera.PiCamera() as cam:
+        if (config.SWDEBUG):
+            print("Pi Camera Revision",cam.revision)
+        cam.close()
+    config.Camera_Present = True
+except:
+    config.Camera_Present = False
 
 
 # display device present variables
@@ -127,15 +154,15 @@ print("----------------------")
 # startup
 
 
-pclogging.log(pclogging.INFO, __name__, "SkyWeather Startup Version"+config.SWVERSION )
+pclogging.log(pclogging.INFO, __name__, "SkyWeather2 Startup Version"+config.SWVERSION )
 
 if (config.USEBLYNK):
      updateBlynk.blynkEventUpdate("SW Startup Version "+config.SWVERSION)
      updateBlynk.blynkStatusTerminalUpdate("SW Startup Version "+config.SWVERSION) 
 
-subjectText = "The "+ config.STATIONKEY + " SkyWeather Raspberry Pi has #rebooted."
+subjectText = "The "+ config.STATIONKEY + " SkyWeather2 Raspberry Pi has #rebooted."
 ipAddress = subprocess.check_output(['hostname',  '-I'])
-bodyText = "SkyWeather Version "+config.SWVERSION+ " Startup \n"+ipAddress.decode()+"\n"
+bodyText = "SkyWeather2 Version "+config.SWVERSION+ " Startup \n"+ipAddress.decode()+"\n"
 if (config.SunAirPlus_Present):
 	sampleSunAirPlus()
 	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)
@@ -187,7 +214,8 @@ scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day
 scheduler.add_job(util.barometricTrend, 'interval', seconds=15*60)
 
 if (config.DustSensor_Present):
-    scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*15)
+    #scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*5)
+    scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*2)
     
 # sky camera
 if (config.Camera_Present):

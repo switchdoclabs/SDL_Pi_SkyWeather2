@@ -81,8 +81,7 @@ AS3935_Lightning_Config = [2,1,3,0,3,3]
 BMP280_Altitude_Meters = 626.0
 
 # device present global variables
-
-
+# do not change - set by software
 Camera_Present = False
 SunAirPlus_Present = False
 AS3935_Present = False
@@ -90,28 +89,20 @@ BMP280_Present = False
 OLED_Present = False
 Sunlight_Present = False
 DustSensor_Present = True
+# End of Do not change
+
 
 # set Sunlight High Gain (indoors - 1) or Low Gain (outdoors - 0)
 Sunlight_Gain = 0
 
 
-# Pin definitions
-pixelPin = 21
-
-DustSensorPin = 19
-DustSensorPowerPin = 26
-
-#WeatherRack 
-anemometerPin = 20
-rainPin = 13
-
-
-SHT30GSPIN = 6
-AM2315GSPIN = 6
+DustSensorSCL = 20
+DustSensorSDA = 21
+DustSensorPowerPin = 12
 
 # for fan
-GPIO_Pin_PowerDrive_Sig1 = 5
-GPIO_Pin_PowerDrive_Sig2 = 5     # To avoid stepping on GPIO 6 
+GPIO_Pin_PowerDrive_Sig1 = 4
+GPIO_Pin_PowerDrive_Sig2 = 4     # GPIO 4
 
-WATCHDOGTRIGGER = 4
+WATCHDOGTRIGGER = 6
 

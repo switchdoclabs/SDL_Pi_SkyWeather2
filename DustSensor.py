@@ -4,14 +4,13 @@
 # Public Domain
 
 
-# tests SDL_Pi_DustSensor Driver
 from __future__ import print_function
 from builtins import str
 import sys
-sys.path.append('./SDL_Pi_DustSensor')
+sys.path.append('./SDL_Pi_HM3301')
 import time
 import pigpio
-import SDL_Pi_DustSensor
+import SDL_Pi_HM3301
 
 import RPi.GPIO as GPIO
 
@@ -46,44 +45,39 @@ def read_AQI():
           print ("Turning Dust Power On")
       powerOnDustSensor()
 
-      pi = pigpio.pi() # Connect to Pi.
    
-      dustSensor = SDL_Pi_DustSensor.SDL_Pi_DustSensor(pi, config.DustSensorPin) # set the GPIO pin number
 
       # delay for 30 seconds for calibrated reading
 
       time.sleep(30)
       
-      # get the gpio, ratio and concentration in particles / 0.01 ft3
-      g, r, c = dustSensor.read()
+      hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL)
+      time.sleep(0.1)
 
-      # concentration above 1,080,000 considered error
-      if (c>=1080000.00):
+
+      myData = hm3301.get_data()
+      if (config.SWDEBUG):
+        print ("data=",myData)
+      if (hm3301.checksum() != True):
           if (config.SWDEBUG):
-            print("Dust Sensor Concentration Error\n")
+            print("Checksum Error!")
+          myData = hm3301.get_data()
+          if (hm3301.checksum() != True):
+                if (config.SWDEBUG):
+                    print("2 Checksum Errors!")
+                    return 0
 
+      myAQI = hm3301.get_aqi()
       if (config.SWDEBUG):
-        print("Air Quality Measurements for PM2.5:")
-        print("  " + str(int(c)) + " particles/0.01ft^3")
-
-      # convert to SI units
-      concentration_ugm3=dustSensor.pcs_to_ugm3(c)
-      if (config.SWDEBUG):
-        print("  " + str(int(concentration_ugm3)) + " ugm^3")
+        hm3301.print_data()
+        print ("AQI=", myAQI)
       
-      # convert SI units to US AQI
-      # input should be 24 hour average of ugm3, not instantaneous reading
-      aqi=dustSensor.ugm3_to_aqi(concentration_ugm3)
-      
-      if (config.SWDEBUG):
-        print("  Current AQI (not 24 hour avg): " + str(int(aqi)))
-        print("")
-
-      state.Outdoor_AirQuality_Sensor_Value = int(aqi)
-      pi.stop() # Disconnect from Pi.
-
-      if (config.SWDEBUG):
-          print ("Turning Dust Sensor Power Off")
+      hm3301.close()
       powerOffDustSensor()
+      state.Outdoor_AirQuality_Sensor_Value = myAQI
+      
+
+
+
 
 

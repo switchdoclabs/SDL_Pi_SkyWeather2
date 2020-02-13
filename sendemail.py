@@ -1,3 +1,6 @@
+import traceback
+
+
 def sendEmail(source, message, subject, toaddress, fromaddress, filename):
 
 	# if conflocal.py is not found, import default config.py
@@ -57,8 +60,9 @@ def sendEmail(source, message, subject, toaddress, fromaddress, filename):
 		s.quit()
 
 	except:
-		
-		print("sendmail exception raised")
+                if (config.SWDEBUG):
+                   print (traceback.format_exc())
+                print("sendmail exception raised")
 	return 0
 
 

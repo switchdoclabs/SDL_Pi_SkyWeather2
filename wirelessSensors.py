@@ -8,6 +8,7 @@ except ImportError:
 	import config
 
 import json
+import random
 
 import sys
 from subprocess import PIPE, Popen, STDOUT
@@ -42,8 +43,39 @@ def enqueue_output(src, out, queue):
         queue.put(( src, line))
     out.close()
 
+def randomadd(value, spread):
+
+    return round(value+random.uniform(-spread, spread),2)
+
 
 # process functions
+
+def processF300Data(sLine):
+
+    if (config.SWDEBUG):
+        sys.stdout.write("processing F300 Data\n")
+        #sys.stdout.write('This is the raw data: ' + sLine + '\n')
+
+    # now do random bouncing around on reasonable values
+
+
+    state.currentOutsideTemperature = randomadd(10.0, 10.0)
+    state.currentOutsideHumidity =  randomadd(40.0, 10.0)
+
+
+    state.currentRain60Minutes = randomadd(10.0, 10.0)
+
+    state.currentSunlightVisible =  randomadd(4000.0, 10.0)
+    state.currentSunlightIR = randomadd(200.0, 10.0)
+    state.currentSunlightUV = randomadd(300.0, 10.0)
+    state.currentSunlightUVIndex  = randomadd(5.0, 10.0)
+
+    state.ScurrentWindSpeed = randomadd(10.0, 10.0)
+    state.ScurrentWindGust  = randomadd(30.0, 10.0)
+    state.ScurrentWindDirection  = randomadd(330.0, 10.0)
+    state.currentTotalRain  = randomadd(10.0, 10.0)
+
+
 
 
 # processes Inside Temperature and Humidity
@@ -87,6 +119,8 @@ def readSensors():
         #   Other processing can occur here as needed...
         #sys.stdout.write('Made it to processing step. \n')
 
+
+
         try:
             src, line = q.get(timeout = 1)
             #print(line.decode())
@@ -98,6 +132,7 @@ def readSensors():
             #   See if the data is something we need to act on...
             if ( sLine.find('F007TH') != -1):
                 processF007THData(sLine)
-     
+                processF300Data(sLine)
+
         sys.stdout.flush()
 

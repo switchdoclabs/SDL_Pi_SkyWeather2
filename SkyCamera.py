@@ -25,7 +25,7 @@ def SkyWeatherKeyGeneration(userKey):
 
     catkey = "AZWqNqDMhvK8Lhbb2jtk1bucj0s2lqZ6" +userKey
 
-    md5result = hashlib.md5(catkey)
+    md5result = hashlib.md5(catkey.encode())
     #print ("hashkey =", md5result.hexdigest())
     return md5result.hexdigest()
 
@@ -64,7 +64,7 @@ def takeSkyPicture():
         val = util.returnTemperatureCF(state.currentOutsideTemperature)
         OTtval = "{0:0.1f} ".format(val) + util.returnTemperatureCFUnit()
 
-        myText = "SkyWeather %s Wind Speed: %s Wind Gust: %s Temp: %s " % (dt.datetime.now().strftime('%d-%b-%Y %H:%M:%S'),WindStval, WindGtval, OTtval)
+        myText = "SkyWeather2 V%s %s Wind Speed: %s Wind Gust: %s Temp: %s " % (config.SWVERSION,dt.datetime.now().strftime('%d-%b-%Y %H:%M:%S'),WindStval, WindGtval, OTtval)
 
         # Draw the text
         color = 'rgb(255,255,255)'
@@ -232,7 +232,7 @@ def sendSkyWeather():
 		},
 		{
 			"name":"BarometricPressure",
-			"value": state.currentBarometricPressure,
+			"value": state.currentBarometricPressure*10.0,
                         "units" : "hPa"
 
 		},
@@ -243,7 +243,7 @@ def sendSkyWeather():
 		},
 		{
 			"name":"SeaLevelPressure",
-			"value": state.currentSeaLevel,
+			"value": state.currentSeaLevel*10.0,
                         "units" : "hPa"
 		},
 		{
@@ -333,53 +333,53 @@ def sendSkyWeather():
 		},
 		{
 			"name":"WXBatteryVoltage",
-			"value": state.WXbatteryVoltage,
+			"value": 0,
                         "units" : "V"
 
 		},
 		{
 			"name":"WXBatteryCurrent",
-			"value": state.WXbatteryCurrent,
+			"value": 0 ,
                         "units" : "ma"
 		},
 		{
 			"name":"WXSolarVoltage",
-			"value": state.WXsolarVoltage,
+			"value": 0 ,
                         "units" : "V"
 		},
 		{
 			"name":"WXSolarCurrent",
-			"value": state.WXsolarCurrent,
+			"value": 0 ,
                         "units" : "ma"
 		},
 		{
 			"name":"WXLoadVoltage",
-			"value": state.WXloadVoltage,
+			"value": 0 ,
                         "units" : "V"
 		},
 		{
 			"name":"WXLoadCurrent",
-			"value": state.WXloadCurrent,
+			"value": 0 ,
                         "units" : "ma"
 		},
 		{
 			"name":"WXBatteryPOWER",
-			"value": state.WXbatteryPower,
+			"value": 0 ,
                         "units" : "W"
 		},
 		{
 			"name":"WXSolarPower",
-			"value": state.WXsolarPower,
+			"value": 0 ,
                         "units" : "W"
 		},
 		{
 			"name":"WXLoadPower",
-			"value": state.WXloadPower,
+			"value": 0 ,
                         "units" : "W"
 		},
 		{
 			"name":"WXBatteryCharge",
-			"value": state.WXbatteryCharge,
+			"value": 0 ,
                         "units" : "%"
 
 

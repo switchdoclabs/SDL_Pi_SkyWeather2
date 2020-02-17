@@ -5,6 +5,7 @@ tx*
 *.temp
 *.test
 nohup.out
+*.JSON
 .*DS_Store
 conflocal.py
 state/EnglishMetric.txt

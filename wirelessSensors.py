@@ -15,12 +15,13 @@ from subprocess import PIPE, Popen, STDOUT
 from threading  import Thread
 #import json
 import datetime
+import buildJSON
 
 import state
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '20']
+cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '20', '-R', '146']
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 #   A few helper functions...
@@ -54,27 +55,63 @@ def processF300Data(sLine):
 
     if (config.SWDEBUG):
         sys.stdout.write("processing F300 Data\n")
-        #sys.stdout.write('This is the raw data: ' + sLine + '\n')
+        sys.stdout.write('This is the raw data: ' + sLine + '\n')
 
-    # now do random bouncing around on reasonable values
+    var = json.loads(sLine)
+
+    # outside temperature and Humidity
+
+    state.mainID = var["id"] 
+    state.lastMainReading = nowStr()
+    wTemp = var["temperature"]
+    ucHumi = var["humidity"]
+
+    if (wTemp >= 0x7fa):
+        wTemp = wTemp | 0x7F00
+    else:
+        if (wTemp> state.TEMP_MAX_F):
+            wTemp = state.INVALID_DATA_16
+            ucHumi = state.INVALID_DATA_8
+
+    wTemp = (wTemp - 400)/10.0
+    print("wTemp=", wTemp);
+    
+    state.currentOutsideTemperature = round(((wTemp - 32.0)/(9.0/5.0)),2)
+    state.currentOutsideHumidity =  ucHumi 
+    
+        
+    state.ScurrentWindSpeed =  round(var["avewindspeed"]/10.0, 1)
+    state.ScurrentWindGust  = round(var["gustwindspeed"]/10.0, 1)
+    state.ScurrentWindDirection  = var["winddirection"]
+    
 
 
-    state.currentOutsideTemperature = randomadd(10.0, 10.0)
-    state.currentOutsideHumidity =  randomadd(40.0, 10.0)
+    state.currentTotalRain  = round(var["cumulativerain"]/10.0,1)
+    state.currentRain60Minutes = 0.0
+
+    wLight = var["light"]
+    if (wLight >= 0x1fffa):
+        wLight = wLight | 0x7fff0000
+
+    wUVI =var["uv"]
+    if (wUVI >= 0xfa):
+        wUVI = wUVI | 0x7f00
+
+    state.currentSunlightVisible =  wLight 
+    state.currentSunlightIR =  0
+    state.currentSunlightUV = 0 
+    state.currentSunlightUVIndex  = round(wUVI/10.0, 1 )
 
 
-    state.currentRain60Minutes = randomadd(10.0, 10.0)
 
-    state.currentSunlightVisible =  randomadd(4000.0, 10.0)
-    state.currentSunlightIR = randomadd(200.0, 10.0)
-    state.currentSunlightUV = randomadd(300.0, 10.0)
-    state.currentSunlightUVIndex  = randomadd(5.0, 10.0)
-
-    state.ScurrentWindSpeed = randomadd(10.0, 10.0)
-    state.ScurrentWindGust  = randomadd(30.0, 10.0)
-    state.ScurrentWindDirection  = randomadd(330.0, 10.0)
-    state.currentTotalRain  = randomadd(10.0, 10.0)
-
+    print("looking for buildJSONSemaphore acquire")
+    state.buildJSONSemaphore.acquire()
+    print("buildJSONSemaphore acquired")
+    state.currentStateJSON = buildJSON.getStateJSON()
+    #if (config.SWDEBUG):
+    #    print("currentJSON = ", state.currentStateJSON)
+    state.buildJSONSemaphore.release()
+    print("buildJSONSemaphore released")
 
 
 
@@ -85,11 +122,23 @@ def processF007THData(sLine):
     
     var = json.loads(sLine)
 
+    state.mainID = var["device"] + var["channel"]
+    state.lastInsideReading = nowStr()
 
     state.currentInsideTemperature = round(((var["temperature_F"] - 32.0)/(9.0/5.0)),2)
     state.currentInsideHumidity = var["humidity"]
     state.lastInsideReading = var["time"]
     state.insideID = var["channel"]
+
+    print("looking for buildJSONSemaphore acquire")
+    state.buildJSONSemaphore.acquire()
+    print("buildJSONSemaphore acquired")
+    state.currentStateJSON = buildJSON.getStateJSON()
+    #if (config.SWDEBUG):
+    #    print("currentJSON = ", state.currentStateJSON)
+    state.buildJSONSemaphore.release()
+    print("buildJSONSemaphore released")
+
 # main read 433HMz Sensor Loop
 def readSensors():
 
@@ -130,9 +179,12 @@ def readSensors():
             pulse -= 1
             sLine = line.decode()
             #   See if the data is something we need to act on...
-            if ( sLine.find('F007TH') != -1):
-                processF007THData(sLine)
-                processF300Data(sLine)
+            if ( sLine.find('F007TH') != -1) or ( sLine.find('FT0300') != -1):
+                
+                if ( sLine.find('F007TH') != -1): 
+                    processF007THData(sLine)
+                if ( sLine.find('FT0300') != -1): 
+                    processF300Data(sLine)
 
         sys.stdout.flush()
 

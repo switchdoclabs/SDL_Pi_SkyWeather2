@@ -1,6 +1,9 @@
 Grove HM3301 Dust Sensor Python3 Driver<BR>
 SwitchDoc Labs 2020<BR>
-Version 1.0<BR>
+Version 1.1<BR>
+
+Version 1.1 - March 6, 2020 - Modified library so you don't start pgpio inside of library - will eventually bomb with too many connections<BR>
+Version 1.0 - Initial Release<BR>
 
 The Zero, W, Raspberry Pi 3B+ and the Raspberry Pi 4B have a problem with the standard I2C bus reading the HM3301 sensor.<BR>
 

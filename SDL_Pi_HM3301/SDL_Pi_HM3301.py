@@ -16,11 +16,11 @@ DATA_CNT = 29
 
 class SDL_Pi_HM3301(object):
 
-    def __init__(self, SDA=20, SCL=19, I2C_Address =0x40):
+    def __init__(self, SDA=20, SCL=19, I2C_Address =0x40, pi= None):
 
 
 
-        self.pi = pigpio.pi()
+        self.pi = pi
         self.SDA = SDA
         self.SCL = SCL
         self.I2C_Address = I2C_Address

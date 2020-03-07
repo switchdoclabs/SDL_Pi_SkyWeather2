@@ -11,14 +11,10 @@
 # imports
 # Check for user imports
 from __future__ import print_function
-try:
-	import conflocal as config
-except ImportError:
-	import config
 
+import config
 
 config.SWVERSION = "002"
-
 # system imports
 
 import time
@@ -218,8 +214,9 @@ if (config.DustSensor_Present):
     scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*2)
     
 # sky camera
-if (config.Camera_Present):
-    scheduler.add_job(SkyCamera.takeSkyPicture, 'interval', seconds=config.INTERVAL_CAM_PICS__SECONDS) 
+if (config.USEWEATHERSTEM):
+    if (config.Camera_Present):
+        scheduler.add_job(SkyCamera.takeSkyPicture, 'interval', seconds=config.INTERVAL_CAM_PICS__SECONDS) 
 
 
 # start scheduler
@@ -237,3 +234,4 @@ print ("-----------------")
 while True:
 
     time.sleep(1.0)
+

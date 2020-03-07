@@ -8,14 +8,15 @@ sys.path.append('./SDL_Pi_HM3301')
 import SDL_Pi_HM3301
 import time
 import traceback
+import pigpio
 
 try:
 	import conflocal as config
 except ImportError:
 	import config
 
-
-hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL)
+myPi = pigpio.pi()
+hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL, pi=myPi)
 time.sleep(0.01)
 try:
     while 1:

@@ -77,47 +77,111 @@ class SkyWeatherConfigure(App):
         self.GPIO_Pin_PowerDrive_Sig1 = 4
         self.GPIO_Pin_PowerDrive_Sig2 = 4
         self.WATCHDOGTRIGGER = 6
-        
-        
+        self.Camera_Night_Enable =  False
+        self.REST_Enable = False 
+        self.MQTT_Enable = False 
+        self.MQTT_Server_URL = "" 
+        self.MQTT_Port_Number = 5900 
+        self.MQTT_Send_Seconds = 500 
+       
+       
+        self.dataDefaults = {} 
+
+        self.dataDefaults['SWDEBUG'] = self.SWDEBUG 
+        self.dataDefaults['enable_MySQL_Logging'] = self.enable_MySQL_Logging 
+        self.dataDefaults['MySQL_Password'] = self.MySQL_Password 
+        self.dataDefaults['enable_WLAN_Detection'] = self.enable_WLAN_Detection 
+        self.dataDefaults['PingableRouterAddress'] = self.PingableRouterAddress 
+        self.dataDefaults['mailUser'] = self.mailUser 
+        self.dataDefaults['mailPassword'] = self.mailPassword 
+        self.dataDefaults['notifyAddress'] = self.notifyAddress 
+        self.dataDefaults['fromAddress'] = self.fromAddress 
+        self.dataDefaults['enableText'] = self.enableText 
+        self.dataDefaults['textnotifyAddress'] = self.textnotifyAddress 
+        self.dataDefaults['runLEDs'] = self.runLEDs 
+        self.dataDefaults['SolarMAX_Present'] = self.SolarMAX_Present 
+        self.dataDefaults['SolarMAX_Type'] = self.SolarMAX_Type 
+        self.dataDefaults['BMP280_Altitude_Meters'] = self.BMP280_Altitude_Meters 
+        self.dataDefaults['Sunlight_Gain'] = self.Sunlight_Gain 
+        self.dataDefaults['USEWEATHERSTEM'] = self.USEWEATHERSTEM 
+        self.dataDefaults['INTERVAL_CAM_PICS__SECONDS'] = self.INTERVAL_CAM_PICS__SECONDS 
+        self.dataDefaults['STATIONKEY'] = self.STATIONKEY 
+        self.dataDefaults['WeatherUnderground_Present'] = self.WeatherUnderground_Present 
+        self.dataDefaults['WeatherUnderground_StationID'] = self.WeatherUnderground_StationID 
+        self.dataDefaults['WeatherUnderground_StationKey'] = self.WeatherUnderground_StationKey 
+        self.dataDefaults['USEBLYNK'] = self.USEBLYNK 
+        self.dataDefaults['BLYNK_AUTH'] = self.BLYNK_AUTH 
+        self.dataDefaults['AS3935_Lightning_Config'] = self.AS3935_Lightning_Config 
+        self.dataDefaults['DustSensorSCL'] = self.DustSensorSCL 
+        self.dataDefaults['DustSensorSDA'] = self.DustSensorSDA 
+        self.dataDefaults['DustSensorPowerPin'] = self.DustSensorPowerPin 
+        self.dataDefaults['GPIO_Pin_PowerDrive_Sig1'] = self.GPIO_Pin_PowerDrive_Sig1 
+        self.dataDefaults['GPIO_Pin_PowerDrive_Sig2'] = self.GPIO_Pin_PowerDrive_Sig2 
+        self.dataDefaults['WATCHDOGTRIGGER'] = self.WATCHDOGTRIGGER 
+        self.dataDefaults['Camera_Night_Enable'] = self.Camera_Night_Enable 
+        self.dataDefaults['REST_Enable'] = self.REST_Enable 
+        self.dataDefaults['MQTT_Enable'] = self.MQTT_Enable 
+        self.dataDefaults['MQTT_Server_URL'] = self.MQTT_Server_URL 
+        self.dataDefaults['MQTT_Port_Number'] = self.MQTT_Port_Number 
+        self.dataDefaults['MQTT_Send_Seconds'] = self.MQTT_Send_Seconds 
+
+    def getJSONValue(self, entry):
+        try:
+            returnData = self.JSONData[entry]
+            return returnData
+        except:
+            print("JSON value not found - Set to Defaults:", entry)
+            return self.dataDefaults[entry]
+
+
+
     def readJSON(self):
 
+        self.setDefaults()
 
         if os.path.isfile('SkyWeather2.JSON'):
             print ("SkyWeather2.JSON File exists")
             with open('SkyWeather2.JSON') as json_file:
-                data = json.load(json_file)
+                self.JSONData = json.load(json_file)
 
-                self.SWDEBUG = data['SWDEBUG']
-                self.enable_MySQL_Logging = data['enable_MySQL_Logging']
-                self.MySQL_Password = data['MySQL_Password']
-                self.enable_WLAN_Detection = data['enable_WLAN_Detection']
-                self.PingableRouterAddress = data['PingableRouterAddress']
-                self.mailUser = data['mailUser']
-                self.mailPassword = data['mailPassword']
-                self.notifyAddress = data['notifyAddress']
-                self.fromAddress = data['fromAddress']
-                self.enableText = data['enableText']
-                self.textnotifyAddress = data['textnotifyAddress']
-                self.runLEDs = data['runLEDs']
-                self.SolarMAX_Present = data['SolarMAX_Present']
-                self.SolarMAX_Type = data['SolarMAX_Type']
-                self.BMP280_Altitude_Meters = data['BMP280_Altitude_Meters']
-                self.Sunlight_Gain = data['Sunlight_Gain']
-                self.USEWEATHERSTEM = data['USEWEATHERSTEM']
-                self.INTERVAL_CAM_PICS__SECONDS = data['INTERVAL_CAM_PICS__SECONDS']
-                self.STATIONKEY = data['STATIONKEY']
-                self.WeatherUnderground_Present = data['WeatherUnderground_Present']
-                self.WeatherUnderground_StationID = data['WeatherUnderground_StationID']
-                self.WeatherUnderground_StationKey = data['WeatherUnderground_StationKey']
-                self.USEBLYNK = data['USEBLYNK']
-                self.BLYNK_AUTH = data['BLYNK_AUTH']
-                self.AS3935_Lightning_Config = data['AS3935_Lightning_Config']
-                self.DustSensorSCL = data['DustSensorSCL']
-                self.DustSensorSDA = data['DustSensorSDA']
-                self.DustSensorPowerPin = data['DustSensorPowerPin']
-                self.GPIO_Pin_PowerDrive_Sig1 = data['GPIO_Pin_PowerDrive_Sig1']
-                self.GPIO_Pin_PowerDrive_Sig2 = data['GPIO_Pin_PowerDrive_Sig2']
-                self.WATCHDOGTRIGGER = data['WATCHDOGTRIGGER']
+
+                self.SWDEBUG = self.getJSONValue('SWDEBUG')
+                self.enable_MySQL_Logging = self.getJSONValue('enable_MySQL_Logging')
+                self.MySQL_Password = self.getJSONValue('MySQL_Password')
+                self.enable_WLAN_Detection = self.getJSONValue('enable_WLAN_Detection')
+                self.PingableRouterAddress = self.getJSONValue('PingableRouterAddress')
+                self.mailUser = self.getJSONValue('mailUser')
+                self.mailPassword = self.getJSONValue('mailPassword')
+                self.notifyAddress = self.getJSONValue('notifyAddress')
+                self.fromAddress = self.getJSONValue('fromAddress')
+                self.enableText = self.getJSONValue('enableText')
+                self.textnotifyAddress = self.getJSONValue('textnotifyAddress')
+                self.runLEDs = self.getJSONValue('runLEDs')
+                self.SolarMAX_Present = self.getJSONValue('SolarMAX_Present')
+                self.SolarMAX_Type = self.getJSONValue('SolarMAX_Type')
+                self.BMP280_Altitude_Meters = self.getJSONValue('BMP280_Altitude_Meters')
+                self.Sunlight_Gain = self.getJSONValue('Sunlight_Gain')
+                self.USEWEATHERSTEM = self.getJSONValue('USEWEATHERSTEM')
+                self.INTERVAL_CAM_PICS__SECONDS = self.getJSONValue('INTERVAL_CAM_PICS__SECONDS')
+                self.STATIONKEY = self.getJSONValue('STATIONKEY')
+                self.WeatherUnderground_Present = self.getJSONValue('WeatherUnderground_Present')
+                self.WeatherUnderground_StationID = self.getJSONValue('WeatherUnderground_StationID')
+                self.WeatherUnderground_StationKey = self.getJSONValue('WeatherUnderground_StationKey')
+                self.USEBLYNK = self.getJSONValue('USEBLYNK')
+                self.BLYNK_AUTH = self.getJSONValue('BLYNK_AUTH')
+                self.AS3935_Lightning_Config = self.getJSONValue('AS3935_Lightning_Config')
+                self.DustSensorSCL = self.getJSONValue('DustSensorSCL')
+                self.DustSensorSDA = self.getJSONValue('DustSensorSDA')
+                self.DustSensorPowerPin = self.getJSONValue('DustSensorPowerPin')
+                self.GPIO_Pin_PowerDrive_Sig1 = self.getJSONValue('GPIO_Pin_PowerDrive_Sig1')
+                self.GPIO_Pin_PowerDrive_Sig2 = self.getJSONValue('GPIO_Pin_PowerDrive_Sig2')
+                self.WATCHDOGTRIGGER = self.getJSONValue('WATCHDOGTRIGGER')
+                self.Camera_Night_Enable = self.getJSONValue('Camera_Night_Enable')
+                self.REST_Enable = self.getJSONValue('REST_Enable')
+                self.MQTT_Enable = self.getJSONValue('MQTT_Enable')
+                self.MQTT_Server_URL = self.getJSONValue('MQTT_Server_URL')
+                self.MQTT_Port_Number = self.getJSONValue('MQTT_Port_Number')
+                self.MQTT_Send_Seconds = self.getJSONValue('MQTT_Send_Seconds')
 
         else:
             print ("SkyWeather2.JSON File does not exist")
@@ -166,9 +230,14 @@ class SkyWeatherConfigure(App):
         data['GPIO_Pin_PowerDrive_Sig1'] = self.F_GPIO_Pin_PowerDrive_Sig1.get_value()
         data['GPIO_Pin_PowerDrive_Sig2'] = self.F_GPIO_Pin_PowerDrive_Sig2.get_value()
         data['WATCHDOGTRIGGER'] = self.F_WATCHDOGTRIGGER.get_value()
+        data['REST_Enable'] = self.F_REST_Enable.get_value()
+        data['Camera_Night_Enable'] = self.F_Camera_Night_Enable.get_value()
+        data['MQTT_Enable'] = self.F_MQTT_Enable.get_value()
+        data['MQTT_Server_URL'] = self.F_MQTT_Server_URL.get_value()
+        data['MQTT_Port_Number'] = self.F_MQTT_Port_Number.get_value()
+        data['MQTT_Send_Seconds'] = self.F_MQTT_Send_Seconds.get_value()
 
         json_data = json.dumps(data)        
-        print (json_data)
         
         with open('SkyWeather2.JSON', 'w') as outfile:
             json.dump(data, outfile)
@@ -180,40 +249,43 @@ class SkyWeatherConfigure(App):
 
         #screen 1
 
-        vbox = VBox(width=500, height=510, style="background: LightGray; border: 5px solid red")
+        vbox = VBox(width=500, height=510, style="background: LightGray")
 
         vbox.style['justify-content'] = 'flex-start'
         vbox.style['align-items'] = 'flex-start'
         vbox.style['border'] = '2px'
         vbox.style['border-color'] = 'blue'
+
+
+        #screen 1
+
        
         menu = gui.Menu(width='100%', height='30px')
-        m1 = gui.MenuItem('DMW', width=80, height=30)
+        m1 = gui.MenuItem('DMW', width=70, height=30)
         m1.onclick.do(self.menu_screen1_clicked)
-        m2 = gui.MenuItem('MTN', width=80, height=30)
+        m2 = gui.MenuItem('MTN', width=70, height=30)
         m2.onclick.do(self.menu_screen2_clicked)
-        m3 = gui.MenuItem('PSMax', width=80, height=30)
+        m3 = gui.MenuItem('PSMax', width=70, height=30)
         m3.onclick.do(self.menu_screen3_clicked)
-        m4 = gui.MenuItem('WS-WU', width=80, height=30)
+        m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=80, height=30)
+        m5 = gui.MenuItem('B-TB', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
-        m6 = gui.MenuItem('Pins', width=80, height=30)
+        m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
+        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7.onclick.do(self.menu_screen7_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6])
+        menu.append([m1, m2, m3, m4, m5, m6, m7])
+    
     
         menubar = gui.MenuBar(width='100%', height='30px')
         menubar.append(menu)
-
         vbox.append(menubar)
 
-        #screen 1
-        screen1header = gui.Label("Debug / MySQL / WLAN Tab", style='margin:10px')
+
+        screen1header = gui.Label("Debug / MySQL / WLAN Tab", style='margin:10px; background: LightGray')
         vbox.append(screen1header)
-
-
-
 
         #debug config
 
@@ -264,21 +336,24 @@ class SkyWeatherConfigure(App):
         vbox.style['border-color'] = 'blue'
        
        
+    
         menu = gui.Menu(width='100%', height='30px')
-        m1 = gui.MenuItem('DMW', width=80, height=30)
+        m1 = gui.MenuItem('DMW', width=70, height=30)
         m1.onclick.do(self.menu_screen1_clicked)
-        m2 = gui.MenuItem('MTN', width=80, height=30)
+        m2 = gui.MenuItem('MTN', width=70, height=30)
         m2.onclick.do(self.menu_screen2_clicked)
-        m3 = gui.MenuItem('PSMax', width=80, height=30)
+        m3 = gui.MenuItem('PSMax', width=70, height=30)
         m3.onclick.do(self.menu_screen3_clicked)
-        m4 = gui.MenuItem('WS-WU', width=80, height=30)
+        m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=80, height=30)
+        m5 = gui.MenuItem('B-TB', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
-        m6 = gui.MenuItem('Pins', width=80, height=30)
+        m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
+        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7.onclick.do(self.menu_screen7_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6])
+        menu.append([m1, m2, m3, m4, m5, m6, m7])
     
         menubar = gui.MenuBar(width='100%', height='30px')
         menubar.append(menu)
@@ -347,20 +422,23 @@ class SkyWeatherConfigure(App):
 
        
         menu = gui.Menu(width='100%', height='30px')
-        m1 = gui.MenuItem('DMW', width=80, height=30)
+        m1 = gui.MenuItem('DMW', width=70, height=30)
         m1.onclick.do(self.menu_screen1_clicked)
-        m2 = gui.MenuItem('MTN', width=80, height=30)
+        m2 = gui.MenuItem('MTN', width=70, height=30)
         m2.onclick.do(self.menu_screen2_clicked)
-        m3 = gui.MenuItem('PSMax', width=80, height=30)
+        m3 = gui.MenuItem('PSMax', width=70, height=30)
         m3.onclick.do(self.menu_screen3_clicked)
-        m4 = gui.MenuItem('WS-WU', width=80, height=30)
+        m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=80, height=30)
+        m5 = gui.MenuItem('B-TB', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
-        m6 = gui.MenuItem('Pins', width=80, height=30)
+        m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
+        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7.onclick.do(self.menu_screen7_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6])
+        menu.append([m1, m2, m3, m4, m5, m6, m7])
+    
     
         menubar = gui.MenuBar(width='100%', height='30px')
         menubar.append(menu)
@@ -433,22 +511,26 @@ class SkyWeatherConfigure(App):
         vbox.style['border'] = '2px'
         vbox.style['border-color'] = 'blue'
        
+   
         menu = gui.Menu(width='100%', height='30px')
-        m1 = gui.MenuItem('DMW', width=80, height=30)
+        m1 = gui.MenuItem('DMW', width=70, height=30)
         m1.onclick.do(self.menu_screen1_clicked)
-        m2 = gui.MenuItem('MTN', width=80, height=30)
+        m2 = gui.MenuItem('MTN', width=70, height=30)
         m2.onclick.do(self.menu_screen2_clicked)
-        m3 = gui.MenuItem('PSMax', width=80, height=30)
+        m3 = gui.MenuItem('PSMax', width=70, height=30)
         m3.onclick.do(self.menu_screen3_clicked)
-        m4 = gui.MenuItem('WS-WU', width=80, height=30)
+        m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=80, height=30)
+        m5 = gui.MenuItem('B-TB', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
-        m6 = gui.MenuItem('Pins', width=80, height=30)
+        m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
+        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7.onclick.do(self.menu_screen7_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6])
+        menu.append([m1, m2, m3, m4, m5, m6, m7])
     
+
         menubar = gui.MenuBar(width='100%', height='30px')
         menubar.append(menu)
 
@@ -513,22 +595,26 @@ class SkyWeatherConfigure(App):
         vbox.style['border'] = '2px'
         vbox.style['border-color'] = 'blue'
 
+   
         menu = gui.Menu(width='100%', height='30px')
-        m1 = gui.MenuItem('DMW', width=80, height=30)
+        m1 = gui.MenuItem('DMW', width=70, height=30)
         m1.onclick.do(self.menu_screen1_clicked)
-        m2 = gui.MenuItem('MTN', width=80, height=30)
+        m2 = gui.MenuItem('MTN', width=70, height=30)
         m2.onclick.do(self.menu_screen2_clicked)
-        m3 = gui.MenuItem('PSMax', width=80, height=30)
+        m3 = gui.MenuItem('PSMax', width=70, height=30)
         m3.onclick.do(self.menu_screen3_clicked)
-        m4 = gui.MenuItem('WS-WU', width=80, height=30)
+        m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=80, height=30)
+        m5 = gui.MenuItem('B-TB', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
-        m6 = gui.MenuItem('Pins', width=80, height=30)
+        m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
+        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7.onclick.do(self.menu_screen7_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6])
+        menu.append([m1, m2, m3, m4, m5, m6, m7])
     
+
         menubar = gui.MenuBar(width='100%', height='30px')
         menubar.append(menu)
 
@@ -580,29 +666,33 @@ class SkyWeatherConfigure(App):
         vbox.style['border'] = '2px'
         vbox.style['border-color'] = 'blue'
        
+   
         menu = gui.Menu(width='100%', height='30px')
-        m1 = gui.MenuItem('DMW', width=80, height=30)
+        m1 = gui.MenuItem('DMW', width=70, height=30)
         m1.onclick.do(self.menu_screen1_clicked)
-        m2 = gui.MenuItem('MTN', width=80, height=30)
+        m2 = gui.MenuItem('MTN', width=70, height=30)
         m2.onclick.do(self.menu_screen2_clicked)
-        m3 = gui.MenuItem('PSMax', width=80, height=30)
+        m3 = gui.MenuItem('PSMax', width=70, height=30)
         m3.onclick.do(self.menu_screen3_clicked)
-        m4 = gui.MenuItem('WS-WU', width=80, height=30)
+        m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=80, height=30)
+        m5 = gui.MenuItem('B-TB', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
-        m6 = gui.MenuItem('Pins', width=80, height=30)
+        m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
+        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7.onclick.do(self.menu_screen7_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6])
+        menu.append([m1, m2, m3, m4, m5, m6, m7])
     
+
         menubar = gui.MenuBar(width='100%', height='30px')
         menubar.append(menu)
 
         vbox.append(menubar)
 
         #screen 
-        screenheader = gui.Label("Pin Config", style='margin:10px')
+        screenheader = gui.Label("Pin Config Tab", style='margin:10px')
         vbox.append(screenheader)
         
         # short headers
@@ -660,6 +750,94 @@ class SkyWeatherConfigure(App):
         return vbox
 
 
+    def buildScreen7(self):
+        #screen 7
+
+        vbox = VBox(width=500, height=510, style="background: LightGray; border: 5px solid red")
+
+        vbox.style['justify-content'] = 'flex-start'
+        vbox.style['align-items'] = 'flex-start'
+        vbox.style['border'] = '2px'
+        vbox.style['border-color'] = 'blue'
+       
+        menu = gui.Menu(width='100%', height='30px')
+        m1 = gui.MenuItem('DMW', width=70, height=30)
+        m1.onclick.do(self.menu_screen1_clicked)
+        m2 = gui.MenuItem('MTN', width=70, height=30)
+        m2.onclick.do(self.menu_screen2_clicked)
+        m3 = gui.MenuItem('PSMax', width=70, height=30)
+        m3.onclick.do(self.menu_screen3_clicked)
+        m4 = gui.MenuItem('WS-WU', width=70, height=30)
+        m4.onclick.do(self.menu_screen4_clicked)
+        m5 = gui.MenuItem('B-TB', width=70, height=30)
+        m5.onclick.do(self.menu_screen5_clicked)
+        m6 = gui.MenuItem('Pins', width=70, height=30)
+        m6.onclick.do(self.menu_screen6_clicked)
+        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7.onclick.do(self.menu_screen7_clicked)
+
+        menu.append([m1, m2, m3, m4, m5, m6, m7])
+    
+        menubar = gui.MenuBar(width='100%', height='30px')
+        menubar.append(menu)
+
+        vbox.append(menubar)
+
+        #screen 
+        screenheader = gui.Label("Camera / MQTT / Rest Tab", style='margin:10px')
+        vbox.append(screenheader)
+        
+        # short headers
+
+        shortlabelstyle = 'font-family:monospace; width:200; font-size:15px; margin:5px; background:LightGray' 
+
+
+
+        P5Nheader = gui.Label("Night Camera Enable", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
+        vbox.append(P5Nheader,'P5Nheader') 
+        self.F_Camera_Night_Enable = gui.CheckBoxLabel( 'Night Vision Enable', self.Camera_Night_Enable, height=30, style='margin:5px; background: LightGray ')
+        vbox.append(self.F_Camera_Night_Enable,'self.F_Camera_Night_Enable') 
+
+        P7Nheader = gui.Label("REST Interface", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
+        vbox.append(P7Nheader,'P7Nheader') 
+        self.F_REST_Enable = gui.CheckBoxLabel( 'REST Enable', self.REST_Enable, height=30, style='margin:5px; background: LightGray ')
+        vbox.append(self.F_REST_Enable,'self.F_REST_Enable') 
+
+
+        P6Nheader = gui.Label("MQTT Configuration", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
+        vbox.append(P6Nheader,'P6Nheader') 
+
+        self.F_MQTT_Enable = gui.CheckBoxLabel( 'MQTT Enable', self.MQTT_Enable, height=30, style='margin:5px; background: LightGray ')
+        vbox.append(self.F_MQTT_Enable,'self.F_MQTT_Enable') 
+
+        p4label = gui.Label("MQTT Server URL ", style='position:absolute; left:5px; top:40px;'+shortlabelstyle)
+        vbox.append(p4label,'p4label') 
+        
+        self.F_MQTT_Server_URL = gui.TextInput(width=200, height=30, style="margin:5px")
+        self.F_MQTT_Server_URL.set_value(self.MQTT_Server_URL)
+        vbox.append(self.F_MQTT_Server_URL,'MQTT_Server_URL') 
+
+        p3label = gui.Label("MQTT Server Port Number ", style='position:absolute; left:5px; top:40px;'+shortlabelstyle)
+        vbox.append(p3label,'p3label') 
+        
+        self.F_MQTT_Port_Number = gui.TextInput(width=200, height=30, style="margin:5px")
+        self.F_MQTT_Port_Number.set_value(str(self.MQTT_Port_Number))
+        vbox.append(self.F_MQTT_Port_Number,'MQTT_Port_Number') 
+
+        p2label = gui.Label("How Often MQTT Sent in Seconds ", style='position:absolute; left:5px; top:40px;'+shortlabelstyle)
+        vbox.append(p2label,'p2label') 
+        
+        self.F_MQTT_Send_Seconds = gui.TextInput(width=200, height=30, style="margin:5px")
+        self.F_MQTT_Send_Seconds.set_value(str(self.MQTT_Send_Seconds))
+        vbox.append(self.F_MQTT_Send_Seconds,'MQTT_Send_Seconds') 
+
+
+
+
+
+        return vbox
+
+
 
     def main(self):
 
@@ -711,6 +889,7 @@ class SkyWeatherConfigure(App):
         self.screen4 = self.buildScreen4()
         self.screen5 = self.buildScreen5()
         self.screen6 = self.buildScreen6()
+        self.screen7 = self.buildScreen7()
 
 
         self.mainContainer.append(self.screen1,'screen1')
@@ -734,6 +913,7 @@ class SkyWeatherConfigure(App):
         self.mainContainer.remove_child(self.screen4)
         self.mainContainer.remove_child(self.screen5)
         self.mainContainer.remove_child(self.screen6)
+        self.mainContainer.remove_child(self.screen7)
         
     # listener functions
 
@@ -768,6 +948,12 @@ class SkyWeatherConfigure(App):
         print("menu screen6 clicked")
 
 
+    def menu_screen7_clicked(self, widget):
+        self.removeAllScreens()
+        self.mainContainer.append(self.screen7,'screen7')
+        print("menu screen7 clicked")
+
+
     def onCancel(self, widget, name='', surname=''):
         print("onCancel clicked")
         self.saveJSON()
@@ -797,6 +983,7 @@ class SkyWeatherConfigure(App):
         self.screen4 = self.buildScreen4()
         self.screen5 = self.buildScreen5()
         self.screen6 = self.buildScreen6()
+        self.screen7 = self.buildScreen7()
 
 
         self.mainContainer.append(self.screen1,'screen1')

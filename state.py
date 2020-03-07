@@ -2,7 +2,45 @@
 # Contains State Variables
 #
 
+# FT0300 Invalid Statements
+# Invalid data / null / max / min defines
 
+
+INVALID_DATA_8  =               0x7a          # Invalid value (corresponding to 8bit value)
+INVALID_DATA_16 =               0x7ffa        # Invalid value (corresponding to 16bit value)
+INVALID_DATA_32 =               0x7ffffffa    # Invalid value (corresponding to 32bit value)
+
+NULL_DATA_8     =               0x7b          # Indicates that the field does not exist
+NULL_DATA_16    =               0x7ffb
+NULL_DATA_32    =               0x7ffffffb
+
+LOW_DATA_8      =               0x7c          # Means less than the minimum value that can be expressed
+LOW_DATA_16     =               0x7ffc
+LOW_DATA_32     =               0x7ffffffc
+
+HIGH_DATA_8     =               0x7d          # Means greater than the maximum value that can be expressed
+HIGH_DATA_16    =               0x7ffd
+HIGH_DATA_32    =               0x7ffffffd
+
+# 0x7e, 0x7f skip
+
+
+# ===============================================================================
+# Maximum and minimum
+# ===============================================================================
+TEMP_MIN_F      =               0            # -40.0F, offset 40.0F
+TEMP_MAX_F      =               1800         # 140.0F, offset 40.0F
+
+HUMI_MIN        =               10           # 10%
+HUMI_MAX        =               99           # 99%
+
+WIND_MAX        =               500          # 50.0m/s
+
+RAIN_MAX        =               99999        # 9999.9mm
+
+# JSON state record
+
+currentStateJSON = ""
 # WeatherSTEM info
 
 WeatherSTEMHash = ""
@@ -179,4 +217,9 @@ def printState():
     print ("-------------")
     print ("fanState = ", fanState)
     print ("-------------")
+
+
+
+import threading
+buildJSONSemaphore = threading.Semaphore()
 

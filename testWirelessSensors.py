@@ -3,10 +3,6 @@
 #   rtl_433_wrapper.py
 #
 #   Wrapper script for executing "rtl_433" and processing the output as it occurs in realtime.
-#   As currently written it works with the "Aculink 986" refrigerator and freezer temperature monitor.
-#
-#   >>>---> Changes to handle other makes/models will likely be necessary, possibly to the rtl_433 source as well because ouputting data
-#           as JSON hasn't been implemented in  all of the protocol handlers :-/
 #
 #   The goal is to be able to use "rtl_433" unmodified so that is easy to stay current as support for additional devices/protocols are added.
 #   Note: To make this "real" some refactoring of the rtl_433 source will be needed to add consistent support for JSON across the various protocol handlers.
@@ -20,7 +16,7 @@ import datetime
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '20']
+cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '20', '-R', '146']
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 #   A few helper functions...
@@ -72,6 +68,8 @@ while True:
         sLine = line.decode()
         #   See if the data is something we need to act on...
         if ( sLine.find('F007TH') != -1):
+            sys.stdout.write('This is the raw data: ' + sLine + '\n')
+        if ( sLine.find('FT0300') != -1):
             sys.stdout.write('This is the raw data: ' + sLine + '\n')
 
 

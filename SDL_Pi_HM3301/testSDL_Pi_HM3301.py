@@ -5,7 +5,14 @@
 import SDL_Pi_HM3301
 import time
 import traceback
-hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301()
+import pigpio
+
+mypi = pigpio.pi()
+
+mySDA = 21
+mySCL = 20
+
+hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA=mySDA, SCL=mySCL, pi=mypi)
 time.sleep(0.01)
 try:
     while 1:

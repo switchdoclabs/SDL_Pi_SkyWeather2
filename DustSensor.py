@@ -33,6 +33,7 @@ def powerOffDustSensor():
         GPIO.output(config.DustSensorPowerPin, False)
         time.sleep(1)
 
+myPi = pigpio.pi()
 
 def read_AQI():
 
@@ -50,8 +51,8 @@ def read_AQI():
       # delay for 30 seconds for calibrated reading
 
       time.sleep(30)
-      
-      hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL)
+      print("myPi=", myPi) 
+      hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL, pi=myPi)
       time.sleep(0.1)
 
 

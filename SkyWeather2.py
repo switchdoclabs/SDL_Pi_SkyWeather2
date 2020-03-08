@@ -35,7 +35,6 @@ import wirelessSensors
 import wiredSensors
 import sendemail
 import watchDog
-import DustSensor
 import util
 import BMP280
 import SkyCamera
@@ -89,6 +88,8 @@ if (config.SWDEBUG):
 
 cmd = [ '/usr/bin/pigpiod' ]
 output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+print(output)
+import DustSensor
 
 # detect devices
 
@@ -142,6 +143,7 @@ print(util.returnStatusLine("DustSensor",config.DustSensor_Present))
 print()
 print(util.returnStatusLine("UseBlynk",config.USEBLYNK))
 print(util.returnStatusLine("UseMySQL",config.enable_MySQL_Logging))
+print(util.returnStatusLine("UseMQTT",config.MQTT_Enable))
 print(util.returnStatusLine("Check WLAN",config.enable_WLAN_Detection))
 print(util.returnStatusLine("WeatherUnderground",config.WeatherUnderground_Present))
 print(util.returnStatusLine("UseWeatherStem",config.USEWEATHERSTEM))
@@ -170,6 +172,15 @@ if (config.USEBLYNK):
      updateBlynk.blynkInit()
 
 
+import paho.mqtt.client as mqtt
+
+
+# set up MQTT
+if (config.MQTT_Enable):
+    state.mqtt_client = mqtt.Client(client_id="SkyWeather2") 
+    state.mqtt_client.connect(config.MQTT_Server_URL, port=config.MQTT_Port_Number)
+
+import publishMQTT
 
 # Set up scheduler
 
@@ -199,6 +210,9 @@ if (config.SWDEBUG):
 
 if (config.USEBLYNK):
     scheduler.add_job(updateBlynk.blynkStateUpdate, 'interval', seconds=15)
+
+if (config.MQTT_Enable):
+    scheduler.add_job(publishMQTT.publish, 'interval', seconds=config.MQTT_Send_Seconds)
         
 scheduler.add_job(watchDog.patTheDog, 'interval', seconds=10)   # reset the WatchDog Timer
 
@@ -234,4 +248,6 @@ print ("-----------------")
 while True:
 
     time.sleep(1.0)
+
+
 

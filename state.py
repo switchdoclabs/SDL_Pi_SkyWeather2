@@ -223,3 +223,4 @@ def printState():
 import threading
 buildJSONSemaphore = threading.Semaphore()
 
+mqtt_client = None

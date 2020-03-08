@@ -15,11 +15,8 @@ import SDL_Pi_HM3301
 import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
-# Check for user imports
-try:
-            import conflocal as config
-except ImportError:
-            import config
+
+import config
 
 import state
 
@@ -34,6 +31,14 @@ def powerOffDustSensor():
         time.sleep(1)
 
 myPi = pigpio.pi()
+
+try:
+    hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL, pi=myPi)
+except:
+    myPi.bb_i2c_close(config.DustSensorSDA)
+    myPi.stop() 
+    
+    hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL, pi=myPi)
 
 def read_AQI():
 
@@ -51,8 +56,6 @@ def read_AQI():
       # delay for 30 seconds for calibrated reading
 
       time.sleep(30)
-      print("myPi=", myPi) 
-      hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL, pi=myPi)
       time.sleep(0.1)
 
 
@@ -73,7 +76,7 @@ def read_AQI():
         hm3301.print_data()
         print ("AQI=", myAQI)
       
-      hm3301.close()
+      #hm3301.close()
       powerOffDustSensor()
       state.Outdoor_AirQuality_Sensor_Value = myAQI
       

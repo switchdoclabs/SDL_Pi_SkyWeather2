@@ -36,8 +36,8 @@ class SDL_Pi_HM3301(object):
    
         # set pullups - not necessary with Pi2Grover
 
-        self.pi.set_pull_up_down(self.SDA, pigpio.PUD_UP)
-        self.pi.set_pull_up_down(self.SCL, pigpio.PUD_UP)
+        #self.pi.set_pull_up_down(self.SDA, pigpio.PUD_UP)
+        #self.pi.set_pull_up_down(self.SCL, pigpio.PUD_UP)
         h = self.pi.bb_i2c_open(self.SDA, self.SCL, 20000)    
 
         (count, data) = self.pi.bb_i2c_zip(

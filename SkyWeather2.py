@@ -36,7 +36,7 @@ import wiredSensors
 import sendemail
 import watchDog
 import util
-import BMP280
+from  bmp280 import BMP280
 import SkyCamera
 
 # Scheduler Helpers
@@ -86,6 +86,16 @@ print ("")
 if (config.SWDEBUG):
     print("Starting pigpio daemon")
 
+# kill all pigpio instances
+try:
+    cmd = [ 'killall', 'pigpiod' ]
+    output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+    print(output)
+    time.sleep(5)
+except:
+    #print(traceback.format_exc())
+    pass
+
 cmd = [ '/usr/bin/pigpiod' ]
 output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
 print(output)
@@ -96,10 +106,19 @@ import DustSensor
 ################
 # BMP280 Setup 
 ################
-bmp280 = BMP280.BMP280()
 
 try:
-        bmp280 = BMP280.BMP280()
+    from smbus2 import SMBus
+except ImportError:
+    from smbus import SMBus
+
+
+# Initialise the BMP280
+bus = SMBus(1)
+bmp280 = BMP280(i2c_dev=bus, i2c_addr=0x77)
+
+try:
+        bmp280 = BMP280(i2c_dev=bus, i2c_addr=0x77)
         config.BMP280_Present = True
 except Exception as e: 
         if (config.SWDEBUG):

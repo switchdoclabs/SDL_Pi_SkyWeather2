@@ -64,20 +64,28 @@ def processF300Data(sLine):
     state.mainID = var["id"] 
     state.lastMainReading = nowStr()
     wTemp = var["temperature"]
+
     ucHumi = var["humidity"]
 
-    if (wTemp >= 0x7fa):
-        wTemp = wTemp | 0x7F00
-    else:
-        if (wTemp> state.TEMP_MAX_F):
-            wTemp = state.INVALID_DATA_16
-            ucHumi = state.INVALID_DATA_8
 
     wTemp = (wTemp - 400)/10.0
-    print("wTemp=", wTemp);
-    
+    # deal with error condtions
+    if (wTemp > 140.0):
+        # error condition from sensor
+        if (config.SWDEBUG):
+            sys.stdout.write("error--->>> Temperature reading from F300\n")
+            sys.stdout.write('This is the raw temperature: ' + str(wTemp) + '\n')
+        # put in previous temperature 
+        wtemp = state.currentOutsideTemperature 
+    print("wTemp=%s %s", (str(wTemp),nowStr() ));
+    if (ucHumi > 100.0):
+        # bad humidity
+        # put in previous humidity
+        ucHumi  = state.currentOutsideHumidity
+     
     state.currentOutsideTemperature = round(((wTemp - 32.0)/(9.0/5.0)),2)
     state.currentOutsideHumidity =  ucHumi 
+
     
         
     state.ScurrentWindSpeed =  round(var["avewindspeed"]/10.0, 1)

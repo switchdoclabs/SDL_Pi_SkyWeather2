@@ -995,7 +995,7 @@ class SkyWeatherConfigure(App):
 
 
 #Configuration
-configuration = {'config_enable_file_cache': True, 'config_multiple_instance': True, 'config_port': 8001, 'config_address': '0.0.0.0', 'config_start_browser': True, 'config_project_name': 'untitled', 'config_resourcepath': './res/'}
+configuration = {'config_enable_file_cache': True, 'config_multiple_instance': True, 'config_port': 8001, 'config_address': '0.0.0.0', 'config_start_browser': False, 'config_project_name': 'untitled', 'config_resourcepath': './res/'}
 
 # starts the web server
 #start(SkyWeatherConfigure, address='0.0.0.0', port=8001)

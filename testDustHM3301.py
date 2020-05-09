@@ -5,34 +5,38 @@
 import sys
 sys.path.append('./SDL_Pi_HM3301')
 
+import subprocess
 import SDL_Pi_HM3301
 import time
 import traceback
 import pigpio
+import config
 
-try:
-	import conflocal as config
-except ImportError:
-	import config
 
-myPi = pigpio.pi()
-hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL, pi=myPi)
+if (config.SWDEBUG):
+    print("Starting pigpio daemon")
+
+cmd = [ '/usr/bin/pigpiod' ]
+output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+print(output)
+import DustSensor
+
+
+
 time.sleep(0.01)
 try:
     while 1:
 
-
-        myData = hm3301.get_data()
+        DustSensor.powerOnDustSensor()
+        myData = DustSensor.get_data()
         print ("data=",myData)
-        if (hm3301.checksum() != True):
-            print("Checksum Error!")
-        myAQI = hm3301.get_aqi()
-        hm3301.print_data()
+        myAQI = DustSensor.get_aqi()
+        DustSensor.print_data()
         print ("AQI=", myAQI)
+        DustSensor.powerOffDustSensor()
 
         time.sleep(3)
 
 except:
-    print ("closing hm3301")
+    #DustSensor.powerOffDustSensor()
     print(traceback.format_exc())
-    hm3301.close()

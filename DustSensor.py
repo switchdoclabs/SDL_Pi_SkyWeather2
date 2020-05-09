@@ -19,15 +19,18 @@ GPIO.setmode(GPIO.BCM)
 import config
 
 import state
+GPIO.setup(12, GPIO.OUT)
 
 def powerOnDustSensor():
-        GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
-        GPIO.output(config.DustSensorPowerPin, True)
+        #GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
+        GPIO.output(12, True)
+        #GPIO.output(config.DustSensorPowerPin, True)
         time.sleep(1)
 
 def powerOffDustSensor():
-        GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
-        GPIO.output(config.DustSensorPowerPin, False)
+        #GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
+        GPIO.output(12, False)
+        #GPIO.output(config.DustSensorPowerPin, False)
         time.sleep(1)
 
 myPi = pigpio.pi()
@@ -80,8 +83,14 @@ def read_AQI():
       powerOffDustSensor()
       state.Outdoor_AirQuality_Sensor_Value = myAQI
       
+def print_data():
+    hm3301.print_data()
+
+def get_aqi():
+      myAQI = hm3301.get_aqi()
+      return myAQI
 
 
-
-
-
+def get_data():
+      myData = hm3301.get_data()
+      return myData

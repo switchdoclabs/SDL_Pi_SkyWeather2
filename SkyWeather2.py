@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "003"
+config.SWVERSION = "004"
 # system imports
 
 import time

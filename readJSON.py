@@ -77,10 +77,10 @@ def readJSON():
                 config.runLEDs = getJSONValue('runLEDs')
                 config.SolarMAX_Present = getJSONValue('SolarMAX_Present')
                 config.SolarMAX_Type = getJSONValue('SolarMAX_Type')
-                config.BMP280_Altitude_Meters = getJSONValue('BMP280_Altitude_Meters')
+                config.BMP280_Altitude_Meters = int(getJSONValue('BMP280_Altitude_Meters'))
                 config.Sunlight_Gain = getJSONValue('Sunlight_Gain')
                 config.USEWEATHERSTEM = getJSONValue('USEWEATHERSTEM')
-                config.INTERVAL_CAM_PICS__SECONDS = getJSONValue('INTERVAL_CAM_PICS__SECONDS')
+                config.INTERVAL_CAM_PICS__SECONDS = int(getJSONValue('INTERVAL_CAM_PICS__SECONDS'))
                 config.STATIONKEY = getJSONValue('STATIONKEY')
                 config.WeatherUnderground_Present = getJSONValue('WeatherUnderground_Present')
                 config.WeatherUnderground_StationID = getJSONValue('WeatherUnderground_StationID')
@@ -98,8 +98,8 @@ def readJSON():
                 config.REST_Enable = getJSONValue('REST_Enable')
                 config.MQTT_Enable = getJSONValue('MQTT_Enable')
                 config.MQTT_Server_URL = getJSONValue('MQTT_Server_URL')
-                config.MQTT_Port_Number = getJSONValue('MQTT_Port_Number')
-                config.MQTT_Send_Seconds = getJSONValue('MQTT_Send_Seconds')
+                config.MQTT_Port_Number = int(getJSONValue('MQTT_Port_Number'))
+                config.MQTT_Send_Seconds = int(getJSONValue('MQTT_Send_Seconds'))
 
         else:
             print ("SkyWeather2.JSON File does not exist")

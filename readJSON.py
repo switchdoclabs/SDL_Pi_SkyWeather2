@@ -77,7 +77,7 @@ def readJSON():
                 config.runLEDs = getJSONValue('runLEDs')
                 config.SolarMAX_Present = getJSONValue('SolarMAX_Present')
                 config.SolarMAX_Type = getJSONValue('SolarMAX_Type')
-                config.BMP280_Altitude_Meters = int(getJSONValue('BMP280_Altitude_Meters'))
+                config.BMP280_Altitude_Meters = float(getJSONValue('BMP280_Altitude_Meters'))
                 config.Sunlight_Gain = getJSONValue('Sunlight_Gain')
                 config.USEWEATHERSTEM = getJSONValue('USEWEATHERSTEM')
                 config.INTERVAL_CAM_PICS__SECONDS = int(getJSONValue('INTERVAL_CAM_PICS__SECONDS'))

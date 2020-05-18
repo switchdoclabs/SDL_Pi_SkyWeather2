@@ -1,5 +1,6 @@
 import os
 import config
+import json
 
 def setDefaults():
         config.SWDEBUG = False

@@ -18,6 +18,9 @@ GPIO.setmode(GPIO.BCM)
 
 import config
 
+print("config.DustSensorSCL=", config.DustSensorSCL)
+print("config.DustSensorSDA=", config.DustSensorSDA)
+
 import state
 GPIO.setup(12, GPIO.OUT)
 GPIO.output(12, True)

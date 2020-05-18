@@ -79,10 +79,10 @@ MQTT_Port_Number = None
 MQTT_Send_Seconds = None
 
 
-import SkyJSONConfig
+import readJSON
 
 # JSON read in files
 
 # read JSON and put it it into the config variables
 
-SkyJSONConfig.readJSON()
+readJSON.readJSON()

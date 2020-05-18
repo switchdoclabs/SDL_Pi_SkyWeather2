@@ -93,7 +93,7 @@ def readJSON():
                 config.DustSensorPowerPin = int(getJSONValue('DustSensorPowerPin'))
                 config.GPIO_Pin_PowerDrive_Sig1 = int(getJSONValue('GPIO_Pin_PowerDrive_Sig1'))
                 config.GPIO_Pin_PowerDrive_Sig2 = int(getJSONValue('GPIO_Pin_PowerDrive_Sig2'))
-                config.WATCHDOGTRIGGER = getJSONValue('WATCHDOGTRIGGER')
+                config.WATCHDOGTRIGGER = int(getJSONValue('WATCHDOGTRIGGER'))
                 config.Camera_Night_Enable = getJSONValue('Camera_Night_Enable')
                 config.REST_Enable = getJSONValue('REST_Enable')
                 config.MQTT_Enable = getJSONValue('MQTT_Enable')

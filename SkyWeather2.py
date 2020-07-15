@@ -242,8 +242,7 @@ scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day
 #check for Barometric Trend (every 15 minutes)
 scheduler.add_job(util.barometricTrend, 'interval', seconds=15*60)
 
-if (config.DustSensor_Present):
-    #scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*5)
+if (config.DustSensor.read_AQI, 'interval', seconds=60*5)
     scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*2)
     
 # sky camera

@@ -2,10 +2,7 @@ from __future__ import print_function
 # WatchDog Programs
 
 # Check for user imports
-try:
-	import conflocal as config
-except ImportError:
-	import config
+import config
 
 import RPi.GPIO as GPIO
 import time

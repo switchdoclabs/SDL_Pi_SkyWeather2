@@ -15,11 +15,7 @@ import util
 import datetime as dt
 
 
-# Check for user imports
-try:
-            import conflocal as config
-except ImportError:
-            import config
+import config
 
 def SkyWeatherKeyGeneration(userKey):
 
@@ -143,7 +139,7 @@ def sendSkyWeather():
         print ("--------------------")
         print ("SkyCam Package Sending")
         print ("--------------------")
-
+        print ("API Key:",state.WeatherSTEMHash)
     if(state.barometricTrend == True):
         bptrendvalue = "Rising"
     else:

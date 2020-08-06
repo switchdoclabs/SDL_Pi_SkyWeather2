@@ -3,13 +3,9 @@ import traceback
 
 def sendEmail(source, message, subject, toaddress, fromaddress, filename):
 
-	# if conflocal.py is not found, import default config.py
 
 	# Check for user imports
-	try:
-     		import conflocal as config
-	except ImportError:
-     		import config
+        import config
 
 	# Import smtplib for the actual sending function
 	import smtplib

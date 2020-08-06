@@ -8,10 +8,7 @@ import util
 import state
 import traceback
 # Check for user imports
-try:
-                import conflocal as config
-except ImportError:
-                import config
+import config
 
 
 DEBUGBLYNK = False 

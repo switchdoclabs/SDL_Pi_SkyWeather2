@@ -2,10 +2,7 @@
 # wireless sensor routines
 
 
-try:
-	import conflocal as config
-except ImportError:
-	import config
+import config
 
 import json
 import random

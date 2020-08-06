@@ -5,10 +5,7 @@ import updateBlynk
 import RPi.GPIO as GPIO
 
 # Check for user imports
-try:
-                import conflocal as config
-except ImportError:
-                import config
+import config
 
 
 

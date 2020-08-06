@@ -1,10 +1,7 @@
 # imports
 # Check for user imports
 from __future__ import print_function
-try:
-	import conflocal as config
-except ImportError:
-	import config
+import config
 
 import state
 import SkyCamera
@@ -14,6 +11,7 @@ import SkyCamera
 if (config.USEWEATHERSTEM == True):
     state.WeatherSTEMHash = SkyCamera.SkyWeatherKeyGeneration(config.STATIONKEY)
 
+    print("config.STATIONKEY=", config.STATIONKEY)
 # test SkyWeather Camera and WeatherSTEM
 print ("taking SkyPicture")
 SkyCamera.takeSkyPicture()

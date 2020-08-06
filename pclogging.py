@@ -20,10 +20,7 @@ NOTSET=0
 import sys
 import time
 # Check for user imports
-try:
-        import conflocal as config
-except ImportError:
-        import config
+import config
 
 if (config.enable_MySQL_Logging == True):
 	import MySQLdb as mdb

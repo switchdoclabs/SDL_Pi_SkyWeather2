@@ -86,3 +86,19 @@ import readJSON
 # read JSON and put it it into the config variables
 
 readJSON.readJSON()
+
+
+
+
+
+########
+#Logging
+########
+
+CRITICAL=50
+ERROR=40
+WARNING=30
+INFO=20
+JSON=15
+DEBUG=10
+NOTSET=0

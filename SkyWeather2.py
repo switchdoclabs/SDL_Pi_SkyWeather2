@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "006"
+config.SWVERSION = "007"
 # system imports
 
 import time
@@ -53,7 +53,7 @@ def ap_my_listener(event):
 	
 def shutdownPi(why):
 
-   pclogging.log(pclogging.INFO, __name__, "Pi Shutting Down: %s" % why)
+   pclogging.systemog(config.INFO, "Pi Shutting Down: %s" % why)
    sendemail.sendEmail("test", "SkyWeather2 Shutting down:"+ why, "The SkyWeather2 Raspberry Pi shutting down.", config.notifyAddress,  config.fromAddress, "");
    sys.stdout.flush()
    time.sleep(10.0)
@@ -62,11 +62,11 @@ def shutdownPi(why):
 
 def rebootPi(why):
 
-   pclogging.log(pclogging.INFO, __name__, "Pi Rebooting: %s" % why)
+   pclogging.systemlog(config.INFO, "Pi Rebooting: %s" % why)
    if (config.USEBLYNK):
      updateBlynk.blynkEventUpdate("Pi Rebooting: %s" % why)
      updateBlynk.blynkStatusTerminalUpdate("Pi Rebooting: %s" % why)
-   pclogging.log(pclogging.INFO, __name__, "Pi Rebooting: %s" % why)
+   pclogging.systemlog(config.INFO, "Pi Rebooting: %s" % why)
    os.system("sudo shutdown -r now")
 
 
@@ -171,7 +171,7 @@ print("----------------------")
 # startup
 
 
-pclogging.log(pclogging.INFO, __name__, "SkyWeather2 Startup Version"+config.SWVERSION )
+pclogging.systemlog(config.INFO,"SkyWeather2 Startup Version"+config.SWVERSION )
 
 if (config.USEBLYNK):
      updateBlynk.blynkEventUpdate("SW Startup Version "+config.SWVERSION)
@@ -228,7 +228,7 @@ if (config.SWDEBUG):
     scheduler.add_job(state.printState, 'interval', seconds=60)
 
 if (config.USEBLYNK):
-    scheduler.add_job(updateBlynk.blynkStateUpdate, 'interval', seconds=15)
+    scheduler.add_job(updateBlynk.blynkStateUpdate, 'interval', seconds=30)
 
 if (config.MQTT_Enable):
     scheduler.add_job(publishMQTT.publish, 'interval', seconds=config.MQTT_Send_Seconds)

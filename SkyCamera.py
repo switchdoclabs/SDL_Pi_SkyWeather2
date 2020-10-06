@@ -35,7 +35,7 @@ def takeSkyPicture():
 
     camera.exposure_mode = "auto"
     try:
-        camera.rotation = 180
+        camera.rotation = 0
         #camera.rotation = 270
         camera.resolution = (1920, 1080)
         # Camera warm-up time
@@ -57,7 +57,7 @@ def takeSkyPicture():
         WindStval = "{0:0.1f}".format(val) + util.returnWindSpeedUnit()
         val = util.returnWindSpeed(state.ScurrentWindGust)
         WindGtval = "{0:0.1f}".format(val) + util.returnWindSpeedUnit()
-        val = util.returnTemperatureCF(state.currentOutsideTemperature)
+        val = util.returnTemperatureCF(state.OutdoorTemperature)
         OTtval = "{0:0.1f} ".format(val) + util.returnTemperatureCFUnit()
 
         myText = "SkyWeather2 V%s %s Wind Speed: %s Wind Gust: %s Temp: %s " % (config.SWVERSION,dt.datetime.now().strftime('%d-%b-%Y %H:%M:%S'),WindStval, WindGtval, OTtval)
@@ -163,83 +163,78 @@ def sendSkyWeather():
 
 		{
 			"name":"OutsideTemperature",
-			"value": state.currentOutsideTemperature,
+			"value": state.OutdoorTemperature,
                         "units" : "C"
 
 		},
 		{
 			"name":"OutsideHumidity",
-			"value": state.currentOutsideHumidity,
+			"value": state.OutdoorHumidity,
                         "units" : "%"
 
 		},
 		{
 			"name":"InsideTemperature",
-			"value": state.currentInsideTemperature,
+			"value": state.IndoorTemperature,
                         "units" : "C"
 		},
 		{
 			"name":"InsideHumidity",
-			"value": state.currentInsideHumidity,
+			"value": state.IndoorHumidity,
                         "units" : "%"
 
 		},
 		{
 			"name":"RainInLast60Minutes",
-			"value": state.currentRain60Minutes,
+			"value": state.Rain60Minutes,
                         "units" : "mm/h"
 		},
 		{
 			"name":"VisibleSunlight",
-			"value": state.currentSunlightVisible,
+			"value": state.SunlightVisible,
                         "units" : "lux"
 		},
 		{
-			"name":"IRSunlight",
-			"value": state.currentSunlightIR,
-                        "units" : "lux"
-		},
-		{
-			"name":"UVSunlightt",
-			"value": state.currentSunlightUV,
+			"name":"UVSunlightIndex",
+			"value": state.SunlightUVIndex,
                         "units" : "lux"
 
 		},
 		{
 			"name":"WindSpeed",
-			"value": state.ScurrentWindSpeed,
+			"value": state.WindSpeed,
                         "units" : "kph"
 		},
 		{
 			"name":"WindGust",
-			"value": state.ScurrentWindGust,
+			"value": state.WindGust,
                         "units" : "kph"
 		},
 		{
 			"name":"WindDirection",
-			"value": state.ScurrentWindDirection,
+			"value": state.WindDirection,
                         "units" : "degrees"
 		},
 		{
 			"name":"totalRain",
-			"value": state.currentTotalRain,
+			"value": state.TotalRain,
                         "units" : "mm"
 
 		},
 		{
 			"name":"BarometricPressure",
-			"value": state.currentBarometricPressure*10.0,
+			"value": state.BarometricPressure*10.0,
                         "units" : "hPa"
 
 		},
 		{
 			"name":"Altitude",
-			"value": state.currentAltitude,
+			"value": state.Altitude,
                         "units" : "m"
 		},
 		{
 			"name":"SeaLevelPressure",
-			"value": state.currentSeaLevel*10.0,
+			"value": state.BarometricPressureSeaLevel*10.0,
                         "units" : "hPa"
 		},
 		{
@@ -251,26 +246,10 @@ def sendSkyWeather():
 		},
 		{
 			"name":"OutdoorAirQuality",
-			"value": state.Outdoor_AirQuality_Sensor_Value,
+			"value": state.AQI,
                         "units" : "AQI"
-		},
-		{
-			"name":"IndoorAirQuality",
-			"value": state.Indoor_AirQuality_Sensor_Value,
-                        "units" : "AQI"
-		},
-		{
-			"name":"LastLightningDistance",
-			"value": state.currentAs3935LastDistance,
-                        "units" : "km"
-
-		},
-		{
-			"name":"LastLightningTimeStamp",
-			"value": state.currentAs3935LastLightningTimeStamp,
-                        "units" : ""
-
 		}
+		
                 ],
 	"solarpower":[
 		{

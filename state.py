@@ -38,62 +38,93 @@ WIND_MAX        =               500          # 50.0m/s
 
 RAIN_MAX        =               99999        # 9999.9mm
 
-# JSON state record
-
-currentStateJSON = ""
 # WeatherSTEM info
 
 WeatherSTEMHash = ""
 
 # Weather Variable Sensor Reads
 
+
+
+######################
+# Weather State Variables
+######################
+
+
+# JSON state record
+
+StateJSON = ""
+
+
+
+
+# Weather Variable Sensor Reads
+
 lastMainReading ="Never"
-lastInsideReading = "Never"
+lastIndoorReading = "Never"
+previousMainReading = "Never"
+previousIndoorReading = "Never"
 mainID = ""
 insideID = ""
 # Weather Variables
 
-currentOutsideTemperature = 0.0
-currentOutsideHumidity = 1
+OutdoorTemperature = 0.0
+OutdoorHumidity = 0.0
 
-currentInsideTemperature = 0.0
-currentInsideHumidity = 1
+IndoorTemperature = 0.0
+IndoorHumidity = 0.0
 
-currentRain60Minutes = 0.0
+Rain60Minutes = 0.0
 
-currentSunlightVisible = 0
-currentSunlightIR = 0
-currentSunlightUV = 0
-currentSunlightUVIndex  = 0
+SunlightVisible = 0.0
+SunlightUVIndex  = 0.0
 
-ScurrentWindSpeed = 0
-ScurrentWindGust  = 0
-ScurrentWindDirection  = 0.2
-currentTotalRain  = 0
+WindSpeed = 0
+WindGust  = 0
+WindDirection  = 0.2
+TotalRain  = 0
 
-currentBarometricTemperature = 0
-currentBarometricPressure = 0
-currentAltitude = 0 
-currentSeaLevel = 0
+BarometricTemperature = 0
+BarometricPressure = 0
+Altitude = 0 
+BarometricPressureSeaLevel = 0
+BarometricTemperature = 0
 barometricTrend = True
 pastBarometricReading = 0
 
-Indoor_AirQuality_Sensor_Value = 0
-Outdoor_AirQuality_Sensor_Value = 0
-Hour24_Outdoor_AirQuality_Sensor_Value = 0
+AQI = 0.0
+Hour24_AQI = 0.0
+
+# Indoor Temperature Sensor Array
+
+IndoorTH = []
 
 
+# status Values
+
+Last_Event = "My Last Event"
+EnglishMetric = 0
 
 
-# Lightning Values
+# Solar Values
 
-currentAs3935Interrupt = 0
 
-currentAs3935LastInterrupt = 0
-currentAs3935LastDistance = 0
-currentAs3935LastStatus = 0
+batteryVoltage = 0
+batteryCurrent = 0
+solarVoltage = 0
+solarCurrent = 0
+loadVoltage = 0
+loadCurrent = 0
+batteryPower = 0
+solarPower = 0
+loadPower = 0
+batteryCharge = 0
+SolarMAXLastReceived = "None"
 
-currentAs3935LastLightningTimeStamp = 0
+SolarMaxIndoorTemperature = 0.0
+SolarMaxIndoorHumidity = 0.0
+
+
 
 # Button Variables
 
@@ -134,50 +165,42 @@ def printState():
     print ("-------------")
     print ("Current State")
     print ("-------------")
-    print("latest MainSensor Reading=", lastMainReading)
-    print("MainDeviceNumber=", mainID)
-    print("currentOutsideTemperature = ",currentOutsideTemperature )
-    print("currentOutsideHumidity = ", currentOutsideHumidity )
 
-    print("latest Inside Sensor Reading=", lastInsideReading)
-    print("InsideDeviceNumber=", insideID)
-    print("currentInsideTemperature = ",currentInsideTemperature)
-    print("currentInsideHumidity = ",  currentInsideHumidity )
 
-    print("currentRain60Minutes = ",  currentRain60Minutes )
-
-    print("currentSunlightVisible = ",  currentSunlightVisible )
-    print("currentSunlightIR = ", currentSunlightIR )
-    print("currentSunlightUV = ",  currentSunlightUV )
-    print("currentSunlightUVIndex  = ", currentSunlightUVIndex  )
-
-    print("ScurrentWindSpeed = ", ScurrentWindSpeed)
-    print("ScurrentWindGust  = ",  ScurrentWindGust )
-    print("ScurrentWindDirection  = ",  ScurrentWindDirection )
-    print("currentTotalRain  = ", currentTotalRain  )
-
-    print ("currentBarometricTemperature = ", currentBarometricTemperature )
-    print ("currentBarometricPressure = ", currentBarometricPressure )
-    print ("currentAltitude = ", currentAltitude )
-    print ("currentSeaLevel = ", currentSeaLevel )
-    print ("barometricTrend =",barometricTrend )
-    print ("pastBarometricReading = ", pastBarometricReading )
-
-    print ("Outdoor_AirQuality_Sensor_Value = ",  Outdoor_AirQuality_Sensor_Value )
-    print ("Hour24_Outdoor_AirQuality_Sensor_Value = ",  Hour24_Outdoor_AirQuality_Sensor_Value )
-    print ("Indoor_AirQuality_Sensor_Value = ",  Indoor_AirQuality_Sensor_Value )
 
     print ("-------------")
 
 
-    print ("currentAs3935Interrupt = ", currentAs3935Interrupt )
+    print("latest MainSensor Reading=", lastMainReading)
+    print("MainDeviceNumber=", mainID)
+    print("OutdoorTemperature = ",OutdoorTemperature )
+    print("OutdoorHumidity = ", OutdoorHumidity )
 
-    print ("currentAs3935LastInterrupt = ", currentAs3935LastInterrupt )
-    print ("currentAs3935LastDistance = ",  currentAs3935LastDistance )
-    print ("currentAs3935LastStatus = ", currentAs3935LastStatus )
-    
-    print ("currentAs3935LastLightningTimeStamp = ", currentAs3935LastLightningTimeStamp )
+    print("latest Indoor Sensor Reading=", lastIndoorReading)
+    print("IndoorDeviceNumber=", insideID)
+    print("IndoorTemperature = ",IndoorTemperature)
+    print("IndoorHumidity = ",  IndoorHumidity )
 
+    print("Rain60Minutes = ",  Rain60Minutes )
+
+    print("SunlightVisible = ",  SunlightVisible )
+    print("SunlightUVIndex  = ", SunlightUVIndex  )
+
+    print("WindSpeed = ", WindSpeed)
+    print("WindGust  = ",  WindGust )
+    print("WindDirection  = ",  WindDirection )
+    print("TotalRain  = ", TotalRain  )
+
+    print ("BarometricTemperature = ", BarometricTemperature )
+    print ("BarometricPressure = ", BarometricPressure )
+    print ("Altitude = ", Altitude )
+    print ("BarometricPressureSeaLevel = ", BarometricPressureSeaLevel )
+    print ("BarometricTemperature = ", BarometricTemperature )
+    print ("barometricTrend =",barometricTrend )
+    print ("pastBarometricReading = ", pastBarometricReading )
+
+    print ("AQI = ",  AQI )
+    print ("Hour24_AQI = ",  Hour24_AQI )
 
     
     print ("-------------")

@@ -58,7 +58,7 @@ def sendEmail(source, message, subject, toaddress, fromaddress, filename):
         except:
             if (config.SWDEBUG):
                  pass
-                 #print (traceback.format_exc())
+                 print (traceback.format_exc())
                  print("sendmail exception raised")
         return 0
 

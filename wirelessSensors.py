@@ -70,28 +70,28 @@ def processF300Data(sLine):
     if (wTemp > 140.0):
         # error condition from sensor
         if (config.SWDEBUG):
-            sys.stdout.write("error--->>> Temperature reading from F300\n")
+            sys.stdout.write("error--->>> Temperature reading from FT020T\n")
             sys.stdout.write('This is the raw temperature: ' + str(wTemp) + '\n')
         # put in previous temperature 
-        wtemp = state.currentOutsideTemperature 
-    print("wTemp=%s %s", (str(wTemp),nowStr() ));
+        wtemp = state.OudoorTemperature 
+    #print("wTemp=%s %s", (str(wTemp),nowStr() ));
     if (ucHumi > 100.0):
         # bad humidity
         # put in previous humidity
-        ucHumi  = state.currentOutsideHumidity
+        ucHumi  = state.OutdoorHumidity
      
-    state.currentOutsideTemperature = round(((wTemp - 32.0)/(9.0/5.0)),2)
-    state.currentOutsideHumidity =  ucHumi 
+    state.OutdoorTemperature = round(((wTemp - 32.0)/(9.0/5.0)),2)
+    state.OutdoorHumidity =  ucHumi 
 
     
         
-    state.ScurrentWindSpeed =  round(var["avewindspeed"]/10.0, 1)
-    state.ScurrentWindGust  = round(var["gustwindspeed"]/10.0, 1)
-    state.ScurrentWindDirection  = var["winddirection"]
+    state.WindSpeed =  round(var["avewindspeed"]/10.0, 1)
+    state.WindGust  = round(var["gustwindspeed"]/10.0, 1)
+    state.WindDirection  = var["winddirection"]
     
 
 
-    state.currentTotalRain  = round(var["cumulativerain"]/10.0,1)
+    state.TotalRain  = round(var["cumulativerain"]/10.0,1)
     state.currentRain60Minutes = 0.0
 
     wLight = var["light"]
@@ -102,10 +102,8 @@ def processF300Data(sLine):
     if (wUVI >= 0xfa):
         wUVI = wUVI | 0x7f00
 
-    state.currentSunlightVisible =  wLight 
-    state.currentSunlightIR =  0
-    state.currentSunlightUV = 0 
-    state.currentSunlightUVIndex  = round(wUVI/10.0, 1 )
+    state.SunlightVisibl =  wLight 
+    state.SunlightUVIndex  = round(wUVI/10.0, 1 )
 
 
 
@@ -128,11 +126,11 @@ def processF007THData(sLine):
     var = json.loads(sLine)
 
     state.mainID = var["device"] + var["channel"]
-    state.lastInsideReading = nowStr()
+    state.lastIndoorReading = nowStr()
 
-    state.currentInsideTemperature = round(((var["temperature_F"] - 32.0)/(9.0/5.0)),2)
-    state.currentInsideHumidity = var["humidity"]
-    state.lastInsideReading = var["time"]
+    state.IndoorTemperature = round(((var["temperature_F"] - 32.0)/(9.0/5.0)),2)
+    state.IndoorHumidity = var["humidity"]
+    state.lastIndoorReading = var["time"]
     state.insideID = var["channel"]
 
     print("looking for buildJSONSemaphore acquire")
@@ -184,11 +182,12 @@ def readSensors():
             pulse -= 1
             sLine = line.decode()
             #   See if the data is something we need to act on...
-            if ( sLine.find('F007TH') != -1) or ( sLine.find('FT0300') != -1):
+
+            if ( sLine.find('F007TH') != -1) or ( sLine.find('FT0300') != -1) or ( sLine.find('F016TH') != -1) or ( sLine.find('FT020T') != -1):
                 
-                if ( sLine.find('F007TH') != -1): 
+                if (( sLine.find('F007TH') != -1) or ( sLine.find('F016TH') != -1)): 
                     processF007THData(sLine)
-                if ( sLine.find('FT0300') != -1): 
+                if (( sLine.find('FT0300') != -1) or ( sLine.find('FT020T') != -1)): 
                     processF300Data(sLine)
 
         sys.stdout.flush()

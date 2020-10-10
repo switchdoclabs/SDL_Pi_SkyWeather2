@@ -53,9 +53,9 @@ def takeSkyPicture():
 
         # set up units
         #wind
-        val = util.returnWindSpeed(state.ScurrentWindSpeed)
+        val = util.returnWindSpeed(state.WindSpeed)
         WindStval = "{0:0.1f}".format(val) + util.returnWindSpeedUnit()
-        val = util.returnWindSpeed(state.ScurrentWindGust)
+        val = util.returnWindSpeed(state.WindGust)
         WindGtval = "{0:0.1f}".format(val) + util.returnWindSpeedUnit()
         val = util.returnTemperatureCF(state.OutdoorTemperature)
         OTtval = "{0:0.1f} ".format(val) + util.returnTemperatureCFUnit()

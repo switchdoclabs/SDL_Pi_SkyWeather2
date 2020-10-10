@@ -1,0 +1,10 @@
+
+.mini_container {
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  margin: 5px;
+  padding: 10px;
+  position: relative;
+  box-shadow: 2px 2px 2px lightgrey;
+}
+

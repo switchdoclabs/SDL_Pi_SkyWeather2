@@ -23,10 +23,10 @@ def readWiredSensors(bmp280, hdc1080):
 
     if (config.BMP280_Present):	
         try:
-            state.currentBarometricTemperature = round(bmp280.get_temperature(), 2)
-            state.currentBarometricPressure = round(old_div(bmp280.get_pressure(),1000)*100, 5)
-            state.currentAltitude = round(bmp280.get_altitude(), 4)
-            state.currentSeaLevel = round(old_div(bmp280.get_sealevel_pressure(config.BMP280_Altitude_Meters),1000)*100, 5)
+            state.BarometricTemperature = round(bmp280.get_temperature(), 2)
+            state.BarometricPressure = round(old_div(bmp280.get_pressure(),1000)*100, 5)
+            state.Altitude = round(bmp280.get_altitude(), 4)
+            state.BarometricPressureSeaLevel = round(old_div(bmp280.get_sealevel_pressure(config.BMP280_Altitude_Meters),1000)*100, 5)
         except:
             if (config.SWDEBUG):
                 print(traceback.format_exc()) 
@@ -35,9 +35,9 @@ def readWiredSensors(bmp280, hdc1080):
     print("Looking for buildJSONSemaphore Acquire")
     state.buildJSONSemaphore.acquire()
     print("buildJSONSemaphore Acquired")
-    state.currentStateJSON = buildJSON.getStateJSON()
+    state.StateJSON = buildJSON.getStateJSON()
     #if (config.SWDEBUG):
-    #    print("currentJSON = ", state.currentStateJSON)
+    #    print("currentJSON = ", state.StateJSON)
     state.buildJSONSemaphore.release()
     print("buildJSONSemaphore Released")
 

@@ -1,5 +1,5 @@
 SkyWeather2
 SwitchDoc Labs
 
-May 11, 2020 Version 003 - Added F007TH Support in rtl_433
-
+October 10, 2020 - Version 008 - Added dash_app support
+Ocober 8, 2020 - Version 007 - Initial Release

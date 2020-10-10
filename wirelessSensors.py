@@ -15,6 +15,8 @@ import datetime
 import buildJSON
 
 import state
+import indoorTH
+import pclogging
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -48,10 +50,10 @@ def randomadd(value, spread):
 
 # process functions
 
-def processF300Data(sLine):
+def processF020(sLine):
 
     if (config.SWDEBUG):
-        sys.stdout.write("processing F300 Data\n")
+        sys.stdout.write("processing FT020T Data\n")
         sys.stdout.write('This is the raw data: ' + sLine + '\n')
 
     var = json.loads(sLine)
@@ -60,6 +62,15 @@ def processF300Data(sLine):
 
     state.mainID = var["id"] 
     state.lastMainReading = nowStr()
+
+
+    if (state.previousMainReading == "Never"):
+        pclogging.systemlog(config.INFO,"Main Weather Sensors Found")
+        pclogging.systemlog(config.INFO,"Blynk Updates Started")
+        state.previousMainReading = state.lastMainReading
+
+
+
     wTemp = var["temperature"]
 
     ucHumi = var["humidity"]
@@ -92,7 +103,7 @@ def processF300Data(sLine):
 
 
     state.TotalRain  = round(var["cumulativerain"]/10.0,1)
-    state.currentRain60Minutes = 0.0
+    state.Rain60Minutes = 0.0
 
     wLight = var["light"]
     if (wLight >= 0x1fffa):
@@ -102,7 +113,7 @@ def processF300Data(sLine):
     if (wUVI >= 0xfa):
         wUVI = wUVI | 0x7f00
 
-    state.SunlightVisibl =  wLight 
+    state.SunlightVisible =  wLight 
     state.SunlightUVIndex  = round(wUVI/10.0, 1 )
 
 
@@ -110,17 +121,18 @@ def processF300Data(sLine):
     print("looking for buildJSONSemaphore acquire")
     state.buildJSONSemaphore.acquire()
     print("buildJSONSemaphore acquired")
-    state.currentStateJSON = buildJSON.getStateJSON()
+    state.StateJSON = buildJSON.getStateJSON()
     #if (config.SWDEBUG):
-    #    print("currentJSON = ", state.currentStateJSON)
+    #    print("currentJSON = ", state.StateJSON)
     state.buildJSONSemaphore.release()
     print("buildJSONSemaphore released")
 
 
 
 # processes Inside Temperature and Humidity
-def processF007THData(sLine):
+def processF016TH(sLine):
     if (config.SWDEBUG):
+        sys.stdout.write('Processing F016TH data'+'\n')
         sys.stdout.write('This is the raw data: ' + sLine + '\n')
     
     var = json.loads(sLine)
@@ -128,17 +140,25 @@ def processF007THData(sLine):
     state.mainID = var["device"] + var["channel"]
     state.lastIndoorReading = nowStr()
 
+    if (state.previousIndoorReading == "Never"):
+        pclogging.systemlog(config.INFO,"Indoor Weather Sensor Found")
+        state.previousIndoorReading = state.lastIndoorReading
+
     state.IndoorTemperature = round(((var["temperature_F"] - 32.0)/(9.0/5.0)),2)
     state.IndoorHumidity = var["humidity"]
     state.lastIndoorReading = var["time"]
     state.insideID = var["channel"]
 
+
+
+    indoorTH.addITReading(var["device"], var["channel"], state.IndoorTemperature, var["humidity"], var["battery"],  var["time"])
+
     print("looking for buildJSONSemaphore acquire")
     state.buildJSONSemaphore.acquire()
     print("buildJSONSemaphore acquired")
-    state.currentStateJSON = buildJSON.getStateJSON()
+    state.StateJSON = buildJSON.getStateJSON()
     #if (config.SWDEBUG):
-    #    print("currentJSON = ", state.currentStateJSON)
+    #    print("currentJSON = ", state.StateJSON)
     state.buildJSONSemaphore.release()
     print("buildJSONSemaphore released")
 
@@ -186,9 +206,9 @@ def readSensors():
             if ( sLine.find('F007TH') != -1) or ( sLine.find('FT0300') != -1) or ( sLine.find('F016TH') != -1) or ( sLine.find('FT020T') != -1):
                 
                 if (( sLine.find('F007TH') != -1) or ( sLine.find('F016TH') != -1)): 
-                    processF007THData(sLine)
+                    processF016TH(sLine)
                 if (( sLine.find('FT0300') != -1) or ( sLine.find('FT020T') != -1)): 
-                    processF300Data(sLine)
+                    processF020(sLine)
 
         sys.stdout.flush()
 

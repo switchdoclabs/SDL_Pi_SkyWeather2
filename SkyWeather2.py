@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "007"
+config.SWVERSION = "008"
 # system imports
 
 import time
@@ -65,7 +65,7 @@ def rebootPi(why):
    pclogging.systemlog(config.INFO, "Pi Rebooting: %s" % why)
    if (config.USEBLYNK):
      updateBlynk.blynkEventUpdate("Pi Rebooting: %s" % why)
-     updateBlynk.blynkStatusTerminalUpdate("Pi Rebooting: %s" % why)
+     updateBlynk.blynkTerminalUpdate("Pi Rebooting: %s" % why)
    pclogging.systemlog(config.INFO, "Pi Rebooting: %s" % why)
    os.system("sudo shutdown -r now")
 
@@ -171,11 +171,11 @@ print("----------------------")
 # startup
 
 
-pclogging.systemlog(config.INFO,"SkyWeather2 Startup Version"+config.SWVERSION )
+pclogging.systemlog(config.INFO,"SkyWeather2 Startup Version "+config.SWVERSION )
 
 if (config.USEBLYNK):
      updateBlynk.blynkEventUpdate("SW Startup Version "+config.SWVERSION)
-     updateBlynk.blynkStatusTerminalUpdate("SW Startup Version "+config.SWVERSION) 
+     updateBlynk.blynkTerminalUpdate("SW Startup Version "+config.SWVERSION) 
 
 subjectText = "The "+ config.STATIONKEY + " SkyWeather2 Raspberry Pi has #rebooted."
 ipAddress = subprocess.check_output(['hostname',  '-I'])
@@ -244,7 +244,17 @@ scheduler.add_job(util.barometricTrend, 'interval', seconds=15*60)
 
 if (config.DustSensor_Present):
     scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*2)
-    
+   
+
+# weather sensors
+
+scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=15*60)
+#scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=5*60)
+scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=15*60)
+#scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=5*60)
+        
+
+
 # sky camera
 if (config.USEWEATHERSTEM):
     if (config.Camera_Present):

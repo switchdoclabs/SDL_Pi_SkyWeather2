@@ -96,95 +96,6 @@ def sensorlog(DeviceID, SensorNumber, SensorValue, SensorType, TimeRead ):
 
 
 
-def getValveState(id):
- if (config.enable_MySQL_Logging == True):	
-	# open mysql database
-	# write log
-	# commit
-	# close
-        try:
-                #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
-                cur = con.cursor()
-                query = "SELECT * From ValveRecord WHERE DeviceID = '%s' ORDER BY ID DESC LIMIT 1" % id
-                #print("query=", query)
-                cur.execute(query)
-                myRecords = cur.fetchall()
-                #print ('myRecords=',myRecords)
-                if (len(myRecords) == 0):
-                    return "V0000000"
-                return  myRecords[0][2]
-        except mdb.Error as e:
-                traceback.print_exc()
-                print("Error %d: %s" % (e.args[0],e.args[1]))
-                #sys.exit(1)
-
-        finally:
-                cur.close()
-                con.close()
-
-                del cur
-                del con
-        
-
-def valvelog(DeviceID, ValveNumber, State, Source, ValveType, Seconds):
- if (config.enable_MySQL_Logging == True):	
-	# open mysql database
-	# write log
-	# commit
-	# close
-        try:
-                #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
-                cur = con.cursor()
-                query = "INSERT INTO ValveChanges(DeviceID, ValveNumber, State, Source, ValveType, SecondsOn ) VALUES('%s', '%s', %d, '%s', '%s',%d)" % (DeviceID, ValveNumber, int(State), Source, ValveType, int(Seconds))
-                #print("query=", query)
-                cur.execute(query)
-                con.commit()
-        except mdb.Error as e:
-                traceback.print_exc()
-                print("Error %d: %s" % (e.args[0],e.args[1]))
-                con.rollback()
-                #sys.exit(1)
-
-        finally:
-                cur.close()
-                con.close()
-
-                del cur
-                del con
-
-
-def writeMQTTValveChangeRecord(MQTTJSON):
-
- if (config.enable_MySQL_Logging == True):	
-	# open mysql database
-	# write log
-	# commit
-	# close
-        try:
-                #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
-                cur = con.cursor()
-                query = "INSERT INTO ValveRecord(DeviceID, State) VALUES('%s', '%s')" % (MQTTJSON['id'], MQTTJSON['valvestate'])
-                #print("query=", query)
-                cur.execute(query)
-                con.commit()
-        except mdb.Error as e:
-                traceback.print_exc()
-                print("Error %d: %s" % (e.args[0],e.args[1]))
-                con.rollback()
-                #sys.exit(1)
-
-        finally:
-                cur.close()
-                con.close()
-
-                del cur
-                del con
-
-        return "V00000000"
-
 def readLastHour24AQI():
 
  if (config.enable_MySQL_Logging == True):	
@@ -254,13 +165,13 @@ def writeWeatherRecord():
                     for i in range(0, len(myAQIRecords)):
 
                         myAQITotal = myAQITotal + myAQIRecords[i][1] 
-                    myAQI24 = (myAQITotal+state.AQI)/(len(myAQIRecords)+1)
+                    myAQI24 = (myAQITotal+float(state.AQI))/(len(myAQIRecords)+1)
                 else:
                     myAQI24  = 0.0
                 state.Hour24_AQI = myAQI24 
 
                 fields = "OutdoorTemperature, OutdoorHumidity, IndoorTemperature, IndoorHumidity, TotalRain, SunlightVisible, SunlightUVIndex, WindSpeed, WindGust, WindDirection,BarometricPressure, BarometricPressureSeaLevel, BarometricTemperature, AQI, AQI24Average"
-                values = "%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%6.2f,%6.2f,%6.2f" % (state.OutdoorTemperature, state.OutdoorHumidity, state.IndoorTemperature, state.IndoorHumidity, state.TotalRain, state.SunlightVisible, state.SunlightUVIndex, state.WindSpeed, state.WindGust, state.WindDirection,state.BarometricPressure, state.BarometricPressureSeaLevel, state.BarometricTemperature, state.AQI, state.Hour24_AQI)
+                values = "%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%6.2f,%6.2f,%6.2f" % (state.OutdoorTemperature, state.OutdoorHumidity, state.IndoorTemperature, state.IndoorHumidity, state.TotalRain, state.SunlightVisible, state.SunlightUVIndex, state.WindSpeed, state.WindGust, state.WindDirection,state.BarometricPressure, state.BarometricPressureSeaLevel, state.BarometricTemperature, float(state.AQI), state.Hour24_AQI)
                 query = "INSERT INTO WeatherData (%s) VALUES(%s )" % (fields, values)
                 #print("query=", query)
                 cur.execute(query)
@@ -300,7 +211,7 @@ def writeITWeatherRecord():
                     for singleChannel in state.IndoorTH:
                         values = "%d, %d, %6.2f, %6.2f, \"%s\", \"%s\"" % (singleChannel["deviceID"], singleChannel["channelID"], singleChannel["temperature"], singleChannel["humidity"], singleChannel["batteryOK"], singleChannel["time"])
                         query = "INSERT INTO IndoorTHSensors (%s) VALUES(%s )" % (fields, values)
-                        print("query=", query)
+                        #print("query=", query)
                         cur.execute(query)
                         con.commit()
                 else:

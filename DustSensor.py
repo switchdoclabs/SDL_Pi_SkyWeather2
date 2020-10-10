@@ -85,7 +85,7 @@ def read_AQI():
       
       #hm3301.close()
       powerOffDustSensor()
-      state.Outdoor_AirQuality_Sensor_Value = myAQI
+      state.AQI = myAQI
       
 def print_data():
     hm3301.print_data()

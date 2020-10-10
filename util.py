@@ -21,12 +21,12 @@ def returnStatusLine(device, state):
 
 
 def barometricTrend():
-    if (state.currentBarometricPressure >= state.pastBarometricReading):
+    if (state.BarometricPressure >= state.pastBarometricReading):
         state.barometricTrend = True
     else:
         state.barometricTrend = False
 
-    state.pastBarometricReading = state.currentBarometricPressure
+    state.pastBarometricReading = state.BarometricPressure
 
 
 ################

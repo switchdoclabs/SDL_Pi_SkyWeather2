@@ -84,7 +84,7 @@ def blynkEventUpdate(Event):
         print (e)
         return 0
 
-def blynkStatusTerminalUpdate(entry):
+def blynkTerminalUpdate(entry):
     try:
         put_header={"Content-Type": "application/json"}
 
@@ -166,9 +166,11 @@ def blynkUpdateImage():
 
 def blynkStateUpdate():
 
-
+    print("-->>>blynkStatusUpdate")
+    state.printState()
     try:
-
+     # do not blynk if no main reading yet
+     if (state.lastMainReading != "Never"):
         
         blynkUpdateImage()
         
@@ -292,11 +294,14 @@ def blynkStateUpdate():
         r = requests.put(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V40', data=put_body, headers=put_header)
 
         #barometric Pressure graph
+        print("state.BarometricePressureSeaLevel(V41)=",state.BarometricPressureSeaLevel)
         if (state.EnglishMetric == 1):
             tval = "{0:0.2f}".format(state.BarometricPressureSeaLevel) 
         else:
             tval = "{0:0.2f}".format((state.BarometricPressureSeaLevel * 0.2953)) 
+        print("tval=", tval)
         put_body = json.dumps([tval])
+        print("put_body=", put_body)
         r = requests.put(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V41', data=put_body, headers=put_header)
 
         #solar data
@@ -402,7 +407,7 @@ def blynkStatusUpdate():
                 state.EnglishMetric = 1
                 if (DEBUGBLYNK):
                     print("blynkStatusUpdate:POSTBRC:state.EnglishMetric set to Metric")
-                blynkStatusTerminalUpdate("Set to Metric Units ")
+                blynkTerminalUpdate("Set to Metric Units ")
                 f = open("/home/pi/SDL_Pi_SkyWeather/state/EnglishMetric.txt", "w")
                 f.write("1")
                 f.close()
@@ -415,7 +420,7 @@ def blynkStatusUpdate():
                 f.close()
                 if (DEBUGBLYNK):
                     print("blynkStatusUpdate:POSTBRC:state.EnglishMetric set to English")
-                blynkStatusTerminalUpdate("Set to English Units ")
+                blynkTerminalUpdate("Set to English Units ")
 
 
         # look for rainbow button change
@@ -426,12 +431,12 @@ def blynkStatusUpdate():
     
         if (r.text == '["1"]'):
             state.runRainbow = True
-            blynkStatusTerminalUpdate("Turning Rainbow On ")
+            blynkTerminalUpdate("Turning Rainbow On ")
             if (DEBUGBLYNK):
                 print("blynkStatusUpdate:POSTBRC:state.runRainbow set to True")
         else:
             if(state.runRainbow == True):
-                blynkStatusTerminalUpdate("Turning Rainbow Off ")
+                blynkTerminalUpdate("Turning Rainbow Off ")
             state.runRainbow = False
             if (DEBUGBLYNK):
                 print("blynkStatusUpdate:POSTBRC:state.runRainbow set to False")
@@ -444,7 +449,7 @@ def blynkStatusUpdate():
         if (r.text == '["1"]'):
             if (state.runOLED == False):
                 state.runOLED = True
-                blynkStatusTerminalUpdate("Turning OLED On ")
+                blynkTerminalUpdate("Turning OLED On ")
                 if (DEBUGBLYNK):
                     print("blynkStatusUpdate:POSTBRO:state.runOLED set to True")
 
@@ -453,7 +458,7 @@ def blynkStatusUpdate():
                     util.turnOLEDOn()
         else:
             if (state.runOLED == True):
-                blynkStatusTerminalUpdate("Turning OLED Off ")
+                blynkTerminalUpdate("Turning OLED Off ")
                 state.runOLED = False
                 
                 if (DEBUGBLYNK):

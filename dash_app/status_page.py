@@ -16,7 +16,7 @@ import traceback
 import sys
 import psutil
 
-# SGS imports
+# imports
 sys.path.append("../")
 
 import state
@@ -30,7 +30,6 @@ useRandom = False
 # read JSON
 
 readJSON.readJSON("../")
-readJSON.readJSONSGSConfiguration("../")
 
 import MySQLdb as mdb
 
@@ -39,101 +38,6 @@ import MySQLdb as mdb
 ################
 # Status Page
 ################
-def returnLatestValveRecord(myID):
-        try:
-                #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SmartGardenSystem');
-                cur = con.cursor()
-                query = "SELECT State FROM ValveRecord WHERE( DeviceID = '%s')  ORDER BY TimeStamp DESC LIMIT 1" % (myID)
-                #print("query=", query)
-                cur.execute(query)
-                con.commit()
-                records = cur.fetchall()
-                #print ("Query records=", records)
-                if (len(records) == 0):
-                    return "V00000000" 
-                return records[0][0]
-        except mdb.Error as e:
-                traceback.print_exc()
-                print("Error %d: %s" % (e.args[0],e.args[1]))
-                con.rollback()
-                #sys.exit(1)
-
-        finally:
-                cur.close()
-                con.close()
-
-
-def returnLowestSensorValue(SensorType, timeDelta):
-        try:
-                #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SmartGardenSystem');
-                cur = con.cursor()
-                now = datetime.datetime.now()
-                before = now - timeDelta
-                before = before.strftime('%Y-%m-%d %H:%M:%S')
-                query = "SELECT * FROM Sensors WHERE( SensorValue = ( SELECT MIN(SensorValue) FROM Sensors WHERE (TimeStamp > '%s') ) AND (SensorType = '%s') AND (TimeStamp > '%s')) ORDER BY TimeStamp DESC LIMIT 1" % (before,SensorType, before)
-                print("query=", query)
-                cur.execute(query)
-                con.commit()
-                records = cur.fetchall()
-                print ("Query records=", records)
-                
-                return records
-        except mdb.Error as e:
-                traceback.print_exc()
-                print("Error %d: %s" % (e.args[0],e.args[1]))
-                con.rollback()
-                #sys.exit(1)
-
-        finally:
-                cur.close()
-                con.close()
-
-
-
-def returnIndicatorValue(state, number):
-    if (state[number] == "0"):
-        return False
-    else:
-        return True
-
-def returnIndicators():
-    totalLayout = []
-    wirelessJSON = readJSON.getJSONValue("WirelessDeviceJSON")
-    for singleWireless in wirelessJSON:
-        myLabelLayout = [] 
-        
-        valveStatus =  returnLatestValveRecord(singleWireless['id'] )
-
-        myLabelLayout.append(
-                 
-                     html.H6(singleWireless['name'] +"/"+singleWireless['id'],
-		     )
-                     )
-        myIndicatorLayout = [] 
-        for valve in range(1,9):
-
-            currentValue = returnIndicatorValue(valveStatus, valve)
-            if (currentValue):
-                myColor = "greenyellow"
-            else:
-                myColor = "red"
-            myIndicatorLayout.append( daq.Indicator(
-                        id = {'type' : 'SPdynamic', 'index': valve  , 'DeviceID' : singleWireless['id'] },
-                        color = myColor,
-                        label="Valve "+str(valve),
-                        value=True,
-                        style={
-                            'margin': '10px'
-                        }
-                    )
-                    )
-            #myIndicatorCount = myIndicatorCount +1
-        totalLayout.append(dbc.Row( myLabelLayout))
-        totalLayout.append(dbc.Row(myIndicatorLayout))
-
-    return totalLayout
 
 ################
 # Page Functions
@@ -143,10 +47,6 @@ def returnIndicators():
 def StatusPage():
 
 
-    wirelessJSON = readJSON.getJSONValue("WirelessDeviceJSON")
-    numberOfWireless = len(wirelessJSON)
-    numberOfValves = numberOfWireless * 8
-    numberOfSensors = numberOfWireless * 4
     f = open("/proc/device-tree/model")
     piType = f.read()
     boottime =datetime.datetime.fromtimestamp(psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S") 
@@ -154,19 +54,10 @@ def StatusPage():
     Row1 = html.Div(
         [
                     dbc.Button(
-                        ["Number of Wireless Units", dbc.Badge(numberOfWireless, color="light", className="ml-1")],
-                        color="primary",),
-                    dbc.Button(
-                        ["Number of Valves", dbc.Badge(numberOfValves, color="light", className="ml-1")],
-                        color="primary",),
-                    dbc.Button(
-                        ["Number of Sensors", dbc.Badge(numberOfSensors, color="light", className="ml-1")],
-                        color="primary",),
-                    dbc.Button(
                         ["Raspberry Pi", dbc.Badge(piType, color="light", className="ml-1")],
                         color="primary",),
                     dbc.Button(
-                        ["SGS Start Time ", dbc.Badge(boottime, color="light", className="ml-1")],
+                        ["SW2 Start Time ", dbc.Badge(boottime, color="light", className="ml-1")],
                         color="primary",),
                     dbc.Button(
                         ["Pi Boot Time ", dbc.Badge(boottime, color="light", className="ml-1")],
@@ -216,9 +107,7 @@ def StatusPage():
 
 		)
 
-    Layouts = returnIndicators()
     Row3 = html.Div(
-                   Layouts ,
 
 
          )
@@ -247,18 +136,6 @@ def StatusPage():
 ####
 # Callback functions
 ####
-def updateIndicator(myValue ):
-
-    if (useRandom == True):
-    	myValue = random.randint(0,1)
-
-    if (myValue ==1):
-        myColor = "greenyellow"
-    else:
-        myColor = "red"
-
-        
-    return myColor
 
 def updateGauges(id):
     myValue = 0

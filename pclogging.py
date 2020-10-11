@@ -47,7 +47,7 @@ def systemlog(level,  message):
                 #print("trying database")
                 con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
-                #print "before query"
+                #print("before query")
                 query = "INSERT INTO SystemLog(TimeStamp, Level, SystemText ) VALUES(LOCALTIMESTAMP(), %i, '%s')" % (level, message)
                 #print("query=%s" % query)
                 cur.execute(query)
@@ -65,34 +65,6 @@ def systemlog(level,  message):
                 del cur
                 del con
 
-
-
-def sensorlog(DeviceID, SensorNumber, SensorValue, SensorType, TimeRead ):
- if (config.enable_MySQL_Logging == True):	
-	# open mysql database
-	# write log
-	# commit
-	# close
-        try:
-                #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
-                cur = con.cursor()
-                query = "INSERT INTO Sensors(DeviceID, SensorNumber, SensorValue, SensorType, TimeRead ) VALUES('%s', '%s', %f, '%s', '%s')" % (DeviceID, SensorNumber, float(SensorValue), SensorType, TimeRead)
-                #print("query=", query)
-                cur.execute(query)
-                con.commit()
-        except mdb.Error as e:
-                traceback.print_exc()
-                print("Error %d: %s" % (e.args[0],e.args[1]))
-                con.rollback()
-                #sys.exit(1)
-
-        finally:
-                cur.close()
-                con.close()
-
-                del cur
-                del con
 
 
 

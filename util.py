@@ -35,28 +35,29 @@ def barometricTrend():
 # 
 
 def returnTemperatureCF(temperature):
-	if (state.EnglishMetric == True):
+	if (config.English_Metric == True):
 		# return Metric 
 		return temperature
 	else:
 		return (9.0/5.0)*temperature + 32.0
 
 def returnTemperatureCFUnit():
-	if (state.EnglishMetric == True):
-		# return Metric 
-		return "C"
-	else:
-		return  "F"
+    print("config.English_Metric=", config.English_Metric)
+    if (config.English_Metric == True):
+        # return Metric 
+        return "C"
+    else:
+        return  "F"
 
 def returnWindSpeedUnit():
-	if (state.EnglishMetric == True):
+	if (config.English_Metric == True):
 		# return Metric 
 		return "KPH"
 	else:
 		return  "MPH"
 
 def returnWindSpeed(wind):
-	if (state.EnglishMetric == True):
+	if (config.English_Metric == True):
 		# return Metric 
 		return wind
 	else:

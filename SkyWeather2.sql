@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 06, 2020 at 03:18 PM
--- Server version: 10.3.23-MariaDB-0+deb10u1
--- PHP Version: 7.3.19-1~deb10u1
+-- Generation Time: Oct 10, 2020 at 11:02 AM
+-- Server version: 10.3.22-MariaDB-0+deb10u1
+-- PHP Version: 7.3.14-1~deb10u1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -21,6 +21,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `SkyWeather2`
 --
+CREATE DATABASE IF NOT EXISTS `SkyWeather2` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `SkyWeather2`;
 
 -- --------------------------------------------------------
 
@@ -141,7 +143,7 @@ ALTER TABLE `IndoorTHSensors`
 -- AUTO_INCREMENT for table `PowerSystem`
 --
 ALTER TABLE `PowerSystem`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1553;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `SystemLog`

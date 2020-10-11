@@ -77,7 +77,7 @@ MQTT_Enable = None
 MQTT_Server_URL = None
 MQTT_Port_Number = None
 MQTT_Send_Seconds = None
-
+English_Metric = None
 
 import readJSON
 
@@ -85,7 +85,7 @@ import readJSON
 
 # read JSON and put it it into the config variables
 
-readJSON.readJSON()
+readJSON.readJSON('./')
 
 
 

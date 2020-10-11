@@ -11,6 +11,7 @@ import plotly.graph_objs as go
 from dash.exceptions import PreventUpdate
 import traceback
 import datetime
+import base64
 
 import time
 
@@ -41,7 +42,6 @@ app = dash.Dash(__name__,external_stylesheets=[dbc.themes.SLATE])
 
 app.config.suppress_callback_exceptions = True
 
-
 app.layout =  html.Div(
 
         [
@@ -70,6 +70,21 @@ app.layout =  html.Div(
         id="mainpage"
 
     )
+
+
+@app.server.after_request
+def add_header(r):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    #r.headers["Cache-Control"] = 'no-store'
+    #r.headers["Pragma"] = "no-store"
+    #r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'must-revalidate, max-age=10' 
+    return r
+
+
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 
@@ -99,7 +114,7 @@ def display_page(pathname):
     myLayout2 = ""
     if pathname == '/status_page':
         myLayout = status_page.StatusPage() 
-        myLayout2 = moisture_sensors.MoistureSensorPage()
+        myLayout2 = ""
     if pathname == '/log_page':
         myLayout = log_page.LogPage()
         myLayout2 = ""
@@ -235,38 +250,42 @@ def update_statuspage(n_intervals, id, color):
               )
 
 def updateWeatherImagePage(n_intervals,id, value):
-    print("updateWImageP n_intervals", n_intervals)
+    print("+++++++++++++updateWImageP n_intervals", n_intervals)
+    print("+++++++++++++updateWImageP (n_intervals %6)", n_intervals% 6)
     if ((n_intervals % (1*6)) == 0) or (n_intervals ==0): # 1 minutes -10 second timer
         print("--->>>updateSkyCamImage", datetime.datetime.now(), n_intervals)
         try:
+            '''
             # delete old file names
 
-            fileList = glob.glob("/home/pi/SDL_Pi_SmartGardenSystem2/dash_app/assets/imagedisplay*")
+            fileList = glob.glob("/home/pi/SDL_Pi_SkyWeather2/dash_app/assets/imagedisplay*")
             # Iterate over the list of filepaths & remove each file.
             for filePath in fileList:
                     os.remove(filePath)
                         
             # build names
-            basename = "imagedisplay"+str(n_intervals)+".jpg"
+            basename = "imagedisplay"+str(n_intervals)+".jpg?"
             htmlname =  "/assets/"+ basename
-            newname = "/home/pi/SDL_Pi_SmartGardenSystem2/dash_app/assets/"+basename 
-        
+            newname = "/home/pi/SDL_Pi_SkyWeather2/dash_app/assets/"+basename 
             # move camera file to new name
-            shutil.copy('/home/pi/SDL_Pi_SmartGardenSystem2/dash_app/assets/skycamera.jpg', newname)
-            
+            shutil.copy('/home/pi/SDL_Pi_SkyWeather2/dash_app/assets/skycamera.jpg', newname)
+
+            '''
+            htmlname =  "/assets/skycamera.jpg?"
             value = html.Div( [
                           html.Img( height=350, width=350*1.77, src=htmlname),             
-                          html.Figcaption("Smart Garden Cam"),
+                          #html.Figcaption("SkyWeather2 Cam"),
+                          html.Figcaption(htmlname)
                           ])
-
+            print("+++++++value=", value)
 
         except:
             print(traceback.format_exc())
             print("camera file not found")
-            htmlname = "/assets/SGTextcolor.png"
+            htmlname = "/assets/SW2Textcolor.png"
             value = html.Div( [
                           html.Img( height=150, width=150*2.86, src=htmlname),             
-                          html.Figcaption("Smart Garden Cam"),
+                          html.Figcaption("SkyWeather2 Cam"),
                           ])
 
             pass
@@ -359,7 +378,7 @@ def updateWeatherGraphPage(n_intervals,id, value):
            fig = weather_page.buildSunlightUVIndexGraphFigure()
        if (id['index'] ==  'graph-aqi'):
            fig = weather_page.buildAQIGraphFigure()
-           print("aqi-fig=",fig)
+           #print("aqi-fig=",fig)
 
     else:
         raise PreventUpdate

@@ -40,6 +40,7 @@ def setDefaults():
         config.MQTT_Server_URL = "" 
         config.MQTT_Port_Number = 5900 
         config.MQTT_Send_Seconds = 500 
+        config.English_Metric = False 
        
        
 
@@ -53,13 +54,13 @@ def getJSONValue(entry):
 
 
 
-def readJSON():
+def readJSON(addPath):
 
         setDefaults()
 
-        if os.path.isfile('SkyWeather2.JSON'):
-            print ("SkyWeather2.JSON File exists")
-            with open('SkyWeather2.JSON') as json_file:
+        if os.path.isfile(addPath+'SkyWeather2.JSON'):
+            print (addPath+"SkyWeather2.JSON File exists")
+            with open(addPath+'SkyWeather2.JSON') as json_file:
                 config.JSONData = json.load(json_file)
 
 
@@ -100,6 +101,7 @@ def readJSON():
                 config.MQTT_Server_URL = getJSONValue('MQTT_Server_URL')
                 config.MQTT_Port_Number = int(getJSONValue('MQTT_Port_Number'))
                 config.MQTT_Send_Seconds = int(getJSONValue('MQTT_Send_Seconds'))
+                config.English_Metric = getJSONValue('English_Metric')
 
         else:
             print ("SkyWeather2.JSON File does not exist")

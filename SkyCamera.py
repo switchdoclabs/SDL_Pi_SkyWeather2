@@ -61,6 +61,7 @@ def takeSkyPicture():
         OTtval = "{0:0.1f} ".format(val) + util.returnTemperatureCFUnit()
 
         myText = "SkyWeather2 V%s %s Wind Speed: %s Wind Gust: %s Temp: %s " % (config.SWVERSION,dt.datetime.now().strftime('%d-%b-%Y %H:%M:%S'),WindStval, WindGtval, OTtval)
+        print("mySkyCameraText=", myText)
 
         # Draw the text
         color = 'rgb(255,255,255)'
@@ -95,6 +96,7 @@ def takeSkyPicture():
         pil_im.paste(SWLimg, (bg_w-size, bg_h-size))
 
         # Save the image
+        pil_im.save('dash_app/assets/skycamera.jpg', format= 'JPEG')
         pil_im.save('static/skycamera.jpg', format= 'JPEG')
         pil_im.save('static/skycameraprocessed.jpg', format= 'JPEG')
 

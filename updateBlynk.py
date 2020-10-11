@@ -31,23 +31,9 @@ def blynkInit():
         r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V42?value=255')
         r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V43?value=255')
 
-        # read english Metric in from file
-
-        try:
-            f = open("/home/pi/SDL_Pi_SkyWeather/state/EnglishMetric.txt", "r")
-            value = int(f.read())
-            f.close()
-        except Exception as e:
-            value = 0
-            #print "initial state - no EnglishMetric.txt value=", value
-            f1 = open("/home/pi/SDL_Pi_SkyWeather/state/EnglishMetric.txt", "w")
-            f1.write("0")
-            f1.close()
-            
-        state.EnglishMetric = value
         if (DEBUGBLYNK):
-            print("state.EnglishMetric = ", value)
-        if (state.EnglishMetric == 0):
+            print("config.English_Metric = ", value)
+        if (config.English_Metric == 0):
             r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V8?value=0')
         else:        
             r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V8?value=1')
@@ -166,8 +152,6 @@ def blynkUpdateImage():
 
 def blynkStateUpdate():
 
-    print("-->>>blynkStatusUpdate")
-    state.printState()
     try:
      # do not blynk if no main reading yet
      if (state.lastMainReading != "Never"):
@@ -266,7 +250,7 @@ def blynkStateUpdate():
 
         #rain 
         val = "{0:0.2f}".format(state.TotalRain) 
-        if (state.EnglishMetric == 1):
+        if (config.English_Metric == 1):
             tval = "{0:0.2f}mm".format(state.TotalRain) 
         else:
             tval = "{0:0.2f}in".format(state.TotalRain / 25.4) 
@@ -286,7 +270,7 @@ def blynkStateUpdate():
         r = requests.put(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V130', data=put_body, headers=put_header)
 
         #barometric Pressure 
-        if (state.EnglishMetric == 1):
+        if (config.English_Metric == 1):
             tval = "{0:0.2f}hPa".format(state.BarometricPressureSeaLevel) 
         else:
             tval = "{0:0.2f}in".format((state.BarometricPressureSeaLevel * 0.2953)) 
@@ -294,14 +278,11 @@ def blynkStateUpdate():
         r = requests.put(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V40', data=put_body, headers=put_header)
 
         #barometric Pressure graph
-        print("state.BarometricePressureSeaLevel(V41)=",state.BarometricPressureSeaLevel)
-        if (state.EnglishMetric == 1):
+        if (config.English_Metric == 1):
             tval = "{0:0.2f}".format(state.BarometricPressureSeaLevel) 
         else:
             tval = "{0:0.2f}".format((state.BarometricPressureSeaLevel * 0.2953)) 
-        print("tval=", tval)
         put_body = json.dumps([tval])
-        print("put_body=", put_body)
         r = requests.put(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V41', data=put_body, headers=put_header)
 
         #solar data
@@ -403,23 +384,23 @@ def blynkStatusUpdate():
             print("blynkStatusUpdate:POSTEM:r.text:",r.text)
     
         if (r.text == '["1"]'):
-            if (state.EnglishMetric == 0):
-                state.EnglishMetric = 1
+            if (config.English_Metric == 0):
+                config.English_Metric = 1
                 if (DEBUGBLYNK):
-                    print("blynkStatusUpdate:POSTBRC:state.EnglishMetric set to Metric")
+                    print("blynkStatusUpdate:POSTBRC:config.English_Metric set to Metric")
                 blynkTerminalUpdate("Set to Metric Units ")
-                f = open("/home/pi/SDL_Pi_SkyWeather/state/EnglishMetric.txt", "w")
+                f = open("/home/pi/SDL_Pi_SkyWeather/config.English_Metric.txt", "w")
                 f.write("1")
                 f.close()
         else:
 
-            if (state.EnglishMetric == 1):
-                state.EnglishMetric = 0
-                f = open("/home/pi/SDL_Pi_SkyWeather/state/EnglishMetric.txt", "w")
+            if (config.English_Metric == 1):
+                config.English_Metric = 0
+                f = open("/home/pi/SDL_Pi_SkyWeather/config.English_Metric.txt", "w")
                 f.write("0")
                 f.close()
                 if (DEBUGBLYNK):
-                    print("blynkStatusUpdate:POSTBRC:state.EnglishMetric set to English")
+                    print("blynkStatusUpdate:POSTBRC:config.English_Metric set to English")
                 blynkTerminalUpdate("Set to English Units ")
 
 

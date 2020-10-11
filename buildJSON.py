@@ -39,7 +39,7 @@ def getStateJSON():
         data['Hour24_AQI'] = state.Hour24_AQI
 
         data['Last_Event'] = state.Last_Event
-        data['EnglishMetric'] = state.EnglishMetric
+        data['English_Metric'] = config.English_Metric 
         data['batteryVoltage'] = state.batteryVoltage
         data['batteryCurrent'] = state.batteryCurrent
         data['solarVoltage'] = state.solarVoltage

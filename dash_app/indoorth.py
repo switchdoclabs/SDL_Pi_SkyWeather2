@@ -29,7 +29,6 @@ import json
 # read JSON
 
 readJSON.readJSON("../")
-readJSON.readJSONSGSConfiguration("../")
 
 import MySQLdb as mdb
 
@@ -62,7 +61,7 @@ def generateTHData(timeDelta):
 
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SmartGardenSystem');
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta

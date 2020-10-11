@@ -9,7 +9,7 @@ import dash_bootstrap_components as dbc
 ################
 # Logo
 ################
-SKYWEATHER2_LOGO = "https://www.switchdoc.com/SGfulllogocolor.png"
+SKYWEATHER2_LOGO = "https://www.switchdoc.com/SkyWeatherNoAlpha.png"
 
 
 
@@ -35,7 +35,7 @@ def Navbar():
     return navbar
 
 def Logo():
-    logo = html.Img(src=SGS_LOGO, height=100, style={'margin' :'20px'})
+    logo = html.Img(src=SKYWEATHER2_LOGO, height=100, style={'margin' :'20px'})
     return logo
 
 

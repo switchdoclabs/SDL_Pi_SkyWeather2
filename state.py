@@ -103,7 +103,6 @@ IndoorTH = []
 # status Values
 
 Last_Event = "My Last Event"
-EnglishMetric = 0
 
 
 # Solar Values
@@ -135,7 +134,6 @@ runOLED = True
 # status Values
 
 Last_Event = "My Last Event"
-EnglishMetric = 0
 
 
 # Solar Values
@@ -214,7 +212,6 @@ def printState():
 
 
     print ("Last_Event = ", Last_Event )
-    print ("EnglishMetric = ", EnglishMetric )
     
     
     print ("-------------")

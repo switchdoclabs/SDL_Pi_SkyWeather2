@@ -83,6 +83,7 @@ class SkyWeatherConfigure(App):
         self.MQTT_Server_URL = "" 
         self.MQTT_Port_Number = 5900 
         self.MQTT_Send_Seconds = 500 
+        self.English_Metric = False
        
        
         self.dataDefaults = {} 
@@ -124,6 +125,7 @@ class SkyWeatherConfigure(App):
         self.dataDefaults['MQTT_Server_URL'] = self.MQTT_Server_URL 
         self.dataDefaults['MQTT_Port_Number'] = self.MQTT_Port_Number 
         self.dataDefaults['MQTT_Send_Seconds'] = self.MQTT_Send_Seconds 
+        self.dataDefaults['English_Metric'] = self.English_Metric 
 
     def getJSONValue(self, entry):
         try:
@@ -182,6 +184,7 @@ class SkyWeatherConfigure(App):
                 self.MQTT_Server_URL = self.getJSONValue('MQTT_Server_URL')
                 self.MQTT_Port_Number = self.getJSONValue('MQTT_Port_Number')
                 self.MQTT_Send_Seconds = self.getJSONValue('MQTT_Send_Seconds')
+                self.English_Metric = self.getJSONValue('English_Metric')
 
         else:
             print ("SkyWeather2.JSON File does not exist")
@@ -236,6 +239,7 @@ class SkyWeatherConfigure(App):
         data['MQTT_Server_URL'] = self.F_MQTT_Server_URL.get_value()
         data['MQTT_Port_Number'] = self.F_MQTT_Port_Number.get_value()
         data['MQTT_Send_Seconds'] = self.F_MQTT_Send_Seconds.get_value()
+        data['English_Metric'] = self.F_English_Metric.get_value()
 
         json_data = json.dumps(data)        
         
@@ -297,7 +301,7 @@ class SkyWeatherConfigure(App):
         # mysql configurattion 
         mysqlheader = gui.Label("MySQL Configuration", style='position:absolute; left:5px; top:40px;'+self.headerstyle)
         vbox.append(mysqlheader,'mysqlheader') 
-        self.F_enable_MySQL_Logging = gui.CheckBoxLabel('enable MySQL Logging ', False , height=30, style='margin:5px; background:LightGray')
+        self.F_enable_MySQL_Logging = gui.CheckBoxLabel('enable MySQL Logging ', self.enable_MySQL_Logging , height=30, style='margin:5px; background:LightGray')
         vbox.append(self.F_enable_MySQL_Logging,'enable_MySQL_Logging') 
 
         plabel = gui.Label("MySQL Password", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
@@ -320,6 +324,14 @@ class SkyWeatherConfigure(App):
         self.F_PingableRouterAddress.set_value(self.PingableRouterAddress)
         
         vbox.append(self.F_PingableRouterAddress,'PingableRouterAddress') 
+
+        P6NTheader = gui.Label("English or Metric Units", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
+        vbox.append(P6NTheader,'P6NTheader') 
+
+        self.F_English_Metric = gui.CheckBoxLabel( 'English (not checked) or Metric (checked)', self.English_Metric, height=30, style='margin:5px; background: LightGray ')
+        vbox.append(self.F_English_Metric,'self.F_English_Metric') 
+
+
 
         return vbox
 
@@ -830,9 +842,6 @@ class SkyWeatherConfigure(App):
         self.F_MQTT_Send_Seconds = gui.TextInput(width=200, height=30, style="margin:5px")
         self.F_MQTT_Send_Seconds.set_value(str(self.MQTT_Send_Seconds))
         vbox.append(self.F_MQTT_Send_Seconds,'MQTT_Send_Seconds') 
-
-
-
 
 
         return vbox

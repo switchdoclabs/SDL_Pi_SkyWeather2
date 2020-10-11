@@ -15,7 +15,7 @@ import datetime
 import traceback
 import sys
 
-# SGS imports
+# imports
 sys.path.append("../")
 
 import state
@@ -28,7 +28,6 @@ import json
 # read JSON
 
 readJSON.readJSON("../")
-readJSON.readJSONSGSConfiguration("../")
 
 import MySQLdb as mdb
 
@@ -150,7 +149,7 @@ def WUnits():
 
 def generateCurrentWeatherJSON():
         try:
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SmartGardenSystem');
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 query = "SELECT * FROM `WeatherData` ORDER BY id DESC LIMIT 1" 
                 #print("query=", query)
@@ -193,7 +192,7 @@ def generateCurrentWeatherJSON():
                     rainspan = rainspanrecords[len(rainspanrecords)-1][1] - rainspanrecords[0][1]
                 else:
                     rainspan = 0
-                CWJSON["CalendarDayRain"] = rainspan
+                CWJSON["CalendarDayRain"] = round(rainspan,2)
 
                 # Calendar Month 
                 query = "SELECT id, TotalRain, TimeStamp FROM WeatherData WHERE MONTH(TimeStamp) = MONTH(NOW()) AND YEAR(TimeStamp) = YEAR(NOW())"
@@ -204,7 +203,7 @@ def generateCurrentWeatherJSON():
                     rainspan = rainspanrecords[len(rainspanrecords)-1][1] - rainspanrecords[0][1]
                 else:
                     rainspan = 0
-                CWJSON["CalendarMonthRain"] = rainspan
+                CWJSON["CalendarMonthRain"] = round(rainspan,2)
                 
                 # last 30 days 
                 timeDelta = datetime.timedelta(days=30)
@@ -220,7 +219,7 @@ def generateCurrentWeatherJSON():
                     rainspan = rainspanrecords[len(rainspanrecords)-1][1] - rainspanrecords[0][1]
                 else:
                     rainspan = 0
-                CWJSON["30DayRain"] = rainspan
+                CWJSON["30DayRain"] = round(rainspan,2)
                 
                 
                 # last 24 hours 
@@ -237,7 +236,7 @@ def generateCurrentWeatherJSON():
                     rainspan = rainspanrecords[len(rainspanrecords)-1][1] - rainspanrecords[0][1]
                 else:
                     rainspan = 0
-                CWJSON["24HourRain"] = rainspan
+                CWJSON["24HourRain"] = round(rainspan,2)
                 
                 
                 # last 7 days 
@@ -254,7 +253,7 @@ def generateCurrentWeatherJSON():
                     rainspan = rainspanrecords[len(rainspanrecords)-1][1] - rainspanrecords[0][1]
                 else:
                     rainspan = 0
-                CWJSON["7DaysRain"] = rainspan
+                CWJSON["7DaysRain"] = round(rainspan,2)
                 
 
                                 
@@ -265,7 +264,7 @@ def generateCurrentWeatherJSON():
                 # set units
                 English_Metric = readJSON.getJSONValue("English_Metric")
 
-                if (English_Metric == 0):
+                if (English_Metric == False):
                     # deal with English Units
                     # temperature
                     CWJSON["OutdoorTemperature"]= round(CTUnits(CWJSON["OutdoorTemperature"]),1)
@@ -348,7 +347,7 @@ def generateCurrentWeatherJSON():
 def fetchWindData(timeDelta):
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SmartGardenSystem');
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -490,7 +489,7 @@ def fetchOTH(timeDelta):
 
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SmartGardenSystem');
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -605,7 +604,7 @@ def fetchAQI(timeDelta):
 
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SmartGardenSystem');
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -712,7 +711,7 @@ def fetchSUV(timeDelta):
 
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SmartGardenSystem');
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -975,7 +974,7 @@ def WeatherPage():
                      html.Div(id={'type' : 'WPIdynamic', 'index' : "SkyCamImage"},
                           children = [
                             html.Img( height=350, width=350*1.77, src="/assets/skycamera.jpg"),
-                            html.Figcaption("Smart Garden Cam"),
+                            html.Figcaption("SkyWeather Cam"),
                             ]),
 
                      ]

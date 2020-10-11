@@ -28,7 +28,6 @@ import json
 # read JSON
 
 readJSON.readJSON("../")
-readJSON.readJSONSGSConfiguration("../")
 
 import MySQLdb as mdb
 

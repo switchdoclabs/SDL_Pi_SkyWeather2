@@ -35,8 +35,8 @@ def takeSkyPicture():
 
     camera.exposure_mode = "auto"
     try:
-        camera.rotation = 0
-        #camera.rotation = 270
+        camera.rotation = config.Camera_Rotation
+        
         camera.resolution = (1920, 1080)
         # Camera warm-up time
         time.sleep(2)
@@ -376,7 +376,7 @@ def sendSkyWeather():
   
     # sending post request and saving response as response object 
     r = requests.post(url = API_ENDPOINT, json = data) 
-    #print data 
+    print (data )
     # extracting response text  
     pastebin_url = r.text 
     if (config.SWDEBUG):

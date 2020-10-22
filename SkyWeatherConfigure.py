@@ -15,6 +15,187 @@ class AppURLopener(urllib.request.FancyURLopener):
 
 myURLOpener = AppURLopener()
 
+# radio button
+
+class LabelForInputs(gui.Widget, gui._MixinTextualWidget):
+    """ Non editable text label widget. Specifically designed to be used in conjunction with checkboxes and radiobuttons
+    """
+
+    def __init__(self, text, widget_for_instance, *args, **kwargs):
+        """
+        Args:
+            text (str): The string content that have to be displayed in the Label.
+            widget_for_instance (gui.Widget): checkbox or radiobutton instance
+            kwargs: See Container.__init__()
+        """
+        super(LabelForInputs, self).__init__(*args, **kwargs)
+        self.type = 'label'
+        self.attributes['for'] = widget_for_instance.identifier
+        self.set_text(text)
+
+class InputCheckable(gui.Input):
+    """It is the base class for checkable widgets (Switch, RadioButton, Checkbox).
+        Checkable are the widgets that contains attribute 'checked' to determine the status
+        The developer has to pass the the argument _type to the constructor
+        to determine the kind of widget.
+    """
+
+    def __init__(self, status_on=False, input_type='checkbox', *args, **kwargs):
+        """
+        Args:
+            status_on (bool):
+            kwargs: See Widget.__init__()
+        """
+        super(InputCheckable, self).__init__(input_type, *args, **kwargs)
+        self.set_value(status_on)
+        self.attributes[gui.Widget.EVENT_ONCHANGE] = \
+            "var params={};params['value']=document.getElementById('%(emitter_identifier)s').checked;" \
+            "sendCallbackParam('%(emitter_identifier)s','%(event_name)s',params);" % \
+            {'emitter_identifier': str(self.identifier), 'event_name': gui.Widget.EVENT_ONCHANGE}
+
+    @gui.decorate_event
+    def onchange(self, value):
+        value = value in ('True', 'true')
+        self.set_value(value)
+        self._set_updated()
+        return (value,)
+
+    def set_value(self, status_on):
+        if status_on:
+            self.attributes['checked'] = 'checked'
+        else:
+            if 'checked' in self.attributes:
+                del self.attributes['checked']
+
+    def get_value(self):
+        """
+        Returns:
+            bool:
+        """
+        return 'checked' in self.attributes
+
+
+
+class RadioButton(InputCheckable):
+    """RadioButton widget, useful for exclusive selection.
+        different radiobuttons have to be assigned to the
+        same group name in order to switch exclusively.
+    """
+
+    @property
+    def attr_name(self):
+        return self.attributes.get('name', '')
+
+    @attr_name.setter
+    def attr_name(self, value):
+        self.attributes['name'] = str(value)
+
+    def __init__(self, status_on=False, group='group', *args, **kwargs):
+        """
+        Args:
+            status_on (bool): the initial value
+            group (str): the group name. RadioButtons with same group will be exclusively activated
+            kwargs: See Widget.__init__()
+        """
+        super(RadioButton, self).__init__(status_on, input_type='radio', *args, **kwargs)
+        self.attr_name = group
+
+    def set_value(self, status_on):
+        InputCheckable.set_value(self, status_on)
+
+        # if on and has a parent, all other radios with same group name are switched off
+        if status_on and self.get_parent():
+            for w in self.get_parent().children.values():
+                if isinstance(w, type(self)):
+                    if w.identifier != self.identifier:
+                        if w.get_group() == self.get_group():
+                            w.set_value(False)
+
+    def set_group(self, group_name):
+        self.attr_name = group_name
+
+    def get_group(self):
+        return self.attr_name
+
+class RadioButtonWithLabel(gui.Container):
+    _radio = None
+    _label = None
+
+    @property
+    def text(self):
+        return self._label.get_text()
+
+    @text.setter
+    def text(self, value):
+        self._label.set_text(value)
+
+    @property
+    def attr_name(self):
+        return self._radio.attr_name
+
+    @attr_name.setter
+    def attr_name(self, value):
+        self._radio.attr_name = str(value)
+
+    def __init__(self, text='radiobutton', status_on=False, group='group', *args, **kwargs):
+        """
+        Args:
+            text (str): the text label
+            status_on (bool): the initial value
+            group (str): the group name. RadioButtons with same group will be exclusively activated
+            kwargs: See Widget.__init__()
+        """
+        super(RadioButtonWithLabel, self).__init__(*args, **kwargs)
+
+        self._radio = RadioButton(status_on, group=group)
+        self.append(self._radio, key='radio')
+
+        self._label = LabelForInputs(text, self._radio)
+        self.append(self._label, key='label')
+
+        self._radio.onchange.connect(self.onchange)
+
+    @gui.decorate_event
+    def onchange(self, widget, value):
+        self.__update_other_radios()
+        return (value,)
+
+    def get_text(self):
+        return self._label.text
+
+    def set_text(self, text):
+        self._label.text = text
+
+    def set_group(self, group_name):
+        self.attr_name = group_name
+
+    def get_group(self):
+        return self.attr_name
+
+    def get_value(self):
+        return self._radio.get_value()
+
+    def set_value(self, value):
+        """ Args:
+                value (bool): defines the checked status for the radio button
+        """
+        self._radio.set_value(value)
+        self.__update_other_radios()
+
+    def __update_other_radios(self):
+        # if on and has a parent,
+        # all other radios, in the same container,
+        # with same group name are switched off
+        if self.get_value() and self.get_parent():
+            for w in self.get_parent().children.values():
+                if isinstance(w, type(self)):
+                    if w.identifier != self.identifier:
+                        if w.get_group() == self.get_group():
+                            w.set_value(False)
+
+
+
+#############
 class SuperImage(gui.Image):
     def __init__(self, file_path_name=None, **kwargs):
         super(SuperImage, self).__init__("/res/logo.png", **kwargs)
@@ -78,6 +259,7 @@ class SkyWeatherConfigure(App):
         self.GPIO_Pin_PowerDrive_Sig2 = 4
         self.WATCHDOGTRIGGER = 6
         self.Camera_Night_Enable =  False
+        self.Camera_Rotation =  0
         self.REST_Enable = False 
         self.MQTT_Enable = False 
         self.MQTT_Server_URL = "" 
@@ -119,6 +301,7 @@ class SkyWeatherConfigure(App):
         self.dataDefaults['GPIO_Pin_PowerDrive_Sig1'] = self.GPIO_Pin_PowerDrive_Sig1 
         self.dataDefaults['GPIO_Pin_PowerDrive_Sig2'] = self.GPIO_Pin_PowerDrive_Sig2 
         self.dataDefaults['WATCHDOGTRIGGER'] = self.WATCHDOGTRIGGER 
+        self.dataDefaults['Camera_Rotation'] = self.Camera_Rotation 
         self.dataDefaults['Camera_Night_Enable'] = self.Camera_Night_Enable 
         self.dataDefaults['REST_Enable'] = self.REST_Enable 
         self.dataDefaults['MQTT_Enable'] = self.MQTT_Enable 
@@ -179,6 +362,7 @@ class SkyWeatherConfigure(App):
                 self.GPIO_Pin_PowerDrive_Sig2 = self.getJSONValue('GPIO_Pin_PowerDrive_Sig2')
                 self.WATCHDOGTRIGGER = self.getJSONValue('WATCHDOGTRIGGER')
                 self.Camera_Night_Enable = self.getJSONValue('Camera_Night_Enable')
+                self.Camera_Rotation = self.getJSONValue('Camera_Rotation')
                 self.REST_Enable = self.getJSONValue('REST_Enable')
                 self.MQTT_Enable = self.getJSONValue('MQTT_Enable')
                 self.MQTT_Server_URL = self.getJSONValue('MQTT_Server_URL')
@@ -235,6 +419,7 @@ class SkyWeatherConfigure(App):
         data['WATCHDOGTRIGGER'] = self.F_WATCHDOGTRIGGER.get_value()
         data['REST_Enable'] = self.F_REST_Enable.get_value()
         data['Camera_Night_Enable'] = self.F_Camera_Night_Enable.get_value()
+        data['Camera_Rotation'] = self.Camera_Rotation
         data['MQTT_Enable'] = self.F_MQTT_Enable.get_value()
         data['MQTT_Server_URL'] = self.F_MQTT_Server_URL.get_value()
         data['MQTT_Port_Number'] = self.F_MQTT_Port_Number.get_value()
@@ -253,7 +438,7 @@ class SkyWeatherConfigure(App):
 
         #screen 1
 
-        vbox = VBox(width=500, height=510, style="background: LightGray")
+        vbox = VBox(width=600, height=510, style="background: LightGray")
 
         vbox.style['justify-content'] = 'flex-start'
         vbox.style['align-items'] = 'flex-start'
@@ -277,10 +462,12 @@ class SkyWeatherConfigure(App):
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
-        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7 = gui.MenuItem('MQTTR', width=70, height=30)
         m7.onclick.do(self.menu_screen7_clicked)
+        m8 = gui.MenuItem('Camera', width=70, height=30)
+        m8.onclick.do(self.menu_screen8_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6, m7])
+        menu.append([m1, m2, m3, m4, m5, m6, m7, m8])
     
     
         menubar = gui.MenuBar(width='100%', height='30px')
@@ -340,7 +527,7 @@ class SkyWeatherConfigure(App):
 
         #screen 2
 
-        vbox = VBox(width=500, height=510, style="background: LightGray; border: 5px solid red")
+        vbox = VBox(width=600, height=510, style="background: LightGray; border: 5px solid red")
 
         vbox.style['justify-content'] = 'flex-start'
         vbox.style['align-items'] = 'flex-start'
@@ -362,10 +549,12 @@ class SkyWeatherConfigure(App):
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
-        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7 = gui.MenuItem('MQTTR', width=70, height=30)
         m7.onclick.do(self.menu_screen7_clicked)
+        m8 = gui.MenuItem('Camera', width=70, height=30)
+        m8.onclick.do(self.menu_screen8_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6, m7])
+        menu.append([m1, m2, m3, m4, m5, m6, m7, m8])
     
         menubar = gui.MenuBar(width='100%', height='30px')
         menubar.append(menu)
@@ -424,7 +613,7 @@ class SkyWeatherConfigure(App):
 
         #screen 3
 
-        vbox = VBox(width=500, height=510, style="background: LightGray; border: 5px solid red")
+        vbox = VBox(width=600, height=510, style="background: LightGray; border: 5px solid red")
 
         vbox.style['justify-content'] = 'flex-start'
         vbox.style['align-items'] = 'flex-start'
@@ -446,10 +635,12 @@ class SkyWeatherConfigure(App):
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
-        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7 = gui.MenuItem('MQTTR', width=70, height=30)
         m7.onclick.do(self.menu_screen7_clicked)
+        m8 = gui.MenuItem('Camera', width=70, height=30)
+        m8.onclick.do(self.menu_screen8_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6, m7])
+        menu.append([m1, m2, m3, m4, m5, m6, m7, m8])
     
     
         menubar = gui.MenuBar(width='100%', height='30px')
@@ -516,7 +707,7 @@ class SkyWeatherConfigure(App):
     def buildScreen4(self):
         #screen 4
 
-        vbox = VBox(width=500, height=510, style="background: LightGray; border: 5px solid red")
+        vbox = VBox(width=600, height=510, style="background: LightGray; border: 5px solid red")
 
         vbox.style['justify-content'] = 'flex-start'
         vbox.style['align-items'] = 'flex-start'
@@ -537,10 +728,12 @@ class SkyWeatherConfigure(App):
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
-        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7 = gui.MenuItem('MQTTR', width=70, height=30)
         m7.onclick.do(self.menu_screen7_clicked)
+        m8 = gui.MenuItem('Camera', width=70, height=30)
+        m8.onclick.do(self.menu_screen8_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6, m7])
+        menu.append([m1, m2, m3, m4, m5, m6, m7, m8])
     
 
         menubar = gui.MenuBar(width='100%', height='30px')
@@ -600,7 +793,7 @@ class SkyWeatherConfigure(App):
     def buildScreen5(self):
         #screen 5
 
-        vbox = VBox(width=500, height=510, style="background: LightGray; border: 5px solid red")
+        vbox = VBox(width=600, height=510, style="background: LightGray; border: 5px solid red")
 
         vbox.style['justify-content'] = 'flex-start'
         vbox.style['align-items'] = 'flex-start'
@@ -621,10 +814,13 @@ class SkyWeatherConfigure(App):
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
-        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7 = gui.MenuItem('MQTTR', width=70, height=30)
         m7.onclick.do(self.menu_screen7_clicked)
+        m8 = gui.MenuItem('Camera', width=70, height=30)
+        m8.onclick.do(self.menu_screen8_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6, m7])
+        menu.append([m1, m2, m3, m4, m5, m6, m7, m8])
+
     
 
         menubar = gui.MenuBar(width='100%', height='30px')
@@ -671,7 +867,7 @@ class SkyWeatherConfigure(App):
     def buildScreen6(self):
         #screen 6
 
-        vbox = VBox(width=500, height=510, style="background: LightGray; border: 5px solid red")
+        vbox = VBox(width=600, height=510, style="background: LightGray; border: 5px solid red")
 
         vbox.style['justify-content'] = 'flex-start'
         vbox.style['align-items'] = 'flex-start'
@@ -692,10 +888,12 @@ class SkyWeatherConfigure(App):
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
-        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7 = gui.MenuItem('MQTTR', width=70, height=30)
         m7.onclick.do(self.menu_screen7_clicked)
+        m8 = gui.MenuItem('Camera', width=70, height=30)
+        m8.onclick.do(self.menu_screen8_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6, m7])
+        menu.append([m1, m2, m3, m4, m5, m6, m7, m8])
     
 
         menubar = gui.MenuBar(width='100%', height='30px')
@@ -765,7 +963,7 @@ class SkyWeatherConfigure(App):
     def buildScreen7(self):
         #screen 7
 
-        vbox = VBox(width=500, height=510, style="background: LightGray; border: 5px solid red")
+        vbox = VBox(width=600, height=510, style="background: LightGray; border: 5px solid red")
 
         vbox.style['justify-content'] = 'flex-start'
         vbox.style['align-items'] = 'flex-start'
@@ -785,10 +983,12 @@ class SkyWeatherConfigure(App):
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
-        m7 = gui.MenuItem('CMQTTR', width=70, height=30)
+        m7 = gui.MenuItem('MQTTR', width=70, height=30)
         m7.onclick.do(self.menu_screen7_clicked)
+        m8 = gui.MenuItem('Camera', width=70, height=30)
+        m8.onclick.do(self.menu_screen8_clicked)
 
-        menu.append([m1, m2, m3, m4, m5, m6, m7])
+        menu.append([m1, m2, m3, m4, m5, m6, m7, m8])
     
         menubar = gui.MenuBar(width='100%', height='30px')
         menubar.append(menu)
@@ -796,7 +996,7 @@ class SkyWeatherConfigure(App):
         vbox.append(menubar)
 
         #screen 
-        screenheader = gui.Label("Camera / MQTT / Rest Tab", style='margin:10px')
+        screenheader = gui.Label("MQTT / Rest Tab", style='margin:10px')
         vbox.append(screenheader)
         
         # short headers
@@ -804,11 +1004,6 @@ class SkyWeatherConfigure(App):
         shortlabelstyle = 'font-family:monospace; width:200; font-size:15px; margin:5px; background:LightGray' 
 
 
-
-        P5Nheader = gui.Label("Night Camera Enable", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
-        vbox.append(P5Nheader,'P5Nheader') 
-        self.F_Camera_Night_Enable = gui.CheckBoxLabel( 'Night Vision Enable', self.Camera_Night_Enable, height=30, style='margin:5px; background: LightGray ')
-        vbox.append(self.F_Camera_Night_Enable,'self.F_Camera_Night_Enable') 
 
         P7Nheader = gui.Label("REST Interface", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
         vbox.append(P7Nheader,'P7Nheader') 
@@ -847,6 +1042,96 @@ class SkyWeatherConfigure(App):
         return vbox
 
 
+
+    def buildScreen8(self):
+        #screen 8
+
+        vbox = VBox(width=600, height=510, style="background: LightGray; border: 5px solid red")
+
+        vbox.style['justify-content'] = 'flex-start'
+        vbox.style['align-items'] = 'flex-start'
+        vbox.style['border'] = '2px'
+        vbox.style['border-color'] = 'blue'
+       
+        menu = gui.Menu(width='100%', height='30px')
+        m1 = gui.MenuItem('DMW', width=70, height=30)
+        m1.onclick.do(self.menu_screen1_clicked)
+        m2 = gui.MenuItem('MTN', width=70, height=30)
+        m2.onclick.do(self.menu_screen2_clicked)
+        m3 = gui.MenuItem('PSMax', width=70, height=30)
+        m3.onclick.do(self.menu_screen3_clicked)
+        m4 = gui.MenuItem('WS-WU', width=70, height=30)
+        m4.onclick.do(self.menu_screen4_clicked)
+        m5 = gui.MenuItem('B-TB', width=70, height=30)
+        m5.onclick.do(self.menu_screen5_clicked)
+        m6 = gui.MenuItem('Pins', width=70, height=30)
+        m6.onclick.do(self.menu_screen6_clicked)
+        m7 = gui.MenuItem('MQTTR', width=70, height=30)
+        m7.onclick.do(self.menu_screen7_clicked)
+        m8 = gui.MenuItem('Camera', width=70, height=30)
+        m8.onclick.do(self.menu_screen8_clicked)
+
+        menu.append([m1, m2, m3, m4, m5, m6, m7, m8])
+    
+        menubar = gui.MenuBar(width='100%', height='30px')
+        menubar.append(menu)
+
+        vbox.append(menubar)
+
+        #screen 
+        screenheader = gui.Label("Camera Options", style='margin:10px')
+        vbox.append(screenheader)
+        
+        # short headers
+
+        shortlabelstyle = 'font-family:monospace; width:200; font-size:15px; margin:5px; background:LightGray' 
+
+
+
+        P5Nheader = gui.Label("Night Camera Enable", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
+        vbox.append(P5Nheader,'P5Nheader') 
+        self.F_Camera_Night_Enable = gui.CheckBoxLabel( 'Night Vision Enable', self.Camera_Night_Enable, height=30, style='margin:5px; background: LightGray ')
+        vbox.append(self.F_Camera_Night_Enable,'self.F_Camera_Night_Enable') 
+
+        P5Nheader = gui.Label("Camera Rotation", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
+        vbox.append(P5Nheader,'P5Nheader') 
+        if (self.Camera_Rotation == 0):
+            self.CR_Radio_1 = RadioButtonWithLabel(' 0',True, 'groupCR')
+        else:
+            self.CR_Radio_1 = RadioButtonWithLabel(' 0',False, 'groupCR')
+        
+        vbox.append(self.CR_Radio_1,'self.F_Camera_Rotation1') 
+        if (self.Camera_Rotation == 90):
+            self.CR_Radio_2 = RadioButtonWithLabel(' 90',True, 'groupCR')
+        else:
+            self.CR_Radio_2 = RadioButtonWithLabel(' 90',False, 'groupCR')
+        vbox.append(self.CR_Radio_2,'self.F_Camera_Rotation2') 
+        if (self.Camera_Rotation == 180):
+            self.CR_Radio_3 = RadioButtonWithLabel(' 180',True, 'groupCR')
+        else:
+            self.CR_Radio_3 = RadioButtonWithLabel(' 180',False, 'groupCR')
+        vbox.append(self.CR_Radio_3,'self.F_Camera_Rotation3') 
+        if (self.Camera_Rotation == 270):
+            self.CR_Radio_4 = RadioButtonWithLabel(' 270',True, 'groupCR')
+        else:
+            self.CR_Radio_4 = RadioButtonWithLabel(' 270',False, 'groupCR')
+        vbox.append(self.CR_Radio_4,'self.F_Camera_Rotation4') 
+
+
+        self.CR_Radio_1.onchange.do(self.radio_changed)
+        self.CR_Radio_2.onchange.do(self.radio_changed)
+        self.CR_Radio_3.onchange.do(self.radio_changed)
+        self.CR_Radio_4.onchange.do(self.radio_changed)
+
+        return vbox
+
+#################RadioButton
+    def radio_changed(self, emitter, value):
+        self.Camera_Rotation =  int(emitter.get_text())
+     
+
+
+###################
 
     def main(self):
 
@@ -899,6 +1184,7 @@ class SkyWeatherConfigure(App):
         self.screen5 = self.buildScreen5()
         self.screen6 = self.buildScreen6()
         self.screen7 = self.buildScreen7()
+        self.screen8 = self.buildScreen8()
 
 
         self.mainContainer.append(self.screen1,'screen1')
@@ -923,6 +1209,7 @@ class SkyWeatherConfigure(App):
         self.mainContainer.remove_child(self.screen5)
         self.mainContainer.remove_child(self.screen6)
         self.mainContainer.remove_child(self.screen7)
+        self.mainContainer.remove_child(self.screen8)
         
     # listener functions
 
@@ -962,6 +1249,11 @@ class SkyWeatherConfigure(App):
         self.mainContainer.append(self.screen7,'screen7')
         print("menu screen7 clicked")
 
+    def menu_screen8_clicked(self, widget):
+        self.removeAllScreens()
+        self.mainContainer.append(self.screen8,'screen8')
+        print("menu screen8 clicked")
+
 
     def onCancel(self, widget, name='', surname=''):
         print("onCancel clicked")
@@ -993,6 +1285,7 @@ class SkyWeatherConfigure(App):
         self.screen5 = self.buildScreen5()
         self.screen6 = self.buildScreen6()
         self.screen7 = self.buildScreen7()
+        self.screen8 = self.buildScreen8()
 
 
         self.mainContainer.append(self.screen1,'screen1')

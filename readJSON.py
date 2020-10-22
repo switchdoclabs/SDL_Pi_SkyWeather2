@@ -35,6 +35,7 @@ def setDefaults():
         config.GPIO_Pin_PowerDrive_Sig2 = 4
         config.WATCHDOGTRIGGER = 6
         config.Camera_Night_Enable =  False
+        config.Camera_Rotation =  0
         config.REST_Enable = False 
         config.MQTT_Enable = False 
         config.MQTT_Server_URL = "" 
@@ -96,6 +97,7 @@ def readJSON(addPath):
                 config.GPIO_Pin_PowerDrive_Sig2 = int(getJSONValue('GPIO_Pin_PowerDrive_Sig2'))
                 config.WATCHDOGTRIGGER = int(getJSONValue('WATCHDOGTRIGGER'))
                 config.Camera_Night_Enable = getJSONValue('Camera_Night_Enable')
+                config.Camera_Rotation = getJSONValue('Camera_Rotation')
                 config.REST_Enable = getJSONValue('REST_Enable')
                 config.MQTT_Enable = getJSONValue('MQTT_Enable')
                 config.MQTT_Server_URL = getJSONValue('MQTT_Server_URL')

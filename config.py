@@ -72,6 +72,7 @@ GPIO_Pin_PowerDrive_Sig1 = None
 GPIO_Pin_PowerDrive_Sig2 = None
 WATCHDOGTRIGGER = None
 Camera_Night_Enable = None
+Camera_Rotation = None
 REST_Enable = None
 MQTT_Enable = None
 MQTT_Server_URL = None

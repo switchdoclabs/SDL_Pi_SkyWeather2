@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # SkyWeather2 Solar Powered Weather Station
-# Januayr 2020
+# November 2020
 #
 # SwitchDoc Labs
 # www.switchdoc.com
@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "008"
+config.SWVERSION = "009"
 # system imports
 
 import time

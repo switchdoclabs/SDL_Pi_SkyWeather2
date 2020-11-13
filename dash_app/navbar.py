@@ -6,11 +6,6 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 
-################
-# Logo
-################
-SKYWEATHER2_LOGO = "https://www.switchdoc.com/SkyWeatherNoAlpha.png"
-
 
 
 ################

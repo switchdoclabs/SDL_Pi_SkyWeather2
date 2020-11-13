@@ -34,8 +34,8 @@ def Navbar():
     )
     return navbar
 
-def Logo():
-    logo = html.Img(src=SKYWEATHER2_LOGO, height=100, style={'margin' :'20px'})
+def Logo(app):
+    logo = html.Img(src=app.get_asset_url('SkyWeather2Logo.png'), height=100, style={'margin' :'20px'})
     return logo
 
 

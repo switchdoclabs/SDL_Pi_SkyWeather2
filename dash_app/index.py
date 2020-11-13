@@ -25,9 +25,6 @@ import indoorth
 from non_impl import NotImplPage 
 
 from navbar import Navbar, Logo
-logo = Logo()
-print("new navbar=")
-nav = Navbar()
 
 UpdateCWJSONLock = threading.Lock()
 SGSDASHSOFTWAREVERSION = "005"
@@ -39,6 +36,10 @@ newValveState = ""
 previousPathname = ""
 
 app = dash.Dash(__name__,external_stylesheets=[dbc.themes.SLATE])
+
+print("new navbar=")
+nav = Navbar()
+logo = Logo(app)
 
 app.config.suppress_callback_exceptions = True
 

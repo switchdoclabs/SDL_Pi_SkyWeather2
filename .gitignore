@@ -11,6 +11,7 @@ conflocal.py
 SkyJSONConfig.py
 state/EnglishMetric.txt
 static/SkyCamera.py
+dash_app/assets/skycamera.py
 static/*.jpg
 __pycache__
 .idea

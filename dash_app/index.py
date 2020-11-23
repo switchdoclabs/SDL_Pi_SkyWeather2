@@ -37,7 +37,7 @@ previousPathname = ""
 
 app = dash.Dash(__name__,external_stylesheets=[dbc.themes.SLATE])
 
-print("new navbar=")
+#print("new navbar=")
 nav = Navbar()
 logo = Logo(app)
 
@@ -93,18 +93,18 @@ def add_header(r):
 def display_page(pathname):
     global previousPathname
 
-    print("--------------------->>>>>>>>>>>>>>>>new page")
+    #print("--------------------->>>>>>>>>>>>>>>>new page")
     now = datetime.datetime.now()
     nowString =  now.strftime('%Y-%m-%d %H:%M:%S')
-    print("begin=",nowString)
+    #print("begin=",nowString)
     
-    print("pathname=", pathname)
-    print("previousPathname=", previousPathname)
+    #print("pathname=", pathname)
+    #print("previousPathname=", previousPathname)
     i = [i['prop_id'] for i in dash.callback_context.triggered]
-    print('i=', i)
-    print('TRIGGER(S):', [i['prop_id'] for i in dash.callback_context.triggered])
+    #print('i=', i)
+    #print('TRIGGER(S):', [i['prop_id'] for i in dash.callback_context.triggered])
     if (i[0] == '.'):
-        print("---no page change--- ['.']")
+        #print("---no page change--- ['.']")
         raise PreventUpdate	
     #if (pathname == previousPathname):
     #    print("---no page change---Equal Pathname")
@@ -128,10 +128,10 @@ def display_page(pathname):
     
     #print("myLayout= ",myLayout)
     #print("myLayout2= ",myLayout2)
-    print("page-content= ",app.layout)
+    #print("page-content= ",app.layout)
     now = datetime.datetime.now()
     nowString =  now.strftime('%Y-%m-%d %H:%M:%S')
-    print("end=",nowString)
+    #print("end=",nowString)
     return (logo, nav,myLayout, myLayout2 )
 
 ##################
@@ -147,9 +147,9 @@ def logpageupdate(n_intervals, id, value):
     
    #if (True): # 1 minutes -10 second timer
    if ((n_intervals % (1*6)) == 0): # 1 minutes -10 second timer
-    print ("---->inputs:",dash.callback_context.inputs) 
-    print(">log_page table Update started",id['index'])
-    print("LG-n_intervals=", n_intervals) 
+    #print ("---->inputs:",dash.callback_context.inputs) 
+    #print(">log_page table Update started",id['index'])
+    #print("LG-n_intervals=", n_intervals) 
     if (id['index'] == "systemlog"):
         data = log_page.fetchSystemLog()
         fig = log_page.buildTableFig(data,"System Log")
@@ -163,7 +163,7 @@ def logpageupdate(n_intervals, id, value):
         data = log_page.fetchSensorLog()
         fig = log_page.buildTableFig(data,"Sensor Log")
 
-    print("<log_page table Update complete",id['index'])
+    #print("<log_page table Update complete",id['index'])
     return fig
    else:
     raise PreventUpdate
@@ -201,31 +201,19 @@ def update_gauges(n_intervals, id, value):
     raise PreventUpdate
 
 
-@app.callback(Output({'type' : 'SPdynamic', 'index' : MATCH, 'DeviceID' : MATCH}, 'color' ),
+@app.callback(Output({'type' : 'SPdynamic', 'index' : MATCH }, 'color' ),
               [Input('main-interval-component','n_intervals'),
-              Input({'type' : 'SPdynamic', 'index' : MATCH, 'DeviceID' : MATCH}, 'id' )],
-              [State({'type' : 'SPdynamic', 'index' : MATCH, 'DeviceID' : MATCH}, 'color'  )]
+              Input({'type' : 'SPdynamic', 'index' : MATCH }, 'id' )],
+              [State({'type' : 'SPdynamic', 'index' : MATCH}, 'color'  )]
               )
 
-def update_statuspage(n_intervals, id, color):
-   global newValveState
-   #if (True): # 1 minutes -10 second timer
-   if ((n_intervals % (1*6)) == 0): # 1 minutes -10 second timer
-    
-    #print(">status_page Indicator Update started",id['index'], id['DeviceID'])
-    #print("id=", id)
-    #print("newValveState=", newValveState)
-    #print("n_intervals=", n_intervals)
-    #print ('Indicator id {} / n_intervals = {}'.format(id['index'], n_intervals))
-    if (newValveState == ""):
-        newValveState = status_page.returnLatestValveRecord(id['DeviceID'] )
+def update_indicators(n_intervals, id, color):
 
-    status  = status_page.returnIndicatorValue(newValveState, id['index'])
-    color = status_page.updateIndicator(status)
+   #if ((n_intervals % (1*5)) == 0): # 15 minutes -10 second timer
+   if ((n_intervals % (16*6)) == 0): # 15 minutes -10 second timer
+     
+    color = status_page.updateIndicators(id)
 
-    if (id['index'] == 7):
-        newValveState = ""    
-    #print("<status_page Indicator Update complete",id['index'], id['DeviceID'])
     return color
    else:
     raise PreventUpdate
@@ -251,8 +239,8 @@ def update_statuspage(n_intervals, id, color):
               )
 
 def updateWeatherImagePage(n_intervals,id, value):
-    print("+++++++++++++updateWImageP n_intervals", n_intervals)
-    print("+++++++++++++updateWImageP (n_intervals %6)", n_intervals% 6)
+    #print("+++++++++++++updateWImageP n_intervals", n_intervals)
+    #print("+++++++++++++updateWImageP (n_intervals %6)", n_intervals% 6)
     if ((n_intervals % (1*6)) == 0) or (n_intervals ==0): # 1 minutes -10 second timer
         print("--->>>updateSkyCamImage", datetime.datetime.now(), n_intervals)
         try:
@@ -309,8 +297,8 @@ def updateWeatherUpdate(n_intervals,id, value):
 
     if ((n_intervals % (1*6)) == 0) or (n_intervals ==0): # 5 minutes -10 second timer
     #if ((n_intervals % (5*6)) == 0) or (n_intervals ==0): # 5 minutes -10 second timer
-        print("--->>>updateWeatherUpdateString", datetime.datetime.now(), n_intervals)
-        print("updateWeatherUpdate n_intervals =", n_intervals, id['index'])
+        #print("--->>>updateWeatherUpdateString", datetime.datetime.now(), n_intervals)
+        #print("updateWeatherUpdate n_intervals =", n_intervals, id['index'])
         if (id['index'] == "StringTime"):
             UpdateCWJSONLock.acquire()
             weather_page.CWJSON = weather_page.generateCurrentWeatherJSON()
@@ -341,11 +329,11 @@ def updateWeatherRosePage(n_intervals,id, value):
 
     if (n_intervals == 0): # stop first update
         raise PreventUpdate
-    print("WeatherRose n_intervals=", n_intervals)
+    #print("WeatherRose n_intervals=", n_intervals)
     # update every 15 minutes
     #if (True): # 15 minutes -10 second timer
     if ((n_intervals % (15*6)) == 0): # 15 minutes -10 second timer
-        print("--->>>updateCompassRose", datetime.datetime.now(), n_intervals)
+        #print("--->>>updateCompassRose", datetime.datetime.now(), n_intervals)
         timeDelta = datetime.timedelta(days=7)
         data = weather_page.fetchWindData(timeDelta)
         fig = weather_page.figCompassRose(data)
@@ -371,8 +359,8 @@ def updateWeatherGraphPage(n_intervals,id, value):
 
     if ((n_intervals % (1*6)) == 0): # 15 minutes -10 second timer
     #if ((n_intervals % (5*6)) == 0): # 15 minutes -10 second timer
-       print("--->>>updateWeatherGraphs", datetime.datetime.now(), n_intervals, id)
-       print("--->>>updateWeatherGraphs:", id['index'])
+       #print("--->>>updateWeatherGraphs", datetime.datetime.now(), n_intervals, id)
+       #print("--->>>updateWeatherGraphs:", id['index'])
        if (id['index'] ==  'graph-oth'):
            fig = weather_page.buildOutdoorTemperature_Humidity_Graph_Figure()
        if (id['index'] ==  'graph-suv'):
@@ -403,8 +391,8 @@ def updateIndoorTHUpdate(n_intervals,id, value):
 
     if ((n_intervals % (1*6)) == 0) or (n_intervals ==0): # 1 minutes -10 second timer
     #if ((n_intervals % (5*6)) == 0) or (n_intervals ==0): # 5 minutes -10 second timer
-        print("--->>>updateIndoorTHUpdate", datetime.datetime.now(), n_intervals)
-        print("updateIndoorTH  n_intervals =", n_intervals, id['index'])
+        #print("--->>>updateIndoorTHUpdate", datetime.datetime.now(), n_intervals)
+        #print("updateIndoorTH  n_intervals =", n_intervals, id['index'])
         if (id['index'] ==  'temperature'):
            timeDelta = datetime.timedelta(days=7)
            data = indoorth.generateTHData(timeDelta)

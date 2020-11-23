@@ -34,6 +34,7 @@ readJSON.readJSON("../")
 import MySQLdb as mdb
 
 
+GREEN = "#2bff00"
 
 ################
 # Status Page
@@ -42,6 +43,146 @@ import MySQLdb as mdb
 ################
 # Page Functions
 ################
+
+def getOutdoorStatus():
+   
+        try:
+                #print("trying database")
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                cur = con.cursor()
+                now = datetime.datetime.now()
+                timeDelta = datetime.timedelta(minutes=30)
+
+
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                query = "SELECT BatteryOK FROM WeatherData WHERE TimeStamp > '%s' ORDER BY TimeStamp DESC LIMIT 1" % (before)
+                #print("query=", query)
+                cur.execute(query)
+                con.commit()
+                records = cur.fetchall()
+                if (len(records) == 0):
+                    return "gray"
+                    
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+        finally:
+                cur.close()
+                con.close()
+
+        if (records[0][0] == "OK"):
+            return GREEN
+        else:
+
+            return "red"
+
+def getIndoorStatus(channel):
+        try:
+                #print("trying database")
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                cur = con.cursor()
+                now = datetime.datetime.now()
+                timeDelta = datetime.timedelta(minutes=30)
+
+
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                query = "SELECT BatteryOK FROM IndoorTHSensors WHERE (TimeStamp > '%s' AND ChannelID = %d) ORDER BY TimeStamp DESC LIMIT 1" % (before, channel)
+                #print("query=", query)
+                cur.execute(query)
+                con.commit()
+                records = cur.fetchall()
+                if (len(records) == 0):
+                    return "gray"
+                    
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+        finally:
+                cur.close()
+                con.close()
+        if (records[0][0] == "OK"):
+            return GREEN
+        else:
+
+            return "red"
+
+
+def returnOutdoorIndicator():
+
+     totalLayout = []
+     myLabelLayout = [] 
+     myIndicatorLayout = []
+        
+     myLabelLayout.append(
+                    
+                     html.H6("WeatherRack2 Battery Status9 (Green=Good, Red=Low, Gray=Off Air)" )
+                     ,
+		     )
+     
+     myColor = getOutdoorStatus() 
+     
+     myIndicatorLayout.append( 
+            daq.Indicator(
+                        id = {'type' : 'SPdynamic', 'index': 0}  , 
+                        color = myColor,
+                        label="Outdoor",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+   
+     totalLayout.append(dbc.Row( myLabelLayout))
+     totalLayout.append(dbc.Row(myIndicatorLayout))
+
+     return totalLayout
+
+
+
+
+def returnIndoorIndicators():
+
+     totalLayout = []
+     myLabelLayout = [] 
+     myIndicatorLayout = []
+        
+   
+     myLabelLayout.append(
+                 
+                     html.H6("Indoor Sensor Battery Channels" )
+                     ,
+		     )
+     
+
+     for IndoorSensor in range(1,9):
+
+
+            myColor = getIndoorStatus(IndoorSensor)
+            
+            myIndicatorLayout.append( daq.Indicator(
+                        id = {'type' : 'SPdynamic', 'index': IndoorSensor}  , 
+                        color = myColor,
+                        label="Channel "+str(IndoorSensor),
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+            
+     totalLayout.append(dbc.Row( myLabelLayout))
+     totalLayout.append(dbc.Row(myIndicatorLayout))
+
+     return totalLayout
 
 
 def StatusPage():
@@ -125,9 +266,18 @@ def StatusPage():
 		   style={'margin-top' : "-90px"}
 
     )
+    OutdoorIndicator = returnOutdoorIndicator()
+    IndoorIndicators = returnIndoorIndicators()
+   
+    Row6 = html.Div(
+        OutdoorIndicator, 
+    )
+    Row7 = html.Div(
+        IndoorIndicators,
+    )
     #layout = dbc.Container([
     layout = dbc.Container([
-        Row1, Row2, Row5, Row3, Row4],
+        Row1, Row2, Row5, Row3, Row4, Row6, Row7],
         className="status-1",
     )
     return layout
@@ -151,9 +301,8 @@ def updateGauges(id):
         #return (myRecord[0][1],myRecord[0][2], myRecord[0][3],myRecord[0][5])
         myValue = psutil.disk_usage('/')
         myDPercent = myValue[3]
-        print("myDPercent=", myDPercent)
+        #print("myDPercent=", myDPercent)
         myDPercent = 100.0 - myDPercent
-        print("myDPercent=", myDPercent)
         return myDPercent 
 
 		
@@ -168,5 +317,14 @@ def updateGauges(id):
     	myValue = psutil.virtual_memory().percent
     	return myValue
 
+def updateIndicators(id):    # update indicators
+
+    if (id['index'] == 0):
+        color = getOutdoorStatus()
+    else:
+        color = getIndoorStatus(id['index'])
+    return color
+
+        
 
 

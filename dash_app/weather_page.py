@@ -171,17 +171,22 @@ def generateCurrentWeatherJSON():
                         else:
                             CWJSON[names[i][0]] = records[0][i]
                     else:
-                        if (weatherRecordCount == 0): 
-                            CWJSON[names[i][0]] = 0;
-                        else:
-                            CWJSON[names[i][0]] = float(records[0][i])
+                      if (names[i][0] == "BatteryOK"):
+                       if (weatherRecordCount == 0): 
+                              CWJSON[names[i][0]] = "LOW";
+                       else:
+                              CWJSON[names[i][0]] = records[0][i]
+                      else:
+                       if (weatherRecordCount == 0): 
+                              CWJSON[names[i][0]] = 0;
+                       else:
+                              CWJSON[names[i][0]] = float(records[0][i])
                 if (weatherRecordCount == 0): 
                     CWJSON["StringTime"] = "" 
                 else:
                     CWJSON["StringTime"] = records[0][1].strftime("%d-%b-%Y %H:%M:%S") 
                 CWJSON["StringTimeUnits"] = ""
 
-                print("CWJSON=", CWJSON)
                 # now calculate rain 
                 
                 # calendar day rain
@@ -255,15 +260,16 @@ def generateCurrentWeatherJSON():
                     rainspan = 0
                 CWJSON["7DaysRain"] = round(rainspan,2)
                 
-
+            
                                 
                 
                 con.commit()
                 
                 # convert to appropiate units and add units
                 # set units
+                
                 English_Metric = readJSON.getJSONValue("English_Metric")
-
+                
                 if (English_Metric == False):
                     # deal with English Units
                     # temperature
@@ -329,7 +335,7 @@ def generateCurrentWeatherJSON():
                 CWJSON["WindDirectionUnits"] = "deg"
 
 
-                print ("CWJSON=", CWJSON)                
+                
 
                 return CWJSON
         except: 

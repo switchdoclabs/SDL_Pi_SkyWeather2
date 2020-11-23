@@ -116,7 +116,10 @@ def processF020(sLine):
     state.SunlightVisible =  wLight 
     state.SunlightUVIndex  = round(wUVI/10.0, 1 )
 
-
+    if (var['batterylow'] == 0):
+        state.BatteryOK = "OK"
+    else:
+        state.BatteryOK = "LOW"
 
     print("looking for buildJSONSemaphore acquire")
     state.buildJSONSemaphore.acquire()

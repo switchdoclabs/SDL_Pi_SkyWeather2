@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "011"
+config.SWVERSION = "012"
 # system imports
 
 import time
@@ -38,7 +38,7 @@ import watchDog
 import util
 from  bmp280 import BMP280
 import SkyCamera
-
+import os
 # Scheduler Helpers
 
 # print out faults inside events
@@ -64,7 +64,6 @@ def rebootPi(why):
 
    pclogging.systemlog(config.INFO, "Pi Rebooting: %s" % why)
    if (config.USEBLYNK):
-     updateBlynk.blynkEventUpdate("Pi Rebooting: %s" % why)
      updateBlynk.blynkTerminalUpdate("Pi Rebooting: %s" % why)
    pclogging.systemlog(config.INFO, "Pi Rebooting: %s" % why)
    os.system("sudo shutdown -r now")

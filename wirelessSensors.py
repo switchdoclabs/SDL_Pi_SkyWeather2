@@ -204,7 +204,6 @@ def readSensors():
         #   Other processing can occur here as needed...
         #sys.stdout.write('Made it to processing step. \n')
         timeSinceLastSample = time.time() - lastTimeSensorReceived
-        print("timeSinceLastSample=", timeSinceLastSample)
        
         if (timeSinceLastSample > 720.0):   # restart if no reads in 12 minutes
         

@@ -131,7 +131,6 @@ def sendSkyWeather():
 
     # defining the api-endpoint  
     API_ENDPOINT = "https://skyweather.weatherstem.com/"
-     
   
 
     with open("static/skycamera.jpg", "rb") as image_file:
@@ -149,7 +148,7 @@ def sendSkyWeather():
    
     currentTime = time.time()
 
-
+    print("------->Sea Level", state.BarometricPressureSeaLevel*10.0)
     data = {
                 "SkyWeatherVersion": config.SWVERSION,
                 "SkyWeatherHardware": config.STATIONHARDWARE,
@@ -196,12 +195,16 @@ def sendSkyWeather():
 			"value": state.SunlightVisible,
                         "units" : "lux"
 		},
-		{
-			"name":"UVSunlightIndex",
-			"value": state.SunlightUVIndex,
+        {
+            "name":"IRSunlight",
+            "value": "0.0",
                         "units" : "lux"
-
-		},
+        },
+        {
+            "name":"UVSunlightt",
+            "value": "0.0", 
+                        "units" : "lux"
+        },
 		{
 			"name":"WindSpeed",
 			"value": state.WindSpeed,
@@ -250,7 +253,13 @@ def sendSkyWeather():
 			"name":"OutdoorAirQuality",
 			"value": state.AQI,
                         "units" : "AQI"
-		}
+		},
+
+		#{
+		#	"name":"UVSunlightIndex",
+		#	"value": state.SunlightUVIndex,
+        #                "units" : "index"
+		#}
 		
                 ],
 	"solarpower":[
@@ -371,12 +380,11 @@ def sendSkyWeather():
 		
 	]
     }
-
-
+    import json
   
     # sending post request and saving response as response object 
     r = requests.post(url = API_ENDPOINT, json = data) 
-    #print (data )
+    print (data )
     # extracting response text  
     pastebin_url = r.text 
     if (config.SWDEBUG):

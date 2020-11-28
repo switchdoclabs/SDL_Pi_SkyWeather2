@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 10, 2020 at 11:02 AM
--- Server version: 10.3.22-MariaDB-0+deb10u1
--- PHP Version: 7.3.14-1~deb10u1
+-- Generation Time: Nov 27, 2020 at 03:41 PM
+-- Server version: 10.3.25-MariaDB-0+deb10u1
+-- PHP Version: 7.3.19-1~deb10u1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `SkyWeather2`
 --
-CREATE DATABASE IF NOT EXISTS `SkyWeather2` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `SkyWeather2`;
 
 -- --------------------------------------------------------
 
@@ -98,7 +96,9 @@ CREATE TABLE `WeatherData` (
   `BarometricPressureSeaLevel` float NOT NULL,
   `BarometricTemperature` float NOT NULL,
   `AQI` float NOT NULL,
-  `AQI24Average` float NOT NULL DEFAULT 0
+  `AQI24Average` float NOT NULL DEFAULT 0,
+  `BatteryOK` text NOT NULL,
+  `CPUTemperature` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --

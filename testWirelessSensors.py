@@ -1,12 +1,5 @@
+# test for WeatherSense SwitchDoc Labs Weather Sensors
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
-#
-#   rtl_433_wrapper.py
-#
-#   Wrapper script for executing "rtl_433" and processing the output as it occurs in realtime.
-#
-#   The goal is to be able to use "rtl_433" unmodified so that is easy to stay current as support for additional devices/protocols are added.
-#   Note: To make this "real" some refactoring of the rtl_433 source will be needed to add consistent support for JSON across the various protocol handlers.
-#
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 import sys
 from subprocess import PIPE, Popen, STDOUT
@@ -15,7 +8,9 @@ from threading  import Thread
 import datetime
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+# 146 = FT-020T WeatherRack2, #147 = F016TH SDL Temperature/Humidity Sensor
 print("Starting Wireless Read")
+#cmd = [ '/usr/local/bin/rtl_433', '-vv',  '-q', '-F', 'json', '-R', '146', '-R', '147']
 cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147']
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -66,10 +61,13 @@ while True:
     else: # got line
         pulse -= 1
         sLine = line.decode()
+        print(sLine)
         #   See if the data is something we need to act on...
-        if ( sLine.find('F007TH') != -1):
+        if (( sLine.find('F007TH') != -1) or ( sLine.find('F016TH') != -1)):
+            sys.stdout.write('WeatherSense Indoor T/H F016TH Found' + '\n')
             sys.stdout.write('This is the raw data: ' + sLine + '\n')
-        if ( sLine.find('FT0300') != -1):
+        if (( sLine.find('FT0300') != -1) or ( sLine.find('FT020T') != -1)):
+            sys.stdout.write('WeatherSense WeatherRack2 FT020T found' + '\n')
             sys.stdout.write('This is the raw data: ' + sLine + '\n')
 
 

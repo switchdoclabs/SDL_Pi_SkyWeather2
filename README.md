@@ -2,6 +2,7 @@
 SkyWeather2
 SwitchDoc Labs
 
+November 29, 2020 - Version 016 - Fixed CPUTemperature<BR>
 November 29, 2020 - Version 015 - Minor Fixes<BR>
 November 27, 2020 - Version 014 - WeatherSTEM Fix <BR>
 November 24, 2020 - Version 012 - Reliability rtl_433 improvements <BR>

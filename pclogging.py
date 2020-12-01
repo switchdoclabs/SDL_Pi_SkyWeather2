@@ -20,7 +20,6 @@ import state
 import updateBlynk
 import MySQLdb as mdb
 
-
 import traceback
 
 
@@ -107,6 +106,7 @@ def readLastHour24AQI():
                 del cur
                 del con
 
+import gpiozero 
 
 def writeWeatherRecord():
 
@@ -116,7 +116,9 @@ def writeWeatherRecord():
 	# commit
 	# close
         try:
-
+                cpu = gpiozero.CPUTemperature()
+                state.CPUTemperature = cpu.temperature 
+                print("CPUT=", state.CPUTemperature)
                 # first calculate the 24 hour moving average for AQI
                 
                 print("trying database")
@@ -142,8 +144,8 @@ def writeWeatherRecord():
                     myAQI24  = 0.0
                 state.Hour24_AQI = myAQI24 
 
-                fields = "OutdoorTemperature, OutdoorHumidity, IndoorTemperature, IndoorHumidity, TotalRain, SunlightVisible, SunlightUVIndex, WindSpeed, WindGust, WindDirection,BarometricPressure, BarometricPressureSeaLevel, BarometricTemperature, AQI, AQI24Average, BatteryOK"
-                values = "%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%6.2f,%6.2f,%6.2f, \'%s\'" % (state.OutdoorTemperature, state.OutdoorHumidity, state.IndoorTemperature, state.IndoorHumidity, state.TotalRain, state.SunlightVisible, state.SunlightUVIndex, state.WindSpeed, state.WindGust, state.WindDirection,state.BarometricPressure, state.BarometricPressureSeaLevel, state.BarometricTemperature, float(state.AQI), state.Hour24_AQI, state.BatteryOK)
+                fields = "OutdoorTemperature, OutdoorHumidity, IndoorTemperature, IndoorHumidity, TotalRain, SunlightVisible, SunlightUVIndex, WindSpeed, WindGust, WindDirection,BarometricPressure, BarometricPressureSeaLevel, BarometricTemperature, AQI, AQI24Average, BatteryOK, CPUTemperature"
+                values = "%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%6.2f,%6.2f,%6.2f, \'%s\',%6.2f" % (state.OutdoorTemperature, state.OutdoorHumidity, state.IndoorTemperature, state.IndoorHumidity, state.TotalRain, state.SunlightVisible, state.SunlightUVIndex, state.WindSpeed, state.WindGust, state.WindDirection,state.BarometricPressure, state.BarometricPressureSeaLevel, state.BarometricTemperature, float(state.AQI), state.Hour24_AQI, state.BatteryOK, state.CPUTemperature)
                 query = "INSERT INTO WeatherData (%s) VALUES(%s )" % (fields, values)
                 #print("query=", query)
                 cur.execute(query)
@@ -183,7 +185,7 @@ def writeITWeatherRecord():
                     for singleChannel in state.IndoorTH:
                         values = "%d, %d, %6.2f, %6.2f, \"%s\", \"%s\"" % (singleChannel["deviceID"], singleChannel["channelID"], singleChannel["temperature"], singleChannel["humidity"], singleChannel["batteryOK"], singleChannel["time"])
                         query = "INSERT INTO IndoorTHSensors (%s) VALUES(%s )" % (fields, values)
-                        #print("query=", query)
+                       #print("query=", query)
                         cur.execute(query)
                         con.commit()
                 else:

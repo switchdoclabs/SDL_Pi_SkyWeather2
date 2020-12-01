@@ -96,6 +96,8 @@ AQI = 0.0
 Hour24_AQI = 0.0
 
 BatteryOK = "OK"
+CPUTemperature = 0.0
+
 # Indoor Temperature Sensor Array
 
 IndoorTH = []
@@ -201,6 +203,7 @@ def printState():
     print ("AQI = ",  AQI )
     print ("Hour24_AQI = ",  Hour24_AQI )
     print ("Main Battery Status = ",  BatteryOK )
+    print ("CPU Temperature = ",  CPUTemperature )
 
     
     print ("-------------")

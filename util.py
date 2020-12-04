@@ -42,7 +42,7 @@ def returnTemperatureCF(temperature):
 		return (9.0/5.0)*temperature + 32.0
 
 def returnTemperatureCFUnit():
-    print("config.English_Metric=", config.English_Metric)
+    #print("config.English_Metric=", config.English_Metric)
     if (config.English_Metric == True):
         # return Metric 
         return "C"

@@ -76,6 +76,7 @@ def processF020(sLine):
 
     if (state.previousMainReading == "Never"):
         pclogging.systemlog(config.INFO,"Main Weather Sensors Found")
+        print("Main Weather Sensors Found")
         pclogging.systemlog(config.INFO,"Blynk Updates Started")
         state.previousMainReading = state.lastMainReading
 
@@ -131,14 +132,14 @@ def processF020(sLine):
     else:
         state.BatteryOK = "LOW"
 
-    print("looking for buildJSONSemaphore acquire")
+    #print("looking for buildJSONSemaphore acquire")
     state.buildJSONSemaphore.acquire()
-    print("buildJSONSemaphore acquired")
+    #print("buildJSONSemaphore acquired")
     state.StateJSON = buildJSON.getStateJSON()
     #if (config.SWDEBUG):
     #    print("currentJSON = ", state.StateJSON)
     state.buildJSONSemaphore.release()
-    print("buildJSONSemaphore released")
+    #print("buildJSONSemaphore released")
 
 
 
@@ -155,6 +156,7 @@ def processF016TH(sLine):
 
     if (state.previousIndoorReading == "Never"):
         pclogging.systemlog(config.INFO,"Indoor Weather Sensor Found")
+        print("Indoor Weather Sensors Found")
         state.previousIndoorReading = state.lastIndoorReading
 
     state.IndoorTemperature = round(((var["temperature_F"] - 32.0)/(9.0/5.0)),2)
@@ -166,22 +168,20 @@ def processF016TH(sLine):
 
     indoorTH.addITReading(var["device"], var["channel"], state.IndoorTemperature, var["humidity"], var["battery"],  var["time"])
 
-    print("looking for buildJSONSemaphore acquire")
+    #print("looking for buildJSONSemaphore acquire")
     state.buildJSONSemaphore.acquire()
-    print("buildJSONSemaphore acquired")
+    #print("buildJSONSemaphore acquired")
     state.StateJSON = buildJSON.getStateJSON()
     #if (config.SWDEBUG):
     #    print("currentJSON = ", state.StateJSON)
     state.buildJSONSemaphore.release()
-    print("buildJSONSemaphore released")
+    #print("buildJSONSemaphore released")
 
 # main read 433HMz Sensor Loop
 def readSensors():
 
 
     print("")
-    print("######")
-    print("Read Wireless Sensors")
     print("######")
     #   Create our sub-process...
     #   Note that we need to either ignore output from STDERR or merge it with STDOUT due to a limitation/bug somewhere under the covers of "subprocess"

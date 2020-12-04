@@ -32,14 +32,14 @@ def readWiredSensors(bmp280, hdc1080):
                 print(traceback.format_exc()) 
                 print(("readWiredSensors Unexpected error:", sys.exc_info()[0]))
 
-    print("Looking for buildJSONSemaphore Acquire")
+    #print("Looking for buildJSONSemaphore Acquire")
     state.buildJSONSemaphore.acquire()
-    print("buildJSONSemaphore Acquired")
+    #print("buildJSONSemaphore Acquired")
     state.StateJSON = buildJSON.getStateJSON()
     #if (config.SWDEBUG):
     #    print("currentJSON = ", state.StateJSON)
     state.buildJSONSemaphore.release()
-    print("buildJSONSemaphore Released")
+    #print("buildJSONSemaphore Released")
 
 
 

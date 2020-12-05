@@ -254,7 +254,7 @@ class SkyWeatherConfigure(App):
         self.AS3935_Lightning_Config = "[2,1,3,0,3,3]"
         self.DustSensorSCL = 20
         self.DustSensorSDA = 21
-        self.DustSensorPowerPin = 12
+        self.DustSensorPowerPin = 5
         self.GPIO_Pin_PowerDrive_Sig1 = 4
         self.GPIO_Pin_PowerDrive_Sig2 = 4
         self.WATCHDOGTRIGGER = 6

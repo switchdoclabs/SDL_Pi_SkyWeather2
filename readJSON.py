@@ -30,7 +30,7 @@ def setDefaults():
         config.AS3935_Lightning_Config = "[2,1,3,0,3,3]"
         config.DustSensorSCL = 20
         config.DustSensorSDA = 21
-        config.DustSensorPowerPin = 12
+        config.DustSensorPowerPin = 5
         config.GPIO_Pin_PowerDrive_Sig1 = 4
         config.GPIO_Pin_PowerDrive_Sig2 = 4
         config.WATCHDOGTRIGGER = 6

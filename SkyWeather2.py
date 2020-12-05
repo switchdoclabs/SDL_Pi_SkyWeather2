@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "016"
+config.SWVERSION = "017"
 # system imports
 
 import time
@@ -242,7 +242,7 @@ scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day
 scheduler.add_job(util.barometricTrend, 'interval', seconds=15*60)
 
 if (config.DustSensor_Present):
-    scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*2)
+    scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*12)
    
 
 # weather sensors

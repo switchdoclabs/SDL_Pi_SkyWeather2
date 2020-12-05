@@ -35,11 +35,13 @@ import DustSensor
 
 
 
+
 time.sleep(0.01)
 try:
     while 1:
 
         DustSensor.powerOnDustSensor()
+        time.sleep(3)
         myData = DustSensor.get_data()
         print ("data=",myData)
         myAQI = DustSensor.get_aqi()

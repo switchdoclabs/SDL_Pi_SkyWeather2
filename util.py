@@ -59,9 +59,9 @@ def returnWindSpeedUnit():
 def returnWindSpeed(wind):
 	if (config.English_Metric == True):
 		# return Metric 
-		return wind
+		return wind*3.6
 	else:
-		return wind/1.6
+		return wind*2.237
 
 
 def returnWindDirection(windDirection):

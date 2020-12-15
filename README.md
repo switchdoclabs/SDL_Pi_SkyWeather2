@@ -2,6 +2,7 @@
 SkyWeather2
 SwitchDoc Labs
 
+December 14, 2020 - Version 019 - Added AQI Dust Sensor Detection<BR> 
 December 12, 2020 - Version 018 - Corrected Wind Speed/Gust Calculations<BR> 
 December 4, 2020 - Version 017 - Fixed Dust Sensor Power control<BR> 
 November 29, 2020 - Version 016 - Fixed CPUTemperature<BR>

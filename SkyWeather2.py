@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "018"
+config.SWVERSION = "019"
 # system imports
 
 import time
@@ -101,6 +101,26 @@ print(output)
 import DustSensor
 
 # detect devices
+
+################
+# Dust Sensor
+################
+
+try:
+
+        DustSensor.powerOnDustSensor()
+        time.sleep(3)
+        myData = DustSensor.get_data()
+        #print ("data=",myData)
+
+        config.DustSensor_Present = True
+
+except:
+
+        config.DustSensor_Present = False
+
+
+
 
 ################
 # BMP280 Setup 

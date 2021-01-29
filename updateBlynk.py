@@ -32,7 +32,7 @@ def blynkInit():
         r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V43?value=255')
 
         if (DEBUGBLYNK):
-            print("config.English_Metric = ", value)
+            print("config.English_Metric = ", config.English_Metric)
         if (config.English_Metric == 0):
             r = requests.get(config.BLYNK_URL+config.BLYNK_AUTH+'/update/V8?value=0')
         else:        

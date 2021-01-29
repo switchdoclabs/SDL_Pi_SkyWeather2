@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "019"
+config.SWVERSION = "020"
 # system imports
 
 import time
@@ -53,7 +53,7 @@ def ap_my_listener(event):
 	
 def shutdownPi(why):
 
-   pclogging.systemog(config.INFO, "Pi Shutting Down: %s" % why)
+   pclogging.systemlog(config.INFO, "Pi Shutting Down: %s" % why)
    sendemail.sendEmail("test", "SkyWeather2 Shutting down:"+ why, "The SkyWeather2 Raspberry Pi shutting down.", config.notifyAddress,  config.fromAddress, "");
    sys.stdout.flush()
    time.sleep(10.0)

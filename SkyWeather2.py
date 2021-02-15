@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "021"
+config.SWVERSION = "022"
 # system imports
 
 import time
@@ -134,15 +134,16 @@ except ImportError:
 
 # Initialise the BMP280
 bus = SMBus(1)
-bmp280 = BMP280(i2c_dev=bus, i2c_addr=0x77)
 
 try:
         bmp280 = BMP280(i2c_dev=bus, i2c_addr=0x77)
+        state.BarometricTemperature = round(bmp280.get_temperature(), 2)
+ 
         config.BMP280_Present = True
-except Exception as e: 
+except:
         if (config.SWDEBUG):
-            print ("I/O error({0}): {1}".format(e.errno, e.strerror))
-            print(traceback.format_exc())
+            pass
+            #print(traceback.format_exc())
 
         config.BMP280_Present = False
 

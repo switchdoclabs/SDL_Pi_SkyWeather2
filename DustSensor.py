@@ -22,18 +22,18 @@ import config
 #print("config.DustSensorSDA=", config.DustSensorSDA)
 
 import state
-GPIO.setup(12, GPIO.OUT)
-GPIO.output(12, True)
+GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
+GPIO.output(config.DustSensorPowerPin, True)
 
 def powerOnDustSensor():
         GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
-        GPIO.output(12, False)
+        GPIO.output(config.DustSensorPowerPin, False)
         GPIO.output(config.DustSensorPowerPin, True)
         time.sleep(1)
 
 def powerOffDustSensor():
         GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
-        GPIO.output(12, True)
+        GPIO.output(config.DustSensorPowerPin, True)
         GPIO.output(config.DustSensorPowerPin, False)
         time.sleep(1)
 

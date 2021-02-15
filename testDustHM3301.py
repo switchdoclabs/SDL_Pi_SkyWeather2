@@ -12,7 +12,12 @@ import traceback
 import pigpio
 import config
 
+import RPi.GPIO as GPIO
 
+GPIO.setmode(GPIO.BCM)
+
+GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
+GPIO.output(config.DustSensorPowerPin, True)
 
 #
 if (config.SWDEBUG):

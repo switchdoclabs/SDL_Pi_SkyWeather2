@@ -2,6 +2,7 @@
 SkyWeather2
 SwitchDoc Labs
 
+February 15, 2021 - Version 022 - Minor Bug Fixes
 February 2, 2021 - Version 021 - Minor MQTT Fix from Jason, master bugfinder<BR> 
 January 29, 2021 - Version 020 - Minor fix to Pi shutdown<BR> 
 December 14, 2020 - Version 019 - Added AQI Dust Sensor Detection<BR> 

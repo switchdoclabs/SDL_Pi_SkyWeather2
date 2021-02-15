@@ -25,7 +25,8 @@ def readWiredSensors(bmp280, hdc1080):
         try:
             state.BarometricTemperature = round(bmp280.get_temperature(), 2)
             state.BarometricPressure = round(old_div(bmp280.get_pressure(),1000)*100, 5)
-            state.Altitude = round(bmp280.get_altitude(), 4)
+            #state.Altitude = round(bmp280.get_altitude(), 4)
+            state.Altitude = config.BMP280_Altitude_Meters
             state.BarometricPressureSeaLevel = round(old_div(bmp280.get_sealevel_pressure(config.BMP280_Altitude_Meters),1000)*100, 5)
         except:
             if (config.SWDEBUG):

@@ -108,6 +108,42 @@ def readLastHour24AQI():
 
 import gpiozero 
 
+def get60MinuteRain():
+ if (config.enable_MySQL_Logging == True):	
+	    # open mysql database
+	    # write log
+	    # commit
+	    # close
+        try:
+
+           
+                
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                cur = con.cursor()
+                timeDelta = datetime.timedelta(minutes=60)
+                now = datetime.datetime.now()
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                # 60 minute
+                query = "SELECT id, TotalRain, TimeStamp FROM WeatherData WHERE TimeStamp > '%s' ORDER by id ASC" % before
+                print("query=", query)
+                cur.execute(query)
+                rainspanrecords = cur.fetchall()
+                rainspan = 0.0
+                if (len(rainspanrecords) > 0):
+                    rainspan = rainspanrecords[len(rainspanrecords)-1][1] - rainspanrecords[0][1]
+                
+                return rainspan
+
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+ return 0.0 
+
+
 def getCalendarDayRain():
  if (config.enable_MySQL_Logging == True):	
 	    # open mysql database
@@ -142,7 +178,7 @@ def writeWeatherRecord():
  Rain24Hour = getCalendarDayRain()
  print("Rain24Hour=", Rain24Hour)
  WeatherUnderground.sendWeatherUndergroundData(Rain24Hour)
-
+ state.Rain60Minutes = get60MinuteRain()
 
  if (config.enable_MySQL_Logging == True):	
 	# open mysql database

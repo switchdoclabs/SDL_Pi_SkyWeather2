@@ -141,7 +141,6 @@ def processFT020T(sLine, lastFT020TTimeStamp ):
 
 
     state.TotalRain  = round(var["cumulativerain"]/10.0,1)
-    state.Rain60Minutes = 0.0
 
     wLight = var["light"]
     if (wLight >= 0x1fffa):

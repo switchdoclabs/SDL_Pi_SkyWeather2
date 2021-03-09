@@ -240,7 +240,6 @@ class SkyWeatherConfigure(App):
         self.textnotifyAddress = "yournumber@yourprovider"
         self.runLEDs = False
         self.SolarMAX_Present = False
-        self.SolarMAX_Type = "LEAD"
         self.BMP280_Altitude_Meters = 626.0
         self.Sunlight_Gain = 0
         self.USEWEATHERSTEM = False
@@ -251,7 +250,10 @@ class SkyWeatherConfigure(App):
         self.WeatherUnderground_StationKey = "YYYYYY"
         self.USEBLYNK = False
         self.BLYNK_AUTH = ""
-        self.AS3935_Lightning_Config = "[2,1,3,0,3,3]"
+        self.USEWSLIGHTNING = False
+        self.USEWSAQI = False
+        self.USEWSSKYCAM = False
+        self.ALTWSSKYCAM = False
         self.DustSensorSCL = 20
         self.DustSensorSDA = 21
         self.DustSensorPowerPin = 5
@@ -262,8 +264,8 @@ class SkyWeatherConfigure(App):
         self.Camera_Rotation =  0
         self.REST_Enable = False 
         self.MQTT_Enable = False 
-        self.MQTT_Server_URL = "" 
-        self.MQTT_Port_Number = 5900 
+        self.MQTT_Server_URL = "localhost" 
+        self.MQTT_Port_Number = 1883 
         self.MQTT_Send_Seconds = 500 
         self.English_Metric = False
        
@@ -283,7 +285,6 @@ class SkyWeatherConfigure(App):
         self.dataDefaults['textnotifyAddress'] = self.textnotifyAddress 
         self.dataDefaults['runLEDs'] = self.runLEDs 
         self.dataDefaults['SolarMAX_Present'] = self.SolarMAX_Present 
-        self.dataDefaults['SolarMAX_Type'] = self.SolarMAX_Type 
         self.dataDefaults['BMP280_Altitude_Meters'] = self.BMP280_Altitude_Meters 
         self.dataDefaults['Sunlight_Gain'] = self.Sunlight_Gain 
         self.dataDefaults['USEWEATHERSTEM'] = self.USEWEATHERSTEM 
@@ -293,8 +294,11 @@ class SkyWeatherConfigure(App):
         self.dataDefaults['WeatherUnderground_StationID'] = self.WeatherUnderground_StationID 
         self.dataDefaults['WeatherUnderground_StationKey'] = self.WeatherUnderground_StationKey 
         self.dataDefaults['USEBLYNK'] = self.USEBLYNK 
+        self.dataDefaults['USEWSLIGHTNING'] = self.USEWSLIGHTNING 
+        self.dataDefaults['USEWSAQI'] = self.USEWSAQI 
+        self.dataDefaults['USEWSSKYCAM'] = self.USEWSSKYCAM 
+        self.dataDefaults['ALTWSSKYCAM'] = self.ALTWSSKYCAM 
         self.dataDefaults['BLYNK_AUTH'] = self.BLYNK_AUTH 
-        self.dataDefaults['AS3935_Lightning_Config'] = self.AS3935_Lightning_Config 
         self.dataDefaults['DustSensorSCL'] = self.DustSensorSCL 
         self.dataDefaults['DustSensorSDA'] = self.DustSensorSDA 
         self.dataDefaults['DustSensorPowerPin'] = self.DustSensorPowerPin 
@@ -343,7 +347,6 @@ class SkyWeatherConfigure(App):
                 self.textnotifyAddress = self.getJSONValue('textnotifyAddress')
                 self.runLEDs = self.getJSONValue('runLEDs')
                 self.SolarMAX_Present = self.getJSONValue('SolarMAX_Present')
-                self.SolarMAX_Type = self.getJSONValue('SolarMAX_Type')
                 self.BMP280_Altitude_Meters = self.getJSONValue('BMP280_Altitude_Meters')
                 self.Sunlight_Gain = self.getJSONValue('Sunlight_Gain')
                 self.USEWEATHERSTEM = self.getJSONValue('USEWEATHERSTEM')
@@ -354,7 +357,10 @@ class SkyWeatherConfigure(App):
                 self.WeatherUnderground_StationKey = self.getJSONValue('WeatherUnderground_StationKey')
                 self.USEBLYNK = self.getJSONValue('USEBLYNK')
                 self.BLYNK_AUTH = self.getJSONValue('BLYNK_AUTH')
-                self.AS3935_Lightning_Config = self.getJSONValue('AS3935_Lightning_Config')
+                self.USEWSLIGHTNING = self.getJSONValue('USEWSLIGHTNING')
+                self.USEWSAQI = self.getJSONValue('USEWSAQI')
+                self.USEWSSKYCAM = self.getJSONValue('USEWSSKYCAM')
+                self.ALTWSSKYCAM = self.getJSONValue('ALTWSSKYCAM')
                 self.DustSensorSCL = self.getJSONValue('DustSensorSCL')
                 self.DustSensorSDA = self.getJSONValue('DustSensorSDA')
                 self.DustSensorPowerPin = self.getJSONValue('DustSensorPowerPin')
@@ -399,7 +405,6 @@ class SkyWeatherConfigure(App):
         data['textnotifyAddress'] = self.F_textnotifyAddress.get_value()
         data['runLEDs'] = self.F_runLEDs.get_value()
         data['SolarMAX_Present'] = self.F_SolarMAX_Present.get_value()
-        data['SolarMAX_Type'] = self.F_SolarMAX_Type.get_value()
         data['BMP280_Altitude_Meters'] = self.F_BMP280_Altitude_Meters.get_value()
         data['Sunlight_Gain'] = self.F_Sunlight_Gain.get_value()
         data['USEWEATHERSTEM'] = self.F_USEWEATHERSTEM.get_value()
@@ -410,7 +415,10 @@ class SkyWeatherConfigure(App):
         data['WeatherUnderground_StationKey'] = self.F_WeatherUnderground_StationKey.get_value()
         data['USEBLYNK'] = self.F_USEBLYNK.get_value()
         data['BLYNK_AUTH'] = self.F_BLYNK_AUTH.get_value()
-        data['AS3935_Lightning_Config'] = self.F_AS3935_Lightning_Config.get_value()
+        data['USEWSLIGHTNING'] = self.F_USEWSLIGHTNING.get_value()
+        data['USEWSAQI'] = self.F_USEWSAQI.get_value()
+        data['USEWSSKYCAM'] = self.F_USEWSSKYCAM.get_value()
+        data['ALTWSSKYCAM'] = self.F_ALTWSSKYCAM.get_value()
         data['DustSensorSCL'] = self.F_DustSensorSCL.get_value()
         data['DustSensorSDA'] = self.F_DustSensorSDA.get_value()
         data['DustSensorPowerPin'] = self.F_DustSensorPowerPin.get_value()
@@ -458,7 +466,7 @@ class SkyWeatherConfigure(App):
         m3.onclick.do(self.menu_screen3_clicked)
         m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=70, height=30)
+        m5 = gui.MenuItem('B-WS', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
@@ -545,7 +553,7 @@ class SkyWeatherConfigure(App):
         m3.onclick.do(self.menu_screen3_clicked)
         m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=70, height=30)
+        m5 = gui.MenuItem('B-WS', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
@@ -631,7 +639,7 @@ class SkyWeatherConfigure(App):
         m3.onclick.do(self.menu_screen3_clicked)
         m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=70, height=30)
+        m5 = gui.MenuItem('B-WS', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
@@ -666,15 +674,6 @@ class SkyWeatherConfigure(App):
         vbox.append(self.F_SolarMAX_Present,'self.F_SolarMAX_Present') 
 
 
-        self.F_SolarMAX_Type = gui.DropDown(width='200px')
-        self.F_SolarMAX_Type.style.update({'font-size':'large'})
-        self.F_SolarMAX_Type.add_class("form-control dropdown")
-        item1 = gui.DropDownItem("LEAD")
-        item2 = gui.DropDownItem("LIPO")
-        self.F_SolarMAX_Type.append(item1,'item1')
-        self.F_SolarMAX_Type.append(item2,'item2')
-        self.F_SolarMAX_Type.select_by_value(self.SolarMAX_Type)
-        vbox.append(self.F_SolarMAX_Type, 'self.F_SolarMAX_Type')
 
         P2Nheader = gui.Label("Station Height in Meters", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
         vbox.append(P2Nheader,'P2Nheader') 
@@ -724,7 +723,7 @@ class SkyWeatherConfigure(App):
         m3.onclick.do(self.menu_screen3_clicked)
         m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=70, height=30)
+        m5 = gui.MenuItem('B-WS', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
@@ -810,7 +809,7 @@ class SkyWeatherConfigure(App):
         m3.onclick.do(self.menu_screen3_clicked)
         m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=70, height=30)
+        m5 = gui.MenuItem('B-WS', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
@@ -829,7 +828,7 @@ class SkyWeatherConfigure(App):
         vbox.append(menubar)
 
         #screen 1
-        screen1header = gui.Label("Blynk / ThunderBoard AS3935 Tab", style='margin:10px')
+        screen1header = gui.Label("Blynk / WeatherSense Tab", style='margin:10px')
         vbox.append(screen1header)
 
 
@@ -847,19 +846,17 @@ class SkyWeatherConfigure(App):
         self.F_BLYNK_AUTH.set_value(self.BLYNK_AUTH)
         vbox.append(self.F_BLYNK_AUTH,'BLYNK_AUTH') 
         #
-        P1Nheader = gui.Label("ThunderBoard AS3935 Configuration", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
+        P1Nheader = gui.Label("WeatherSense Sensors", style='position:absolute; left:5px; top:30px;'+self.headerstyle)
         vbox.append(P1Nheader,'P1Nheader') 
+        self.F_USEWSLIGHTNING = gui.CheckBoxLabel( 'Use WS Lightning ', self.USEWSLIGHTNING, height=30, style='margin:5px; background: LightGray ')
+        vbox.append(self.F_USEWSLIGHTNING,'self.F_USEWSLIGHTNING') 
+        self.F_USEWSAQI = gui.CheckBoxLabel( 'Use WS Air Quality ', self.USEWSAQI, height=30, style='margin:5px; background: LightGray ')
+        vbox.append(self.F_USEWSAQI,'self.F_USEWSAQI') 
+        self.F_USEWSSKYCAM = gui.CheckBoxLabel( 'Use WS Sky Camera ', self.USEWSSKYCAM, height=30, style='margin:5px; background: LightGray ')
+        vbox.append(self.F_USEWSSKYCAM,'self.F_USEWSSKYCAM') 
+        self.F_ALTWSSKYCAM = gui.CheckBoxLabel( 'Alternate SkyCam/WS SkyCamera ', self.ALTWSSKYCAM, height=30, style='margin:5px; background: LightGray ')
+        vbox.append(self.F_ALTWSSKYCAM,'self.F_ALTWSSKYCAM') 
 
-        P2Nheader = gui.Label("Format:[NoiseFloor, Indoor, TuneCap, DisturberDetection, WatchDogThreshold, SpikeDetection] ", style='position:absolute; left:5px; top:30px;'+self.labelstyle)
-        vbox.append(P2Nheader,'P2Nheader') 
-        
-
-        p9label = gui.Label("Thunderboard Configuration", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
-        vbox.append(p9label,'p9label') 
-        
-        self.F_AS3935_Lightning_Config  = gui.TextInput(width=300, height=30, style="margin:5px")
-        self.F_AS3935_Lightning_Config .set_value(self.AS3935_Lightning_Config )
-        vbox.append(self.F_AS3935_Lightning_Config ,'AS3935_Lightning_Config ') 
 
 
         return vbox
@@ -884,7 +881,7 @@ class SkyWeatherConfigure(App):
         m3.onclick.do(self.menu_screen3_clicked)
         m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=70, height=30)
+        m5 = gui.MenuItem('B-WS', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
@@ -979,7 +976,7 @@ class SkyWeatherConfigure(App):
         m3.onclick.do(self.menu_screen3_clicked)
         m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=70, height=30)
+        m5 = gui.MenuItem('B-WS', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
@@ -1062,7 +1059,7 @@ class SkyWeatherConfigure(App):
         m3.onclick.do(self.menu_screen3_clicked)
         m4 = gui.MenuItem('WS-WU', width=70, height=30)
         m4.onclick.do(self.menu_screen4_clicked)
-        m5 = gui.MenuItem('B-TB', width=70, height=30)
+        m5 = gui.MenuItem('B-WS', width=70, height=30)
         m5.onclick.do(self.menu_screen5_clicked)
         m6 = gui.MenuItem('Pins', width=70, height=30)
         m6.onclick.do(self.menu_screen6_clicked)
@@ -1147,7 +1144,7 @@ class SkyWeatherConfigure(App):
 
         logo = SuperImage("./static/SkyWeatherLogo.png", width=400, height =200)
         header = gui.Label("SkyWeather2 Configuration Tool", style='position:absolute; left:5px; top:30px')
-        version = gui.Label("Version 002",style='position:absolute; left:5px; top:50px') 
+        version = gui.Label("Version 003",style='position:absolute; left:5px; top:50px') 
         # bottom buttons
 
         cancel = gui.Button('Cancel',style='position:absolute; left:550px; height: 30px; width:100px; margin:10px; top:5px')

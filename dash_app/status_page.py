@@ -44,7 +44,7 @@ GREEN = "#2bff00"
 # Page Functions
 ################
 
-def getOutdoorStatus():
+def getWR2Status():
    
         try:
                 #print("trying database")
@@ -75,6 +75,114 @@ def getOutdoorStatus():
                 con.close()
 
         if (records[0][0] == "OK"):
+            return GREEN
+        else:
+
+            return "red"
+
+def getWSAQIStatus():
+   
+        try:
+                #print("trying database")
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                cur = con.cursor()
+                now = datetime.datetime.now()
+                timeDelta = datetime.timedelta(minutes=60)
+
+
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                query = "SELECT batteryvoltage FROM AQI433MHZ WHERE timestamp > '%s' ORDER BY timestamp DESC LIMIT 1" % (before)
+                #print("query=", query)
+                cur.execute(query)
+                con.commit()
+                records = cur.fetchall()
+                if (len(records) == 0):
+                    return "gray"
+                    
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+        finally:
+                cur.close()
+                con.close()
+
+        if (float(records[0][0]) > 2.9):
+            return GREEN
+        else:
+
+            return "red"
+
+def getWSLightningStatus():
+   
+        try:
+                #print("trying database")
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                cur = con.cursor()
+                now = datetime.datetime.now()
+                timeDelta = datetime.timedelta(minutes=60)
+
+
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                query = "SELECT batteryvoltage FROM TB433MHZ WHERE timestamp > '%s' ORDER BY timestamp DESC LIMIT 1" % (before)
+                #print("query=", query)
+                cur.execute(query)
+                con.commit()
+                records = cur.fetchall()
+                if (len(records) == 0):
+                    return "gray"
+                    
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+        finally:
+                cur.close()
+                con.close()
+
+        if (float(records[0][0]) > 2.9):
+            return GREEN
+        else:
+
+            return "red"
+
+def getWSSolarMAXStatus():
+   
+        try:
+                #print("trying database")
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                cur = con.cursor()
+                now = datetime.datetime.now()
+                timeDelta = datetime.timedelta(minutes=60)
+
+
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                query = "SELECT batteryvoltage FROM SolarMax433MHZ WHERE timestamp > '%s' ORDER BY timestamp DESC LIMIT 1" % (before)
+                #print("query=", query)
+                cur.execute(query)
+                con.commit()
+                records = cur.fetchall()
+                if (len(records) == 0):
+                    return "gray"
+                    
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+        finally:
+                cur.close()
+                con.close()
+
+        if (float(records[0][0]) > 11.2):
             return GREEN
         else:
 
@@ -123,17 +231,56 @@ def returnOutdoorIndicator():
         
      myLabelLayout.append(
                     
-                     html.H6("WeatherRack2 Battery Status9 (Green=Good, Red=Low, Gray=Off Air)" )
+                     html.H6("WeatherSense Battery Status (Green=Good, Red=Low, Gray=Off Air)" )
                      ,
 		     )
      
-     myColor = getOutdoorStatus() 
+     myColor = getWR2Status() 
      
      myIndicatorLayout.append( 
             daq.Indicator(
                         id = {'type' : 'SPdynamic', 'index': 0}  , 
                         color = myColor,
-                        label="Outdoor",
+                        label="WeatherRack2",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+   
+     myColor = getWSAQIStatus() 
+     myIndicatorLayout.append( 
+            daq.Indicator(
+                        id = {'type' : 'SPdynamic', 'index': 10}  , 
+                        color = myColor,
+                        label="WS Air Quality",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+   
+     myColor = getWSLightningStatus() 
+     myIndicatorLayout.append( 
+            daq.Indicator(
+                        id = {'type' : 'SPdynamic', 'index': 11}  , 
+                        color = myColor,
+                        label="WS Lightning",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+   
+     myColor = getWSSolarMAXStatus() 
+     myIndicatorLayout.append( 
+            daq.Indicator(
+                        id = {'type' : 'SPdynamic', 'index': 12}  , 
+                        color = myColor,
+                        label="WS SolarMAX2",
                         value=True,
                         style={
                             'margin': '10px'
@@ -319,9 +466,16 @@ def updateGauges(id):
 
 def updateIndicators(id):    # update indicators
 
+    color = "gray"
     if (id['index'] == 0):
-        color = getOutdoorStatus()
-    else:
+        color = getWR2Status()
+    if (id['index'] == 10):
+        color = getWSAQIStatus()
+    if (id['index'] == 11):
+        color = getWSLightningStatus()
+    if (id['index'] == 12):
+        color = getWSSolarMAXStatus()
+    if ((id['index'] > 0) and (id['index'] < 10)):
         color = getIndoorStatus(id['index'])
     return color
 

@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "022"
+config.SWVERSION = "023"
 # system imports
 
 import time
@@ -69,6 +69,48 @@ def rebootPi(why):
    os.system("sudo shutdown -r now")
 
 
+import MySQLdb as mdb
+
+# Program Requirement Checking
+
+# SkyWeather2 SQL Database
+try:
+
+    con = mdb.connect(
+          "localhost",
+          "root",
+          config.MySQL_Password,
+          "SkyWeather2"
+          )
+
+except:
+    print("--------")
+    print("MySQL Database SkyWeather2 Not Installed.")
+    print("Run this command:")
+    print("sudo mysql -u root -p < SkyWeather2.sql")
+    print("SkyWeather2 Stopped")
+    print("--------")
+    sys.exit("SkyWeather2 Requirements Error Exit")
+
+
+# WeatherSense SQL Database
+try:
+
+    con = mdb.connect(
+          "localhost",
+          "root",
+          config.MySQL_Password,
+          "WeatherSenseWireless"
+          )
+
+except:
+    print("--------")
+    print("MySQL Database WeatherSenseWireless Not Installed.")
+    print("Run this command:")
+    print("sudo mysql -u root -p < WeatherSenseWireless.sql")
+    print("SkyWeather2 Stopped")
+    print("--------")
+    sys.exit("SkyWeather2 Requirements Error Exit")
 
 
 # main program
@@ -174,18 +216,21 @@ except:
 print("----------------------")
 print(util.returnStatusLine("BMP280",config.BMP280_Present))
 print(util.returnStatusLine("SkyCam",config.Camera_Present))
-print(util.returnStatusLine("AS3935",config.AS3935_Present))
 print(util.returnStatusLine("OLED",config.OLED_Present))
 print(util.returnStatusLine("SunAirPlus/SunControl",config.SunAirPlus_Present))
 print(util.returnStatusLine("SolarMAX",config.SolarMAX_Present))
 print(util.returnStatusLine("DustSensor",config.DustSensor_Present))
 print()
-print(util.returnStatusLine("UseBlynk",config.USEBLYNK))
-print(util.returnStatusLine("UseMySQL",config.enable_MySQL_Logging))
-print(util.returnStatusLine("UseMQTT",config.MQTT_Enable))
+print(util.returnStatusEnable("UseBlynk",config.USEBLYNK))
+print(util.returnStatusEnable("UseWSLIGHTNING",config.USEWSLIGHTNING))
+print(util.returnStatusEnable("UseWSAQI",config.USEWSAQI))
+print(util.returnStatusEnable("UseWSSKYCAM",config.USEWSSKYCAM))
+print(util.returnStatusEnable("UseMySQL",config.enable_MySQL_Logging))
+print(util.returnStatusEnable("UseMQTT",config.MQTT_Enable))
 print(util.returnStatusLine("Check WLAN",config.enable_WLAN_Detection))
 print(util.returnStatusLine("WeatherUnderground",config.WeatherUnderground_Present))
 print(util.returnStatusLine("UseWeatherStem",config.USEWEATHERSTEM))
+
 print("----------------------")
 
 # startup
@@ -253,7 +298,7 @@ if (config.USEBLYNK):
 if (config.MQTT_Enable):
     scheduler.add_job(publishMQTT.publish, 'interval', seconds=config.MQTT_Send_Seconds)
         
-scheduler.add_job(watchDog.patTheDog, 'interval', seconds=10)   # reset the WatchDog Timer
+scheduler.add_job(watchDog.patTheDog, 'interval', seconds=20)   # reset the WatchDog Timer
 
 
 # every 5 days at 00:04, reboot
@@ -263,15 +308,21 @@ scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day
 scheduler.add_job(util.barometricTrend, 'interval', seconds=15*60)
 
 if (config.DustSensor_Present):
+    #DustSensor.read_AQI() # get current value
     scheduler.add_job(DustSensor.read_AQI, 'interval', seconds=60*12)
+   
+if (config.USEWSAQI):
+    wirelessSensors.WSread_AQI() # get current value
+    scheduler.add_job(wirelessSensors.WSread_AQI, 'interval', seconds=60*20)
    
 
 # weather sensors
 
-scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=15*60)
-#scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=5*60)
+scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=3*60)
+#scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=15*60)
+
 scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=15*60)
-#scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=5*60)
+
         
 
 

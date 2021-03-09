@@ -1,6 +1,4 @@
-#
-#
-# configuration file - DO NOT MODIFY!   Defaults and configuration are read from a JSON file. SkyWeather2.JSON
+# configuration file - DO NOT MODIFY below this line!   Defaults and configuration are read from a JSON file. SkyWeather2.JSON
 #
 
 #
@@ -32,7 +30,6 @@ BLYNK_URL = 'http://blynk-cloud.com/'
 # do not change - set by software in skyWeather2
 Camera_Present = False
 SunAirPlus_Present = False
-AS3935_Present = False
 BMP280_Present = False
 OLED_Present = False
 Sunlight_Present = False
@@ -53,7 +50,6 @@ enableText = None
 textnotifyAddress = None
 runLEDs = None
 SolarMAX_Present = None
-SolarMAX_Type = None
 BMP280_Altitude_Meters = None
 Sunlight_Gain = None
 USEWEATHERSTEM = None
@@ -64,7 +60,9 @@ WeatherUnderground_StationID = None
 WeatherUnderground_StationKey = None
 USEBLYNK = None
 BLYNK_AUTH = None
-AS3935_Lightning_Config = None
+USEWSLIGHTNING = None
+USEWSAQI = None
+USEWSSKYCAM = None
 DustSensorSCL = None
 DustSensorSDA = None
 DustSensorPowerPin = None

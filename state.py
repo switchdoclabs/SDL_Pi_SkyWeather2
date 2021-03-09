@@ -95,6 +95,10 @@ pastBarometricReading = 0
 AQI = 0.0
 Hour24_AQI = 0.0
 
+# WeatherSense AQI Values
+WS_AQI = 0.0
+WS_Hour24_AQI = 0.0
+
 BatteryOK = "OK"
 CPUTemperature = 0.0
 
@@ -107,24 +111,6 @@ IndoorTH = []
 
 Last_Event = "My Last Event"
 
-
-# Solar Values
-
-
-batteryVoltage = 0
-batteryCurrent = 0
-solarVoltage = 0
-solarCurrent = 0
-loadVoltage = 0
-loadCurrent = 0
-batteryPower = 0
-solarPower = 0
-loadPower = 0
-batteryCharge = 0
-SolarMAXLastReceived = "None"
-
-SolarMaxIndoorTemperature = 0.0
-SolarMaxIndoorHumidity = 0.0
 
 
 
@@ -152,7 +138,7 @@ batteryPower = 0
 solarPower = 0
 loadPower = 0
 batteryCharge = 0
-SolarMAXLastReceived = "None"
+SolarMAXLastReceived = "Never"
 
 SolarMaxInsideTemperature = 0.0
 SolarMaxInsideHumidity = 0.0
@@ -202,6 +188,8 @@ def printState():
 
     print ("AQI = ",  AQI )
     print ("Hour24_AQI = ",  Hour24_AQI )
+    print ("WS_AQI = ",  WS_AQI )
+    print ("WS_Hour24_AQI = ",  WS_Hour24_AQI )
     print ("Main Battery Status = ",  BatteryOK )
     print ("CPU Temperature = ",  CPUTemperature )
 

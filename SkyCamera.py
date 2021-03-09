@@ -135,6 +135,7 @@ def sendSkyWeather():
 
     with open("static/skycamera.jpg", "rb") as image_file:
        encoded_string = base64.b64encode(image_file.read())
+       encoded_string = encoded_string.decode('utf-8')
 
     if (config.SWDEBUG):
         print ("--------------------")

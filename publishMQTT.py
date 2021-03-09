@@ -9,6 +9,6 @@ def publish():
 
     if (config.SWDEBUG):
         print("--->Sending MQTT Packet<---")
-    state.mqtt_client.publish("SkyWeather2", state.StateJSON)
+    state.mqtt_client.publish("skyweather2/state", state.StateJSON)
 
 

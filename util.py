@@ -18,6 +18,15 @@ def returnStatusLine(device, state):
                 returnString = returnString + ":   \t\tNot Present"
         return returnString
 
+def returnStatusEnable(device, state):
+
+        returnString = device
+        if (state == True):
+                returnString = returnString + ":   \t\tEnabled"
+        else:
+                returnString = returnString + ":   \t\tDisabled"
+        return returnString
+
 
 
 def barometricTrend():
@@ -105,7 +114,7 @@ def returnWindDirection(windDirection):
 
 def returnPercentLeftInBattery(currentVoltage, maxVolt):
 
-    if(config.SolarMAX_Type == "LEAD"):
+    if(maxVolt > 12):
 
         returnPercent = ((currentVoltage - 11.00)/(2.6)) * 100.00
         if (returnPercent > 100.00):

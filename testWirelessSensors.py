@@ -10,8 +10,8 @@ import datetime
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 # 146 = FT-020T WeatherRack2, #147 = F016TH SDL Temperature/Humidity Sensor
 print("Starting Wireless Read")
-#cmd = [ '/usr/local/bin/rtl_433', '-vv',  '-q', '-F', 'json', '-R', '146', '-R', '147']
-cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147']
+#cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147']
+cmd = ['/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147', '-R', '148', '-R', '150', '-R', '151']
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 #   A few helper functions...
@@ -65,10 +65,10 @@ while True:
         #   See if the data is something we need to act on...
         if (( sLine.find('F007TH') != -1) or ( sLine.find('F016TH') != -1)):
             sys.stdout.write('WeatherSense Indoor T/H F016TH Found' + '\n')
-            sys.stdout.write('This is the raw data: ' + sLine + '\n')
+            #sys.stdout.write('This is the raw data: ' + sLine + '\n')
         if (( sLine.find('FT0300') != -1) or ( sLine.find('FT020T') != -1)):
             sys.stdout.write('WeatherSense WeatherRack2 FT020T found' + '\n')
-            sys.stdout.write('This is the raw data: ' + sLine + '\n')
+            #sys.stdout.write('This is the raw data: ' + sLine + '\n')
 
 
     sys.stdout.flush()

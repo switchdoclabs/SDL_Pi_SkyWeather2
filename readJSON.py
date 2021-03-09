@@ -16,7 +16,6 @@ def setDefaults():
         config.textnotifyAddress = "yournumber@yourprovider"
         config.runLEDs = False
         config.SolarMAX_Present = False
-        config.SolarMAX_Type = "LEAD"
         config.BMP280_Altitude_Meters = 626.0
         config.Sunlight_Gain = 0
         config.USEWEATHERSTEM = False
@@ -27,7 +26,9 @@ def setDefaults():
         config.WeatherUnderground_StationKey = "YYYYYY"
         config.USEBLYNK = False
         config.BLYNK_AUTH = ""
-        config.AS3935_Lightning_Config = "[2,1,3,0,3,3]"
+        config.USEWSLIGHTNING = False
+        config.USEWSAQI = False
+        config.USEWSSKYCAM = False
         config.DustSensorSCL = 20
         config.DustSensorSDA = 21
         config.DustSensorPowerPin = 5
@@ -38,8 +39,8 @@ def setDefaults():
         config.Camera_Rotation =  0
         config.REST_Enable = False 
         config.MQTT_Enable = False 
-        config.MQTT_Server_URL = "" 
-        config.MQTT_Port_Number = 5900 
+        config.MQTT_Server_URL = "localhost" 
+        config.MQTT_Port_Number = 1883 
         config.MQTT_Send_Seconds = 500 
         config.English_Metric = False 
        
@@ -78,7 +79,6 @@ def readJSON(addPath):
                 config.textnotifyAddress = getJSONValue('textnotifyAddress')
                 config.runLEDs = getJSONValue('runLEDs')
                 config.SolarMAX_Present = getJSONValue('SolarMAX_Present')
-                config.SolarMAX_Type = getJSONValue('SolarMAX_Type')
                 config.BMP280_Altitude_Meters = float(getJSONValue('BMP280_Altitude_Meters'))
                 config.Sunlight_Gain = getJSONValue('Sunlight_Gain')
                 config.USEWEATHERSTEM = getJSONValue('USEWEATHERSTEM')
@@ -89,7 +89,9 @@ def readJSON(addPath):
                 config.WeatherUnderground_StationKey = getJSONValue('WeatherUnderground_StationKey')
                 config.USEBLYNK = getJSONValue('USEBLYNK')
                 config.BLYNK_AUTH = getJSONValue('BLYNK_AUTH')
-                config.AS3935_Lightning_Config = getJSONValue('AS3935_Lightning_Config')
+                config.USEWSLIGHTNING = getJSONValue('USEWSLIGHTNING')
+                config.USEWSAQI = getJSONValue('USEWSAQI')
+                config.USWSSKYCAM = getJSONValue('USEWSSKYCAM')
                 config.DustSensorSCL = int(getJSONValue('DustSensorSCL'))
                 config.DustSensorSDA = int(getJSONValue('DustSensorSDA'))
                 config.DustSensorPowerPin = int(getJSONValue('DustSensorPowerPin'))

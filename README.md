@@ -2,7 +2,22 @@
 SkyWeather2
 SwitchDoc Labs
 
-February 15, 2021 - Version 022 - Minor Bug Fixes
+March 7, 2021 - Version 023 - Major Update: New WeatherSense devices added<BR>
+WeatherSense Air Quality <BR>
+WeatherSense Lightning<BR>
+WeatherSense SolarMAX2<BR>
+Full MQTT Update<BR>
+WeatherUnderground Added<BR>
+Note:  You need to apply the following commands to upgrade:<BR>
+<pre>
+cd
+cd SDL_Pi_SkyWeather2
+git pull
+sudo mysql -u root -p < WeatherSenseWireless.sql 
+</pre>
+
+<BR>
+February 15, 2021 - Version 022 - Minor Bug Fixes<BR>
 February 2, 2021 - Version 021 - Minor MQTT Fix from Jason, master bugfinder<BR> 
 January 29, 2021 - Version 020 - Minor fix to Pi shutdown<BR> 
 December 14, 2020 - Version 019 - Added AQI Dust Sensor Detection<BR> 
@@ -24,6 +39,5 @@ https://shop.switchdoc.com/products/16gb-sd-card-with-stretch-smart-garden-syste
 
 
 
-We will be providing a installation guide to the software on a standard BUSTER image in the future, but not a step-by-step guide.  The open source Python software library mantainers change install instructions frequently.
 
 

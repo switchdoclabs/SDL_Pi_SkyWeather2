@@ -146,6 +146,43 @@ def WUnits():
 
 
 
+def getWSAQIs():
+    
+    #read AQI from WeatherSense
+
+    if (config.enable_MySQL_Logging == True):
+        # open mysql database
+        # write log
+        # commit
+        # close
+        try:
+            con = mdb.connect(
+                "localhost",
+                "root",
+                config.MySQL_Password,
+                "WeatherSenseWireless"
+            )
+            cur = con.cursor()
+
+            query = "SELECT timestamp, AQI, AQI24Hour FROM AQI433MHZ ORDER BY timestamp DESC LIMIT 1;"
+            cur.execute(query)
+            
+            myAQIRecords = cur.fetchall()
+            if (len(myAQIRecords) > 0):
+                return myAQIRecords[0][1], myAQIRecords[0][2]
+            else:
+                return 0.0, 0.0
+
+        except mdb.Error as e:
+            traceback.print_exc()
+            print("Error %d: %s" % (e.args[0], e.args[1]))
+            # sys.exit(1)
+
+
+    return 0.0, 0.0
+
+
+
 
 def generateCurrentWeatherJSON():
         try:
@@ -333,9 +370,13 @@ def generateCurrentWeatherJSON():
                 CWJSON["AQIUnits"] = ""
                 CWJSON["AQI24AverageUnits"] = ""
                 CWJSON["WindDirectionUnits"] = "deg"
-
-
                 
+                # adjust for WS AQI
+                if(config.USEWSAQI):
+                    myAQI = getWSAQIs()
+                    CWJSON["AQI24Average"] = myAQI[1] 
+                    CWJSON["AQI"] = myAQI[0]
+
 
                 return CWJSON
         except: 
@@ -608,6 +649,32 @@ def buildOutdoorTemperature_Humidity_Graph():
 
 def fetchAQI(timeDelta):
 
+    if (config.USEWSAQI):
+        try:
+                #print("trying database")
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                cur = con.cursor()
+                now = datetime.datetime.now()
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                query = "SELECT AQI, AQI24Hour, timestamp FROM `AQI433MHZ` WHERE (timestamp > '%s') ORDER BY id ASC" % (before)
+                #print("query=", query)
+                cur.execute(query)
+                con.commit()
+                records = cur.fetchall()
+                #print ("Query records=", records)
+                return records
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+        finally:
+                cur.close()
+                con.close()
+
+    else:
         try:
                 #print("trying database")
                 con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
@@ -814,6 +881,8 @@ def buildSunlight_UVIndex_Graph():
     return graph
 
 ################################
+
+# WS AQI Select Functions
 
 
 
@@ -1029,7 +1098,6 @@ def WeatherPage():
 
 
 CWJSON = generateCurrentWeatherJSON()
-
 
 
 

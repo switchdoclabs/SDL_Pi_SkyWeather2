@@ -126,7 +126,7 @@ def get60MinuteRain():
                 before = before.strftime('%Y-%m-%d %H:%M:%S')
                 # 60 minute
                 query = "SELECT id, TotalRain, TimeStamp FROM WeatherData WHERE TimeStamp > '%s' ORDER by id ASC" % before
-                print("query=", query)
+                #print("query=", query)
                 cur.execute(query)
                 rainspanrecords = cur.fetchall()
                 rainspan = 0.0

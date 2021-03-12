@@ -89,6 +89,8 @@ def processFT020T(sLine, lastFT020TTimeStamp ):
 
         return ""
 
+    lastFT020TTimeStamp = var["time"]
+
     if (config.MQTT_Enable == True):
         mqtt_publish_single(sLine, "FT020T")
 

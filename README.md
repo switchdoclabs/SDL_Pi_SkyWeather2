@@ -2,6 +2,7 @@
 SkyWeather2
 SwitchDoc Labs
 
+March 12, 2021 - Version 024 - minor fixes, update on README.md for rtl_433<BR>
 March 7, 2021 - Version 023 - Major Update: New WeatherSense devices added<BR>
 WeatherSense Air Quality <BR>
 WeatherSense Lightning<BR>
@@ -15,6 +16,17 @@ cd SDL_Pi_SkyWeather2
 git pull
 sudo mysql -u root -p < WeatherSenseWireless.sql 
 </pre>
+Remember to go to your rtl_433 directory and do the following to update rtl_433:<BR>
+
+cd rtl_433/<BR>
+mkdir build<BR>
+cd build<BR>
+cmake ..<BR>
+make clean <BR>
+make<BR>
+sudo make install<BR>
+
+
 
 <BR>
 February 15, 2021 - Version 022 - Minor Bug Fixes<BR>

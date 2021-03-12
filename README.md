@@ -16,6 +16,8 @@ cd SDL_Pi_SkyWeather2
 git pull
 sudo mysql -u root -p < WeatherSenseWireless.sql 
 </pre>
+(the password that is asked from the mysql command is your mysql root password, by default "password")<BR>
+
 Remember to go to your rtl_433 directory and do the following to update rtl_433:<BR>
 
 cd rtl_433/<BR>

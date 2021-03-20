@@ -16,6 +16,8 @@ import traceback
 import sys
 import psutil
 
+from gpiozero import CPUTemperature
+
 # imports
 sys.path.append("../")
 
@@ -388,8 +390,17 @@ def StatusPage():
                         max = 100,
                         min = 0,
                         ),
-
-
+                    daq.Gauge(
+                        id = {'type' : 'SPGdynamic', 'GaugeType' :'pi-cpu'},
+                        label="Pi CPU Temp",
+                        value=0,
+                        showCurrentValue=True,
+                        units="C",
+                        size=190,
+                        color={"gradient":True,"ranges":{"green":[0,55],"yellow":[55,80],"red":[80,100]}},
+                        max = 100,
+                        min = 0,
+                        )
                 ],
 		no_gutters=True,
 
@@ -458,11 +469,17 @@ def updateGauges(id):
         myValue = psutil.cpu_percent()
         return myValue
 
-
     # update Pi Memory usage
     if (id['GaugeType'] == "pi-memory"):
     	myValue = psutil.virtual_memory().percent
     	return myValue
+
+    # update Pi cpu temp
+    if (id['GaugeType'] == "pi-cpu"):
+        print("cpu temp=",int(CPUTemperature().temperature))
+        myValue = int(CPUTemperature().temperature)
+        return myValue
+
 
 def updateIndicators(id):    # update indicators
 

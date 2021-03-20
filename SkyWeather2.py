@@ -317,10 +317,12 @@ if (config.USEWSAQI):
    
 
 # weather sensors
+# TEC changed to 5 minute intervals
+# TODO externalize
+scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=5*60)
+#scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=15*60)
 
-#scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=3*60)
-scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=15*60)
-
+#scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=5*60)
 scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=15*60)
 
         

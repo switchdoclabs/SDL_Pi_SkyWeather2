@@ -206,6 +206,9 @@ def update_gauges(n_intervals, id, value):
         myName = "Pi Memory Usage" 
      if (id['GaugeType'] == 'pi-loading'):
         myName = "Pi CPU Loading" 
+     if (id['GaugeType'] == 'pi-cpu'):
+        myName = "Pi CPU Temp"
+
      #print("<status_page Gauge Update complete",id['GaugeType'])
 
      return newValue, myName 

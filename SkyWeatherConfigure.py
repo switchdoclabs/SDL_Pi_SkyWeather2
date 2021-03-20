@@ -1161,7 +1161,8 @@ class SkyWeatherConfigure(App):
         self.mainContainer.append(version)
         self.mainContainer.append(cancel)
         self.mainContainer.append(save)
-        self.mainContainer.append(exit)
+        # TEC comment out for svc use
+        # self.mainContainer.append(exit)
         self.mainContainer.append(reset)
 
 

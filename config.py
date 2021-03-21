@@ -77,6 +77,9 @@ MQTT_Server_URL = None
 MQTT_Port_Number = None
 MQTT_Send_Seconds = None
 English_Metric = None
+# TEC
+# how often to record weathee data, in minutes
+Record_Weather_Frequency = None
 
 import readJSON
 

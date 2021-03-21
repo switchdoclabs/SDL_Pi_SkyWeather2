@@ -43,8 +43,10 @@ def setDefaults():
         config.MQTT_Port_Number = 1883 
         config.MQTT_Send_Seconds = 500 
         config.English_Metric = False 
-       
-       
+
+        # TEC
+        config.Record_Weather_frequency = 15
+
 
 def getJSONValue(entry):
         try:
@@ -106,6 +108,7 @@ def readJSON(addPath):
                 config.MQTT_Port_Number = int(getJSONValue('MQTT_Port_Number'))
                 config.MQTT_Send_Seconds = int(getJSONValue('MQTT_Send_Seconds'))
                 config.English_Metric = getJSONValue('English_Metric')
+                config.Record_Weather_Frequency = getJSONValue('Record_Weather_Frequency');
 
         else:
             print ("SkyWeather2.JSON File does not exist")

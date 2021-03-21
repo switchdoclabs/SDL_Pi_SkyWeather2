@@ -268,6 +268,8 @@ class SkyWeatherConfigure(App):
         self.MQTT_Port_Number = 1883 
         self.MQTT_Send_Seconds = 500 
         self.English_Metric = False
+	
+        self.Record_Weather_Frequency = 15
        
        
         self.dataDefaults = {} 
@@ -314,6 +316,8 @@ class SkyWeatherConfigure(App):
         self.dataDefaults['MQTT_Send_Seconds'] = self.MQTT_Send_Seconds 
         self.dataDefaults['English_Metric'] = self.English_Metric 
 
+        self.dataDefaults['Record_Weather_Frequency'] = self.Record_Weather_Frequency
+    
     def getJSONValue(self, entry):
         try:
             returnData = self.JSONData[entry]
@@ -375,6 +379,8 @@ class SkyWeatherConfigure(App):
                 self.MQTT_Port_Number = self.getJSONValue('MQTT_Port_Number')
                 self.MQTT_Send_Seconds = self.getJSONValue('MQTT_Send_Seconds')
                 self.English_Metric = self.getJSONValue('English_Metric')
+                
+                self.Record_Weather_Frequency = self.getJSONValue('Record_Weather_Frequency')
 
         else:
             print ("SkyWeather2.JSON File does not exist")
@@ -434,6 +440,9 @@ class SkyWeatherConfigure(App):
         data['MQTT_Send_Seconds'] = self.F_MQTT_Send_Seconds.get_value()
         data['English_Metric'] = self.F_English_Metric.get_value()
 
+        data['Record_Weather_Frequency'] = self.F_Record_Weather_Frequency.get_value()
+
+        
         json_data = json.dumps(data)        
         
         with open('SkyWeather2.JSON', 'w') as outfile:
@@ -500,11 +509,18 @@ class SkyWeatherConfigure(App):
         vbox.append(self.F_enable_MySQL_Logging,'enable_MySQL_Logging') 
 
         plabel = gui.Label("MySQL Password", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
-        vbox.append(plabel,'plabel') 
+        vbox.append(plabel,'mplabel') 
         
         self.F_MySQL_Password = gui.TextInput(width=300, height=30, style="margin:5px")
         self.F_MySQL_Password.set_value(self.MySQL_Password)
         vbox.append(self.F_MySQL_Password,'MySQLPassword') 
+
+        plabel = gui.Label("Weather Data Record Frequency (minutes)", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
+        vbox.append(plabel,'flabel')
+
+        self.F_Record_Weather_Frequency = gui.TextInput(width=30, height=30, style="margin:5px")
+        self.F_Record_Weather_Frequency.set_value(str(self.Record_Weather_Frequency))
+        vbox.append(self.F_Record_Weather_Frequency,'RecordWeatherFrequency')
         
         #WLAN Configuration 
         WLheader = gui.Label("WLAN Check in SkyWeather2 ", style=self.headerstyle)

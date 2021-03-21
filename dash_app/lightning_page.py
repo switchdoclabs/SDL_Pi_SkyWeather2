@@ -30,7 +30,7 @@ def updateLightningLines():
 
     con = mdb.connect(
         "localhost",
-        "root",
+        config.MySQL_User,
         config.MySQL_Password,
         "WeatherSenseWireless"
     )
@@ -123,7 +123,7 @@ def updateLightningLines():
 def build_graphLightning_figure():
     con = mdb.connect(
         "localhost",
-        "root",
+        config.MySQL_User,
         config.MySQL_Password,
         "WeatherSenseWireless"
     )

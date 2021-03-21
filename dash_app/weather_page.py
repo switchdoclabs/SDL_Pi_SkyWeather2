@@ -158,7 +158,7 @@ def getWSAQIs():
         try:
             con = mdb.connect(
                 "localhost",
-                "root",
+                config.MySQL_User,
                 config.MySQL_Password,
                 "WeatherSenseWireless"
             )
@@ -186,7 +186,7 @@ def getWSAQIs():
 
 def generateCurrentWeatherJSON():
         try:
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = mdb.connect('localhost', config.MySQL_User, config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 query = "SELECT * FROM `WeatherData` ORDER BY id DESC LIMIT 1" 
                 #print("query=", query)
@@ -394,7 +394,7 @@ def generateCurrentWeatherJSON():
 def fetchWindData(timeDelta):
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = mdb.connect('localhost', config.MySQL_Password, config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -536,7 +536,7 @@ def fetchOTH(timeDelta):
 
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = mdb.connect('localhost', config.MySQL_User, config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -652,7 +652,7 @@ def fetchAQI(timeDelta):
     if (config.USEWSAQI):
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                con = mdb.connect('localhost', config.MySQL_User, config.MySQL_Password, 'WeatherSenseWireless');
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -677,7 +677,7 @@ def fetchAQI(timeDelta):
     else:
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = mdb.connect('localhost', config.MySQL_User, config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -784,7 +784,7 @@ def fetchSUV(timeDelta):
 
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = mdb.connect('localhost', config.MySQL_User, config.MySQL_Password, 'SkyWeather2');
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta

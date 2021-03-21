@@ -18,7 +18,7 @@ import config
 def build_graphAQI_figure():
     con = mdb.connect(
         "localhost", 
-        "root",
+        config.MySQL_User,
         config.MySQL_Password,
         "WeatherSenseWireless" 
     )
@@ -48,7 +48,7 @@ def build_graphAQI_figure():
 def build_graph1_figure():
     con = mdb.connect(
         "localhost", 
-        "root",
+        config.MySQL_User,
         config.MySQL_Password,
         "WeatherSenseWireless" 
     )
@@ -83,7 +83,7 @@ def build_graph1_figure():
 def build_graph2_figure():
     con = mdb.connect(
         "localhost", 
-        "root",
+        config.MySQL_User,
         config.MySQL_Password,
         "WeatherSenseWireless" 
 

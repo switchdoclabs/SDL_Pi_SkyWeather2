@@ -78,7 +78,7 @@ try:
 
     con = mdb.connect(
           "localhost",
-          "root",
+          config.MySQL_User,
           config.MySQL_Password,
           "SkyWeather2"
           )
@@ -98,7 +98,7 @@ try:
 
     con = mdb.connect(
           "localhost",
-          "root",
+          config.MySQL_User,
           config.MySQL_Password,
           "WeatherSenseWireless"
           )

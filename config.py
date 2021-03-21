@@ -80,6 +80,8 @@ English_Metric = None
 # TEC
 # how often to record weathee data, in minutes
 Record_Weather_Frequency = None
+# use other than root user
+MySQL_User = None
 
 import readJSON
 

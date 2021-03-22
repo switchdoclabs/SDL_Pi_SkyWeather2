@@ -76,12 +76,7 @@ import MySQLdb as mdb
 # SkyWeather2 SQL Database
 try:
 
-    con = mdb.connect(
-          "localhost",
-          config.MySQL_User,
-          config.MySQL_Password,
-          "SkyWeather2"
-          )
+    con = util.getSkyWeatherConnection()      
 
 except:
     print("--------")
@@ -96,12 +91,7 @@ except:
 # WeatherSense SQL Database
 try:
 
-    con = mdb.connect(
-          "localhost",
-          config.MySQL_User,
-          config.MySQL_Password,
-          "WeatherSenseWireless"
-          )
+     con = util.getWeatherSenseConnection()      
 
 except:
     print("--------")

@@ -168,4 +168,12 @@ def returnPercentLeftInBattery(currentVoltage, maxVolt):
         return 0
 
 
+# TEC centralize connection creation
+import MySQLdb as mdb
+
+def getSkyWeatherConnection():
+    return mdb.connect('localhost', config.MySQL_User, config.MySQL_Password, config.SCHEMA_SKYWEATHER)
+
+def getWeatherSenseConnection():
+    return mdb.connect('localhost', config.MySQL_User, config.MySQL_Password, config.SCHEMA_WEATHERSENSE_WIRELESS)
 

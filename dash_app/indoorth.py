@@ -23,8 +23,7 @@ import state
 import config
 import readJSON
 import json
-
-
+import util
 
 # read JSON
 
@@ -61,7 +60,7 @@ def generateTHData(timeDelta):
 
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', config.MySQL_User, config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta

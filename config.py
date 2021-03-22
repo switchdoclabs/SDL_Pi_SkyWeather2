@@ -83,6 +83,13 @@ Record_Weather_Frequency = None
 # use other than root user
 MySQL_User = None
 
+########
+# DB Schemas
+########
+
+SCHEMA_SKYWEATHER = "SkyWeather2"
+SCHEMA_WEATHERSENSE_WIRELESS = "WeatherSenseWireless"
+
 import readJSON
 
 # JSON read in files
@@ -90,10 +97,6 @@ import readJSON
 # read JSON and put it it into the config variables
 
 readJSON.readJSON('./')
-
-
-
-
 
 ########
 #Logging
@@ -106,3 +109,12 @@ INFO=20
 JSON=15
 DEBUG=10
 NOTSET=0
+
+# TEC centralize connection creation
+import MySQLdb as mdb
+
+def getSkyWeatherConnection():
+    return mdb.connect('localhost', MySQL_User, MySQL_Password, SCHEMA_SKYWEATHER)
+
+def getWeatherSenceConnection():
+    return mdb.connect('localhost', MySQL_User, MySQL_Password, SCHEMA_WEATHERSENCE_WIRELESS)

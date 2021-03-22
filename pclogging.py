@@ -15,7 +15,7 @@ import time
 import datetime
 # Check for user imports
 import config
-
+import util
 import state
 import updateBlynk
 import MySQLdb as mdb
@@ -44,7 +44,7 @@ def systemlog(level,  message):
                         updateBlynk.blynkTerminalUpdate(message) 
                     pass
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
                 #print("before query")
                 query = "INSERT INTO SystemLog(TimeStamp, Level, SystemText ) VALUES(LOCALTIMESTAMP(), %i, '%s')" % (level, message)
@@ -79,7 +79,7 @@ def readLastHour24AQI():
                 # first calculate the 24 hour moving average for AQI
                 
                 print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
 
                 query = "SELECT id, AQI24Average FROM WeatherData ORDER BY id DESC Limit 1" 
@@ -118,7 +118,7 @@ def get60MinuteRain():
 
            
                 
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
                 timeDelta = datetime.timedelta(minutes=60)
                 now = datetime.datetime.now()
@@ -154,7 +154,7 @@ def getCalendarDayRain():
 
            
                 
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
                 # calendar day rain
                 query = "SELECT id, TotalRain, TimeStamp FROM WeatherData WHERE DATE(TimeStamp) = CURDATE() ORDER by id ASC"
@@ -192,7 +192,7 @@ def writeWeatherRecord():
                 # first calculate the 24 hour moving average for AQI
                 
                 print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
 
                 timeDelta = datetime.timedelta(days=1)
@@ -245,7 +245,7 @@ def writeITWeatherRecord():
         try:
 
                 print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
 
 

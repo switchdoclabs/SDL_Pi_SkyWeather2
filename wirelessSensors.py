@@ -17,6 +17,7 @@ import buildJSON
 import state
 import indoorTH
 import pclogging
+import util
 
 import time
 import os
@@ -247,12 +248,7 @@ def processWeatherSenseTB(sLine):
             myTEST = ""
             myTESTDescription = ""
 
-            con = mdb.connect(
-                "localhost",
-                "root",
-                config.MySQL_Password,
-                "WeatherSenseWireless"
-            )
+            con = util.getWeatherSenseConnection()      
 
             cur = con.cursor()
             batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])/1000.0
@@ -309,12 +305,7 @@ def processWeatherSenseAQI(sLine):
             myTEST = ""
             myTESTDescription = ""
 
-            con = mdb.connect(
-                "localhost",
-                "root",
-                config.MySQL_Password,
-                "WeatherSenseWireless"
-            )
+            con = util.getWeatherSenseConnection()      
 
             cur = con.cursor()
             batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])/1000.0
@@ -374,12 +365,7 @@ def WSread_AQI():
         # commit
         # close
         try:
-            con = mdb.connect(
-                "localhost",
-                "root",
-                config.MySQL_Password,
-                "WeatherSenseWireless"
-            )
+            con = util.getWeatherSenseConnection()      
             cur = con.cursor()
 
             query = "SELECT timestamp, AQI, AQI24Hour FROM AQI433MHZ ORDER BY timestamp DESC LIMIT 1;"
@@ -425,12 +411,7 @@ def processSolarMAX(sLine):
                 myTEST = ""
                 myTESTDescription = ""
 
-                con = mdb.connect(
-                    "localhost",
-                    "root",
-                    config.MySQL_Password,
-                    "WeatherSenseWireless"
-                )
+                con = util.getWeatherSenseConnection()      
 
                 cur = con.cursor()
                 batteryPower =  float(myState["batterycurrent"])* float(myState["batteryvoltage"])/1000.0

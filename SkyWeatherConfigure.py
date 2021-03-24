@@ -1178,8 +1178,8 @@ class SkyWeatherConfigure(App):
         cancel.onclick.do(self.onCancel)
         save = gui.Button('Save',style='position:absolute; left:400px; height: 30px; width:100px;  margin: 10px;  top:5px')
         save.onclick.do(self.onSave)
-        exit = gui.Button('Save and Exit',style='position:absolute; left:475px; height: 30px; width:100px;  margin: 10px;  top:95px')
-        exit.onclick.do(self.onExit)
+        restart = gui.Button('Save and Restart',style='position:absolute; left:475px; height: 30px; width:100px;  margin: 10px;  top:95px')
+        restart.onclick.do(self.onRestart)
         reset = gui.Button('Reset to Defaults',style='position:absolute; left:400px;height: 30px;   width:250px; margin: 10px; top:50px')
         reset.onclick.do(self.onReset)
         # appending a widget to another
@@ -1188,8 +1188,7 @@ class SkyWeatherConfigure(App):
         self.mainContainer.append(version)
         self.mainContainer.append(cancel)
         self.mainContainer.append(save)
-        # TEC comment out for svc use
-        # self.mainContainer.append(exit)
+        self.mainContainer.append(restart)
         self.mainContainer.append(reset)
 
 
@@ -1288,14 +1287,13 @@ class SkyWeatherConfigure(App):
         print("server stopped") 
         exit()
         
-    def onExit(self, widget, name='', surname=''):
-        # save and exit
-        print("onSaveExit clicked")
+    def onRestart(self, widget, name='', surname=''):
+        # save and restart the SkyWeather service
+        print("onSaveRestart clicked")
         self.saveJSON()
-        self.server.server_starter_instance._alive = False
-        self.server.server_starter_instance._sserver.shutdown()
-        print("server stopped") 
-        exit()
+        print("restarting skyWeather service")
+        # TODO should command be externalized? 
+        os.system("sudo systemctl start skyweather.service")
 
     def onReset(self, widget, name='', surname=''):
         print("Reset clicked")
@@ -1322,28 +1320,12 @@ class SkyWeatherConfigure(App):
 
 
 #Configuration
-configuration = {
-    'config_enable_file_cache': True, 
-    'config_multiple_instance': True, 
-    'config_port': 8001, 
-    'config_address': '0.0.0.0', 
-    'config_start_browser': False, 
-    'config_project_name': 'untitled', 
-    'config_resourcepath': './res/',
-    'config_username': 'weather',
-    'config_password': 'weather'
-    }
+configuration = {'config_enable_file_cache': True, 'config_multiple_instance': True, 'config_port': 8001, 'config_address': '0.0.0.0', 'config_start_browser': False, 'config_project_name': 'untitled', 'config_resourcepath': './res/'}
 
 # starts the web server
 #start(SkyWeatherConfigure, address='0.0.0.0', port=8001)
 
-start(SkyWeatherConfigure, 
-    address=configuration['config_address'], 
-    port=configuration['config_port'],
-    multiple_instance=configuration['config_multiple_instance'],
-    enable_file_cache=configuration['config_enable_file_cache'],
-    start_browser=configuration['config_start_browser'],
-    username=configuration['config_username'],
-    password=configuration['config_password'],
-    )
-
+start(SkyWeatherConfigure, address=configuration['config_address'], port=configuration['config_port'],
+                        multiple_instance=configuration['config_multiple_instance'],
+                        enable_file_cache=configuration['config_enable_file_cache'],
+                        start_browser=configuration['config_start_browser'])

@@ -44,6 +44,9 @@ import os
 # print out faults inside events
 def ap_my_listener(event):
         if event.exception:
+            try:
+                pclogging.errorlog(event.exception, event.traceback) 
+            except:     
               print (event.exception)
               print (event.traceback)
 

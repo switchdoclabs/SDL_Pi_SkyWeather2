@@ -65,6 +65,29 @@ def systemlog(level,  message):
                 del con
 
 
+def errorlog(message, stacktrace):
+
+        try:
+                #print("trying database")
+                con = util.getSkyWeatherConnection()
+                cur = con.cursor()
+                #print("before query")
+                query = "INSERT INTO error_log(error) VALUES('%s')" % (message + '\n' + stacktrace)
+                #print("query=%s" % query)
+                cur.execute(query)
+                con.commit()
+
+
+        except: 
+                traceback.print_exc()
+                con.rollback()
+                #sys.exit(1)
+        finally:
+                cur.close()
+                con.close()
+
+                del cur
+                del con
 
 
 def readLastHour24AQI():

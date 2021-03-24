@@ -1322,13 +1322,28 @@ class SkyWeatherConfigure(App):
 
 
 #Configuration
-configuration = {'config_enable_file_cache': True, 'config_multiple_instance': True, 'config_port': 8001, 'config_address': '0.0.0.0', 'config_start_browser': False, 'config_project_name': 'untitled', 'config_resourcepath': './res/'}
+configuration = {
+    'config_enable_file_cache': True, 
+    'config_multiple_instance': True, 
+    'config_port': 8001, 
+    'config_address': '0.0.0.0', 
+    'config_start_browser': False, 
+    'config_project_name': 'untitled', 
+    'config_resourcepath': './res/',
+    'config_username': 'weather',
+    'config_password': 'weather'
+    }
 
 # starts the web server
 #start(SkyWeatherConfigure, address='0.0.0.0', port=8001)
 
-start(SkyWeatherConfigure, address=configuration['config_address'], port=configuration['config_port'],
-                        multiple_instance=configuration['config_multiple_instance'],
-                        enable_file_cache=configuration['config_enable_file_cache'],
-                        start_browser=configuration['config_start_browser'])
+start(SkyWeatherConfigure, 
+    address=configuration['config_address'], 
+    port=configuration['config_port'],
+    multiple_instance=configuration['config_multiple_instance'],
+    enable_file_cache=configuration['config_enable_file_cache'],
+    start_browser=configuration['config_start_browser'],
+    username=configuration['config_username'],
+    password=configuration['config_password'],
+    )
 

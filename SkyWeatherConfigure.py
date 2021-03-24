@@ -1293,7 +1293,7 @@ class SkyWeatherConfigure(App):
         self.saveJSON()
         print("restarting skyWeather service")
         # TODO should command be externalized? 
-        os.system("sudo systemctl start skyweather.service")
+        os.system("sudo systemctl restart skyweather.service")
 
     def onReset(self, widget, name='', surname=''):
         print("Reset clicked")

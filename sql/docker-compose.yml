@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+
+  db:
+    # current pi version from apt 
+    image: mariadb:10.3.27
+    volumes:
+      - ./mariadb/:/var/lib/mariadb/
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: SkyWeather2
+      MYSQL_USER: weather
+      MYSQL_PASSWORD: weather
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent", "--password=root"]
+      interval: 1m30s
+      timeout: 60s
+      retries: 6

@@ -72,12 +72,10 @@ def errorlog(message, stacktrace):
                 con = util.getSkyWeatherConnection()
                 cur = con.cursor()
                 #print("before query")
-                query = "INSERT INTO error_log(error) VALUES('%s')" % (message + '\n' + stacktrace)
+                query = "INSERT INTO error_log (message, error) VALUES (%s, %s)"
                 #print("query=%s" % query)
-                cur.execute(query)
+                cur.execute(query, (message, stacktrace,))
                 con.commit()
-
-
         except: 
                 traceback.print_exc()
                 con.rollback()
@@ -198,6 +196,9 @@ def getCalendarDayRain():
  return 0.0 
 
 def writeWeatherRecord():
+ if (config.SWDEBUG):
+        systemlog(config.INFO,"--->recording weather<---")
+ 
  Rain24Hour = getCalendarDayRain()
  print("Rain24Hour=", Rain24Hour)
  WeatherUnderground.sendWeatherUndergroundData(Rain24Hour)
@@ -259,7 +260,9 @@ def writeWeatherRecord():
 
 
 def writeITWeatherRecord():
-
+ if (config.SWDEBUG):
+         systemlog(config.INFO,"--->recording indoor metrics<---")
+ 
  if (config.enable_MySQL_Logging == True):	
 	# open mysql database
 	# write log

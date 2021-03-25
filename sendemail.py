@@ -6,6 +6,7 @@ def sendEmail(source, message, subject, toaddress, fromaddress, filename):
 
 	# Check for user imports
         import config
+        import pclogging
 
 	# Import smtplib for the actual sending function
         import smtplib
@@ -41,6 +42,8 @@ def sendEmail(source, message, subject, toaddress, fromaddress, filename):
 	# Send the email via our own SMTP server.
 
         try:
+            if (config.SWDEBUG):
+                pclogging.systemlog(config.INFO, "--->sending mail<---")    
             # open up a line with the server
             s = smtplib.SMTP("smtp.gmail.com", 587)
             s.ehlo()
@@ -56,10 +59,11 @@ def sendEmail(source, message, subject, toaddress, fromaddress, filename):
             s.quit()
 
         except:
-            if (config.SWDEBUG):
-                 pass
-                 print (traceback.format_exc())
-                 print("sendmail exception raised")
+                try:
+                        pclogging.errorlog("smtp failed", traceback.format_exc()) 
+                except:     
+                        print(traceback.format_exc()) 
+                        print ("--------------------")
+                        print ("SkyCam Picture Failed")
+                        print ("--------------------")
         return 0
-
-

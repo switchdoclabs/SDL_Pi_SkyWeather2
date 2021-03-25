@@ -27,12 +27,13 @@ def SkyWeatherKeyGeneration(userKey):
     return md5result.hexdigest()
 
 def takeSkyPicture():
-    pclogging.systemlog(config.INFO, "taking pic")
-
+ 
     if (config.SWDEBUG):
+        pclogging.systemlog(config.INFO, "--->skyCamera taking pic<---")
         print ("--------------------")
         print ("SkyCam Picture Taken")
         print ("--------------------")
+    
     camera = picamera.PiCamera()
 
     camera.exposure_mode = "auto"

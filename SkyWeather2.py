@@ -121,18 +121,18 @@ if (config.SWDEBUG):
     print("Starting pigpio daemon")
 
 # kill all pigpio instances
-try:
-    cmd = [ 'killall', 'pigpiod' ]
-    output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    print(output)
-    time.sleep(5)
-except:
+#try:
+#    cmd = [ 'killall', 'pigpiod' ]
+#    output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+#    print(output)
+#    time.sleep(5)
+#except:
     #print(traceback.format_exc())
-    pass
+#    pass
 
-cmd = [ '/usr/bin/pigpiod' ]
-output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-print(output)
+#cmd = [ '/usr/bin/pigpiod' ]
+#output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+#print(output)
 import DustSensor
 
 # detect devices

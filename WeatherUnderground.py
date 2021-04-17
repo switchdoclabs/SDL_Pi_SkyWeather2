@@ -1,4 +1,4 @@
-#
+
 # Send SkyWeather2 Information to the WeatherUnderground
 #
 # SwitchDoc Labs March, 2021
@@ -29,8 +29,8 @@ def sendWeatherUndergroundData(Rain24Hour):
         
             myURL += "&winddir=%i" % state.WindDirection
         
-            myURL += "&windspeedmph=%0.2f" % (state.WindSpeed/1.6)
-            myURL += "&windgustmph=%0.2f" % (state.WindGust/1.6)
+            myURL += "&windspeedmph=%0.2f" % (state.WindSpeed/0.447704)
+            myURL += "&windgustmph=%0.2f" % (state.WindGust/0.447704)
         
             myURL += "&humidity=%i" % state.OutdoorHumidity
             myURL += "&tempf=%0.2f" % ((state.OutdoorTemperature*9.0/5.0)+32.0)

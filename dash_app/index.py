@@ -114,7 +114,8 @@ def display_page(pathname):
     #    raise PreventUpdate	
     previousPathname = pathname
     
-    myLayout = NotImplPage()
+    #myLayout = NotImplPage()
+    myLayout = status_page.StatusPage() 
     myLayout2 = ""
     if pathname == '/status_page':
         myLayout = status_page.StatusPage() 
@@ -183,6 +184,15 @@ def logpageupdate(n_intervals, id, value):
 ##################
 # Status Page
 ##################
+@app.callback(Output({'type' : 'VSPdynamic', 'index' : MATCH }, 'color' ),
+              [Input('main-interval-component','n_intervals'),
+              Input({'type' : 'VSPdynamic', 'index' : MATCH }, 'id' )],
+              [State({'type' : 'VSPdynamic', 'index' : MATCH}, 'color'  )]
+              )
+
+def update_indicators(n_intervals, id, color):
+   if (True): # 1 minutes -10 second timer
+    return status_page.returnPiThrottledColor(id) 
 
 @app.callback(
 	      [
@@ -206,6 +216,8 @@ def update_gauges(n_intervals, id, value):
         myName = "Pi Memory Usage" 
      if (id['GaugeType'] == 'pi-loading'):
         myName = "Pi CPU Loading" 
+     if (id['GaugeType'] == 'pi-temp'):
+        myName = "Pi CPU Temperature(C)" 
      #print("<status_page Gauge Update complete",id['GaugeType'])
 
      return newValue, myName 

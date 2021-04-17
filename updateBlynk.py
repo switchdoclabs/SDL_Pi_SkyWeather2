@@ -277,7 +277,7 @@ def blynkStateUpdate():
 
         #barometric Pressure 
         if (config.English_Metric == 1):
-            tval = "{0:0.2f}hPa".format(state.BarometricPressureSeaLevel) 
+            tval = "{0:0.2f}hPa".format(state.BarometricPressureSeaLevel*10.0)
         else:
             tval = "{0:0.2f}in".format((state.BarometricPressureSeaLevel * 0.2953)) 
         put_body = json.dumps([tval])

@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "024"
+config.SWVERSION = "025"
 # system imports
 
 import time
@@ -73,44 +73,69 @@ import MySQLdb as mdb
 
 # Program Requirement Checking
 
-# SkyWeather2 SQL Database
-try:
+if (config.enable_MySQL_Logging):
+    # SkyWeather2 SQL Database
 
-    con = mdb.connect(
+    try:
+
+        con = mdb.connect(
           "localhost",
           "root",
           config.MySQL_Password,
           "SkyWeather2"
           )
 
-except:
-    print("--------")
-    print("MySQL Database SkyWeather2 Not Installed.")
-    print("Run this command:")
-    print("sudo mysql -u root -p < SkyWeather2.sql")
-    print("SkyWeather2 Stopped")
-    print("--------")
-    sys.exit("SkyWeather2 Requirements Error Exit")
+    except:
+        print("--------")
+        print("MySQL Database SkyWeather2 Not Installed.")
+        print("Run this command:")
+        print("sudo mysql -u root -p < SkyWeather2.sql")
+        print("SkyWeather2 Stopped")
+        print("--------")
+        sys.exit("SkyWeather2 Requirements Error Exit")
 
 
-# WeatherSense SQL Database
-try:
 
-    con = mdb.connect(
+    # WeatherSense SQL Database
+    try:
+
+        con = mdb.connect(
           "localhost",
           "root",
           config.MySQL_Password,
           "WeatherSenseWireless"
           )
 
-except:
-    print("--------")
-    print("MySQL Database WeatherSenseWireless Not Installed.")
-    print("Run this command:")
-    print("sudo mysql -u root -p < WeatherSenseWireless.sql")
-    print("SkyWeather2 Stopped")
-    print("--------")
-    sys.exit("SkyWeather2 Requirements Error Exit")
+    except:
+        print("--------")
+        print("MySQL Database WeatherSenseWireless Not Installed.")
+        print("Run this command:")
+        print("sudo mysql -u root -p < WeatherSenseWireless.sql")
+        print("SkyWeather2 Stopped")
+        print("--------")
+        sys.exit("SkyWeather2 Requirements Error Exit")
+
+    # Check for updates having been applied
+    try:
+
+        con = mdb.connect(
+          "localhost",
+          "root",
+          config.MySQL_Password,
+          "WeatherSenseWireless"
+          )
+        cur = con.cursor()
+        query = "SELECT * FROM AS433MHZ"
+        cur.execute(query)
+    except:
+        #print(traceback.format_exc())
+        print("--------")
+        print("MySQL Database WeatherSenseWireless Updates Not Installed.")
+        print("Run this command:")
+        print("sudo mysql -u root -p WeatherSenseWireless < updateWeatherSenseWireless.sql")
+        print("SkyWeather2 Stopped")
+        print("--------")
+        sys.exit("SkyWeather2 Requirements Error Exit")
 
 
 # main program

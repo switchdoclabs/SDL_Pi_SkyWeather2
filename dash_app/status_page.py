@@ -234,7 +234,7 @@ def returnOutdoorIndicator():
         
      myLabelLayout.append(
                     
-                     html.H6("WeatherSense Battery Status (Green=Good, Red=Low, Gray=Off Air)" )
+                     html.H6("WeatherSense Sensor Status (Green=Good, Red=Low, Gray=Off Air)" )
                      ,
 		     )
      
@@ -298,6 +298,237 @@ def returnOutdoorIndicator():
 
 
 
+from vcgencmd import Vcgencmd
+
+#########################
+# vcgencmd get_throttled
+#########################
+ 
+def getPiThrottled():
+ 
+    vcgm = Vcgencmd()
+    thrott_state = vcgm.get_throttled()
+    # print("Get Throttled = ", thrott_state)
+
+    return thrott_state
+
+
+#####################
+#
+#####################
+
+def returnPiThrottledColor(id):
+     piUVDColor   = GREEN
+     piAFCColor   = GREEN
+     piCTColor    = GREEN
+     piSTLAColor  = GREEN
+     piUVHOColor  = GREEN
+     piAFCHOColor = GREEN
+     piSTLHOColor = GREEN
+     piATHOColor  = GREEN
+     piSTLHOColor = GREEN
+ 
+     throttle_states = getPiThrottled()
+     #print ("Throttle tilanne: ", throttle_states)
+
+     for bit in throttle_states['breakdown']:
+         #print("Now: ", bit)
+         if  throttle_states['breakdown'][bit]:
+             #print("State:", throttle_states['breakdown'][bit])
+             if   bit == '0':
+                  piUVDColor = "red"
+             elif bit == '1':
+                  piAFCColor = "red" 
+             elif bit == '2':
+                  piCTColor = "red"
+             elif bit == '3':
+                  piSTLAColor = "red"
+             elif bit == '16':
+                  piUVHOColor = "red"
+             elif bit == '17':
+                  piAFCHOColor = "red"
+             elif bit == '18':
+                  piATHOColor = "red"
+             elif bit == '19': 
+                  piSTLHOColor = "red"
+
+
+     if (id['index'] == 100):
+        return piUVDColor
+     if (id['index'] == 110):
+        return piAFCColor
+     if (id['index'] == 111):
+        return piCTColor
+     if (id['index'] == 112):
+        return piSTLAColor
+     if (id['index'] == 113):
+        return piUVHOColor
+     if (id['index'] == 114):
+        return piAFCHOColor
+     if (id['index'] == 115):
+        return piTHOColor
+     if (id['index'] == 116):
+        return piSTLHOColor
+     return "orange"
+
+#####################
+#
+#####################
+ 
+def returnPiThrottled():
+ 
+     totalLayout = []
+     piLabelLayout = []
+     piIndicatorLayout = []
+ 
+     piUVDColor   = GREEN
+     piAFCColor   = GREEN
+     piCTColor    = GREEN
+     piSTLAColor  = GREEN
+     piUVHOColor  = GREEN
+     piAFCHOColor = GREEN
+     piSTLHOColor = GREEN
+     piATHOColor  = GREEN
+     piSTLHOColor = GREEN
+ 
+     throttle_states = getPiThrottled()
+     #print ("Throttle tilanne: ", throttle_states)
+
+     for bit in throttle_states['breakdown']:
+         #print("Now: ", bit)
+         if  throttle_states['breakdown'][bit]:
+             #print("State:", throttle_states['breakdown'][bit])
+             if   bit == '0':
+                  piUVDColor = "red"
+             elif bit == '1':
+                  piAFCColor = "red" 
+             elif bit == '2':
+                  piCTColor = "red"
+             elif bit == '3':
+                  piSTLAColor = "red"
+             elif bit == '16':
+                  piUVHOColor = "red"
+             elif bit == '17':
+                  piAFCHOColor = "red"
+             elif bit == '18':
+                  piATHOColor = "red"
+             elif bit == '19': 
+                  piSTLHOColor = "red"
+
+     piLabelLayout.append(
+
+                     html.H6(["Pi CPU Throttled Status (Green=Good, Red=Bad)  ", html.A("Info-link", href="https://pypi.org/project/vcgencmd")])
+                     ,
+                     )
+
+     piIndicatorLayout.append(
+            daq.Indicator(
+                        id = {'type' : 'VSPdynamic', 'index': 100},
+                        color = piUVDColor,
+                        label="Under-volted",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+
+     piIndicatorLayout.append(
+            daq.Indicator(
+                        id = {'type' : 'VSPdynamic', 'index': 110},
+                        color = piAFCColor,
+                        label="Capped",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+
+     piIndicatorLayout.append(
+            daq.Indicator(
+                        id = {'type' : 'VSPdynamic', 'index': 111},
+                        color = piCTColor,
+                        label="Throttled",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+
+     piIndicatorLayout.append(
+            daq.Indicator(
+                        id = {'type' : 'VSPdynamic', 'index': 112},
+                        color = piSTLAColor,
+                        label="Soft temp limit",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+
+     piIndicatorLayout.append(
+            daq.Indicator(
+                        id = {'type' : 'VSPdynamic', 'index': 113},
+                        color = piUVHOColor,
+                        label="Has Under-volted",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+
+     piIndicatorLayout.append(
+            daq.Indicator(
+                        id = {'type' : 'VSPdynamic', 'index': 114},
+                        color = piAFCHOColor,
+                        label="Has Capped",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+
+     piIndicatorLayout.append(
+            daq.Indicator(
+                        id = {'type' : 'VSPdynamic', 'index': 115},
+                        color = piATHOColor,
+                        label="Has Throttled",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+
+     piIndicatorLayout.append(
+            daq.Indicator(
+                        id = {'type' : 'VSPdynamic', 'index': 116},
+                        color = piSTLHOColor,
+                        label="Has Soft temp limit",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+
+
+     totalLayout.append(dbc.Row(piLabelLayout))
+     totalLayout.append(dbc.Row(piIndicatorLayout))
+
+     return totalLayout
+
+
+
+
+
+
+
 
 def returnIndoorIndicators():
 
@@ -327,7 +558,9 @@ def returnIndoorIndicators():
                             'margin': '10px'
                         }
                     )
-                    )
+
+            )
+
             
      totalLayout.append(dbc.Row( myLabelLayout))
      totalLayout.append(dbc.Row(myIndicatorLayout))
@@ -373,13 +606,13 @@ def StatusPage():
                         label="Pi Memory Usage",
                         value=0,
                         color={"gradient":True,"ranges":{"green":[0,50],"yellow":[50,85],"red":[85,100]}},
-                        min = 0,
                         max=100,
                         size=190,
                         showCurrentValue=True,
                         units="%",
 
                     ),
+
                     daq.Gauge(
                         id = {'type' : 'SPGdynamic', 'GaugeType' :'pi-disk'},
                         label="Pi Disk Free",
@@ -391,17 +624,20 @@ def StatusPage():
                         max = 100,
                         min = 0,
                         ),
+
                     daq.Gauge(
-                        id = {'type' : 'SPGdynamic', 'GaugeType' :'pi-cpu'},
-                        label="Pi CPU Temp",
+                        id = {'type' : 'SPGdynamic', 'GaugeType' :'pi-temp'},
+                        label="Pi CPU Temperature(C)",
                         value=0,
+                        color={"gradient":True,"ranges":{"green":[0,50],"yellow":[50,85],"red":[85,130]}},
                         showCurrentValue=True,
                         units="C",
                         size=190,
-                        color={"gradient":True,"ranges":{"green":[0,55],"yellow":[55,80],"red":[80,100]}},
-                        max = 100,
+                        max = 130,
                         min = 0,
-                        )
+                    ),
+
+
                 ],
 		no_gutters=True,
 
@@ -427,7 +663,12 @@ def StatusPage():
     )
     OutdoorIndicator = returnOutdoorIndicator()
     IndoorIndicators = returnIndoorIndicators()
-   
+    PiThrottled = returnPiThrottled()
+  
+    Row8 = html.Div(
+        PiThrottled,
+        )
+
     Row6 = html.Div(
         OutdoorIndicator, 
     )
@@ -436,7 +677,7 @@ def StatusPage():
     )
     #layout = dbc.Container([
     layout = dbc.Container([
-        Row1, Row2, Row5, Row3, Row4, Row6, Row7],
+        Row1, Row2, Row5, Row3,html.Br(), Row8,html.Br(), Row4,html.Br(), Row6, html.Br(),Row7],
         className="status-1",
     )
     return layout
@@ -445,6 +686,7 @@ def StatusPage():
 ####
 # Callback functions
 ####
+import gpiozero
 
 def updateGauges(id):
     myValue = 0
@@ -472,8 +714,16 @@ def updateGauges(id):
 
     # update Pi Memory usage
     if (id['GaugeType'] == "pi-memory"):
-    	myValue = psutil.virtual_memory().percent
-    	return myValue
+        myValue = psutil.virtual_memory().percent
+        return myValue
+
+    # update Pi Temperature usage
+    if (id['GaugeType'] == "pi-temp"):
+        cpu = gpiozero.CPUTemperature()
+        CPUTemperature = cpu.temperature
+        myValue = CPUTemperature
+        
+        return myValue
 
     # update Pi cpu temp
     if (id['GaugeType'] == "pi-cpu"):
@@ -495,6 +745,7 @@ def updateIndicators(id):    # update indicators
         color = getWSSolarMAXStatus()
     if ((id['index'] > 0) and (id['index'] < 10)):
         color = getIndoorStatus(id['index'])
+         
     return color
 
         

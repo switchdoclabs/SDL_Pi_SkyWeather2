@@ -115,6 +115,9 @@ def CBUnits(barometricpressure):
 
     if (English_Metric == False):  # english units
         barometricpressure = barometricpressure * .2953
+    else:
+        barometricpressure = barometricpressure * 10.0
+
     return barometricpressure
 
 def BUnits():
@@ -339,6 +342,10 @@ def generateCurrentWeatherJSON():
                     CWJSON["BarometricPressureUnits"] = BUnits() 
                     
                 else:
+                    # convert to hPa
+                    CWJSON["BarometricPressureSeaLevel"]= round(CBUnits(CWJSON["BarometricPressureSeaLevel"]),2)
+
+
                     # temperature units
                     CWJSON["OutdoorTemperatureUnits"] = TUnits() 
                     CWJSON["IndoorTemperatureUnits"] = TUnits() 
@@ -373,7 +380,6 @@ def generateCurrentWeatherJSON():
                     CWJSON["AQI"] = myAQI[0]
 
 
-                return CWJSON
         except: 
                 traceback.print_exc()
                 #sys.exit(1)
@@ -381,7 +387,7 @@ def generateCurrentWeatherJSON():
         finally:
                 cur.close()
                 con.close()
-        print("done generating CWJSON=", CWJSON)
+        #print("done generating CWJSON=", CWJSON)
         return CWJSON
 
 

@@ -216,12 +216,12 @@ def sendSkyWeather():
         },
 		{
 			"name":"WindSpeed",
-			"value": state.WindSpeed,
+			"value": state.WindSpeed*3.6,
                         "units" : "kph"
 		},
 		{
 			"name":"WindGust",
-			"value": state.WindGust,
+			"value": state.WindGust*3.6,
                         "units" : "kph"
 		},
 		{

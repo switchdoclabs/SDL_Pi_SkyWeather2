@@ -108,8 +108,8 @@ def readJSON(addPath):
                 config.MQTT_Port_Number = int(getJSONValue('MQTT_Port_Number'))
                 config.MQTT_Send_Seconds = int(getJSONValue('MQTT_Send_Seconds'))
                 config.English_Metric = getJSONValue('English_Metric')
-                config.Record_Weather_Frequency = getJSONValue('Record_Weather_Frequency');
-                config.MySQL_User = getJSONValue('MySQL_User');
+                config.Record_Weather_Frequency = getJSONValue('Record_Weather_Frequency')
+                config.MySQL_User = getJSONValue('MySQL_User')
 
         else:
             print ("SkyWeather2.JSON File does not exist")

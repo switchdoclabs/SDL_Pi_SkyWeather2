@@ -81,7 +81,7 @@ if (config.enable_MySQL_Logging):
 
     try:
 
-    con = util.getSkyWeatherConnection()      
+        con = util.getSkyWeatherConnection()      
 
     except:
         print("--------")
@@ -109,15 +109,11 @@ if (config.enable_MySQL_Logging):
     # Check for updates having been applied
     try:
 
-        con = mdb.connect(
-          "localhost",
-          "root",
-          config.MySQL_Password,
-          "WeatherSenseWireless"
-          )
+        con = util.getWeatherSenseConnection()      
         cur = con.cursor()
         query = "SELECT * FROM AS433MHZ"
         cur.execute(query)
+
     except:
         #print(traceback.format_exc())
         print("--------")

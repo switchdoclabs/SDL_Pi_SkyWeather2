@@ -198,7 +198,7 @@ def buildHumidityGraph(data):
     fig.update_xaxes(title_text="Time")
 
     # Set y-axes titles
-    fig.update_yaxes(title_text="<b>Humidity (%)</b>", range = (0,100), secondary_y=True, side='right')
+    fig.update_yaxes(title_text="<b>Humidity (%)</b>", range = (0,100), secondary_y=False, side='left')
 
     return fig
 

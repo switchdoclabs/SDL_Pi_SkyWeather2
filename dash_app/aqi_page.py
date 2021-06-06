@@ -39,7 +39,7 @@ def build_graphAQI_figure():
     figure={
     'data': [trace1, trace2 ],
     'layout':
-    go.Layout(title='WeatherSense AQI', xaxis_title="Updated at: "+nowTime) }
+    go.Layout(title='WeatherSense AQI', xaxis_title="Updated at: "+nowTime, yaxis_title="AQI") }
     con.close()
 
     return figure
@@ -74,7 +74,7 @@ def build_graph1_figure():
     figure={
     'data': [trace1, trace2, trace3, trace4],
     'layout':
-    go.Layout(title='WeatherSenseAQI Solar Voltages', xaxis_title="Updated at: "+nowTime) }
+    go.Layout(title='WeatherSenseAQI Solar Voltages', xaxis_title="Updated at: "+nowTime, yaxis_title="Voltage (V)") }
     con.close()
 
     return figure
@@ -105,7 +105,7 @@ def build_graph2_figure():
     figure={
     'data': [trace1c, trace2c, trace3c],
     'layout':
-    go.Layout(title='WeatherSenseAQI Solar Currents', xaxis_title="Updated at: "+nowTime) }
+    go.Layout(title='WeatherSenseAQI Solar Currents', xaxis_title="Updated at: "+nowTime, yaxis_title="Current (mA)") }
 
     con.close()
 

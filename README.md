@@ -7,6 +7,7 @@ See full bug list and info on releases at:<BR>
 https://forum.switchdoc.com/thread/1452/skyweather2-software-releases
 
 
+June 6, 2021 - Version 026 - AfterShock added. fixes and reliability improvements <BR>
 April 17, 2021 - Version 025 - fixes and updgrades<BR>
 March 12, 2021 - Version 024 - minor fixes, update on README.md for rtl_433<BR>
 March 7, 2021 - Version 023 - Major Update: New WeatherSense devices added<BR>

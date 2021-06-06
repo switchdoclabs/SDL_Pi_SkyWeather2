@@ -178,6 +178,15 @@ def processF016TH(sLine):
         sys.stdout.write('This is the raw data: ' + sLine + '\n')
     
     var = json.loads(sLine)
+    
+    IT = round(((var["temperature_F"] - 32.0)/(9.0/5.0)),2)
+
+    # check for bad read (not caught by checksum for some reason)
+    # may be related to low battery
+    if ((IT > 100.00) or (IT < -35)):
+        # bad temperatures / Humidity
+        #skip read
+        return
 
     state.mainID = var["device"] + var["channel"]
     state.lastIndoorReading = nowStr()
@@ -192,7 +201,7 @@ def processF016TH(sLine):
         print("Indoor Weather Sensors Found")
         state.previousIndoorReading = state.lastIndoorReading
 
-    state.IndoorTemperature = round(((var["temperature_F"] - 32.0)/(9.0/5.0)),2)
+    state.IndoorTemperature = IT 
     state.IndoorHumidity = var["humidity"]
     state.lastIndoorReading = var["time"]
     state.insideID = var["channel"]

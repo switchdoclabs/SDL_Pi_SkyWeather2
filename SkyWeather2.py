@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "025"
+config.SWVERSION = "026"
 # system imports
 
 import time
@@ -272,7 +272,7 @@ ipAddress = subprocess.check_output(['hostname',  '-I'])
 bodyText = "SkyWeather2 Version "+config.SWVERSION+ " Startup \n"+ipAddress.decode()+"\n"
 if (config.SunAirPlus_Present):
 	sampleSunAirPlus()
-	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (batteryVoltage, batteryCurrent, solarVoltage, solarCurrent)
+	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (state.batteryVoltage, state.batteryCurrent, state.solarVoltage, state.solarCurrent)
 
 sendemail.sendEmail("test", bodyText, subjectText ,config.notifyAddress,  config.fromAddress, "");
 

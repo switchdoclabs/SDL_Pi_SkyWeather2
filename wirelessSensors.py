@@ -491,6 +491,70 @@ def processSolarMAX(sLine):
     return
 
 
+# processes AfterShock Packets 
+def processWeatherSenseAfterShock(sLine):
+
+    # weathersense protocol 18
+    state = json.loads(sLine)
+    myProtocol = state['weathersenseprotocol']
+    if (config.SWDEBUG):
+        sys.stdout.write("processing AfterShock Data\n")
+        sys.stdout.write('This is the raw data: ' + sLine + '\n')
+
+    if (config.enable_MQTT == True):
+        mqtt_publish_single(sLine, "WSAfterShock")
+
+
+    if (config.enable_MySQL_Logging == True):
+        # open mysql database
+        # write log
+        # commit
+        # close
+        try:
+            myTEST = ""
+            myTESTDescription = ""
+
+            con = mdb.connect(
+                    "localhost",
+                    "root",
+                    config.MySQL_Password,
+                    "WeatherSenseWireless"
+            )
+
+            cur = con.cursor()
+            batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])
+            loadPower  =  float(state["loadcurrent"])* float(state["loadvoltage"])
+            solarPower =  float(state["solarpanelcurrent"])* float(state["solarpanelvoltage"])
+            batteryCharge = 0.0
+
+            fields = "deviceid, protocolversion, softwareversion, weathersenseprotocol, eqcount, finaleq_si, finaleq_pga, instanteq_si, instanteq_pga, batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, solarpresent, aftershockpresent, keepalivemessage, lowbattery, batterycharge, messageID, batterypower, loadpower, solarpower, test, testdescription"
+            values = "%d, %d, %d, %d, %d,%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f, %d, %d, %d, %d,%d,%6.2f, %6.2f, %6.2f,\'%s\', \'%s\'" % (
+            state["deviceid"], state["protocolversion"], state["softwareversion"], state["weathersenseprotocol"],
+            state['eqcount'], state['finaleq_si'], state['finaleq_pga'], state['instanteq_si'],
+            state['instanteq_pga'], 
+            state["batteryvoltage"], state["batterycurrent"], state["loadvoltage"], state["loadcurrent"],
+            state["solarpanelvoltage"], state["solarpanelcurrent"], state["auxa"],state["solarpresent"],state["aftershockpresent"],state["keepalivemessage"],state["lowbattery"],     batteryCharge, state["messageid"],
+            batteryPower, loadPower, solarPower, myTEST, myTESTDescription)
+            query = "INSERT INTO AS433MHZ (%s) VALUES(%s )" % (fields, values)
+            # print("query=", query)
+            cur.execute(query)
+            con.commit()
+        except mdb.Error as e:
+            traceback.print_exc()
+            print("Error %d: %s" % (e.args[0], e.args[1]))
+            con.rollback()
+            # sys.exit(1)
+
+        finally:
+            cur.close()
+            con.close()
+
+            del cur
+            del con
+
+    return
+
+
 
 
 # main read 433HMz Sensor Loop
@@ -580,6 +644,9 @@ def readSensors():
 
             if (sLine.find('Generic') != -1):
                 processWeatherSenseGeneric(sLine)
+
+            if (sLine.find('AfterShock') != -1):
+                processWeatherSenseAfterShock(sLine)
 
 
         sys.stdout.flush()

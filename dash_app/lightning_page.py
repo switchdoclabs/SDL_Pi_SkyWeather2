@@ -62,7 +62,7 @@ def updateLightningLines():
     print("queryD=", query)
     records = cur.fetchall()
     if (len(records) > 0):
-        LLJSON["LastLightningDistance"] = str(records[0][1]) + "km"
+        LLJSON["LastLightningDistance"] = str(records[0][2]) + "km"
     else:
         LLJSON["LastLightningDistance"]= "N/A"
 
@@ -83,7 +83,7 @@ def updateLightningLines():
 
          
     if (len(records) > 0):
-            LLJSON["TotalLightningCount"]= str(records[0][1])
+            LLJSON["TotalLightningCount"]= str(records[0][2])
     else: 
             LLJSON["TotalLightningCount"]= "N/A" 
 

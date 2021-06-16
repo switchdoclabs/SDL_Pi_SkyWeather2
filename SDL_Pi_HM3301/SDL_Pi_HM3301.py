@@ -104,8 +104,8 @@ class SDL_Pi_HM3301(object):
 
 
         myaqi = aqi.to_aqi([
-         (aqi.POLLUTANT_PM25, self.PM_2_5_atmosph),
-         (aqi.POLLUTANT_PM10, self.PM_10_atmosph)
+         (aqi.POLLUTANT_PM25, self.PM_2_5_conctrt_atmosph),
+         (aqi.POLLUTANT_PM10, self.PM_10_conctrt_atmosph)
         ])
 
         return str(myaqi)

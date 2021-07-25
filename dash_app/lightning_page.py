@@ -8,6 +8,15 @@ import pandas as pd
 import MySQLdb as mdb
 import datetime
 
+import readJSON
+import json
+
+
+
+# read JSON
+
+readJSON.readJSON("../")
+
 import plotly.graph_objs as go
 # from dash.dependencies import Input, Output, MATCH, ALL, State
 
@@ -62,7 +71,11 @@ def updateLightningLines():
     print("queryD=", query)
     records = cur.fetchall()
     if (len(records) > 0):
-        LLJSON["LastLightningDistance"] = str(records[0][2]) + "km"
+        English_Metric = readJSON.getJSONValue("English_Metric")
+        if (English_Metric == False):
+            LLJSON["LastLightningDistance"] = str(records[0][2])*0.6214 + "miles"
+        else:
+            LLJSON["LastLightningDistance"] = str(records[0][2]) + "km"
     else:
         LLJSON["LastLightningDistance"]= "N/A"
 
@@ -148,6 +161,13 @@ def build_graphLightning_figure():
     query = "SELECT timestamp, deviceid, interruptcount, lightningcount, irqsource, lightninglastdistance  FROM TB433MHZ WHERE (TimeStamp > '%s') AND (irqsource = 0) AND (deviceid = %d) ORDER BY timestamp"% (before, WSLGHTID)
     df3 = pd.read_sql(query, con )
     df3['present'] = pd.Series([0 for x in range(len(df3.index))])
+    
+    English_Metric = readJSON.getJSONValue("English_Metric")
+    if (English_Metric == False):
+        trace1 = go.Scatter(x=df.timestamp, y=df.lightninglastdistance*0.6214, name='Lightning Distance', mode="markers", marker=dict(size=10, color="blue"))
+       
+    else:
+        trace1 = go.Scatter(x=df.timestamp, y=df.lightninglastdistance, name='Lightning Distance', mode="markers", marker=dict(size=10, color="blue"))
 
     trace1 = go.Scatter(x=df.timestamp, y=df.lightninglastdistance, name='Lightning Distance', mode="markers", marker=dict(size=10, color="blue"))
 
@@ -157,6 +177,10 @@ def build_graphLightning_figure():
 
     trace4 = go.Scatter(x=df3.timestamp, y=df3.present, name='KeepAlive', mode="markers", marker=dict(size=10, color = "black" ))
     
+    if (English_Metric == False):
+       myTitle =  "Lightning Distance (miles)"
+    else:
+       myTitle =  "Lightning Distance (km)"
 
 
     figure={
@@ -165,7 +189,7 @@ def build_graphLightning_figure():
     go.Layout(title='WeatherSense Lightning', xaxis_title="Updated at: "+nowTime,
         yaxis_range=[0,30],
         showlegend= True,
-        yaxis_title="Lightning Distance (km)"
+        yaxis_title=myTitle
  
     
     ) }

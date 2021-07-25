@@ -1,7 +1,7 @@
 #
 # wireless sensor routines
 
-
+import util
 import config
 
 import json
@@ -27,7 +27,7 @@ import MySQLdb as mdb
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147']
-cmd = ['/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147', '-R', '148', '-R', '150', '-R', '151']
+cmd = ['/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147', '-R', '148', '-R', '150', '-R', '151', '-R', '152']
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -267,7 +267,7 @@ def processWeatherSenseTB(sLine):
             batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])/1000.0
             loadPower  =  float(state["loadcurrent"])* float(state["loadvoltage"])/1000.0
             solarPower =  float(state["solarpanelcurrent"])* float(state["solarpanelvoltage"])/1000.0
-            batteryCharge = 0.0
+            batteryCharge = returnPercentLeftInBattery(batteryvoltage, 13.2) 
 
             fields = "deviceid, protocolversion, softwareversion, weathersenseprotocol,irqsource, previousinterruptresult, lightninglastdistance, sparebyte, lightningcount, interruptcount,  batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, batterycharge, messageID, batterypower, loadpower, solarpower, test, testdescription"
             values = "%d, %d, %d, %d, %d, %d, %d, %d,%d, %d,%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%d,%6.2f, %6.2f, %6.2f,\'%s\', \'%s\'" % (
@@ -329,7 +329,8 @@ def processWeatherSenseAQI(sLine):
             batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])/1000.0
             loadPower  =  float(state["loadcurrent"])* float(state["loadvoltage"])/1000.0
             solarPower =  float(state["solarpanelcurrent"])* float(state["solarpanelvoltage"])/1000.0
-            batteryCharge = 0.0
+            batteryCharge = util.returnPercentLeftInBattery(state["batteryvoltage"], 4.2)
+ 
             # calculate AQI 24 Hour
             timeDelta = datetime.timedelta(days=1)
             now = datetime.datetime.now()
@@ -445,7 +446,7 @@ def processSolarMAX(sLine):
                 batteryPower =  float(myState["batterycurrent"])* float(myState["batteryvoltage"])/1000.0
                 loadPower  =  float(myState["loadcurrent"])* float(myState["loadvoltage"])/1000.0
                 solarPower =  float(myState["solarpanelcurrent"])* float(myState["solarpanelvoltage"])/1000.0
-                batteryCharge = 0.0
+                batteryCharge = util.returnPercentLeftInBattery(myState["batteryvoltage"], 4.2)
 
                 fields = "deviceid, protocolversion, softwareversion, weathersenseprotocol, batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, internaltemperature,internalhumidity, batterycharge, messageID, batterypower, loadpower, solarpower, test, testdescription"
                 values = "%d, %d, %d, %d, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%d,%6.2f, %6.2f, %6.2f,\'%s\', \'%s\'" % (
@@ -501,7 +502,7 @@ def processWeatherSenseAfterShock(sLine):
         sys.stdout.write("processing AfterShock Data\n")
         sys.stdout.write('This is the raw data: ' + sLine + '\n')
 
-    if (config.enable_MQTT == True):
+    if (config.MQTT_Enable == True):
         mqtt_publish_single(sLine, "WSAfterShock")
 
 
@@ -525,7 +526,7 @@ def processWeatherSenseAfterShock(sLine):
             batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])
             loadPower  =  float(state["loadcurrent"])* float(state["loadvoltage"])
             solarPower =  float(state["solarpanelcurrent"])* float(state["solarpanelvoltage"])
-            batteryCharge = 0.0
+            batteryCharge = util.returnPercentLeftInBattery(state["batteryvoltage"], 4.2)
 
             fields = "deviceid, protocolversion, softwareversion, weathersenseprotocol, eqcount, finaleq_si, finaleq_pga, instanteq_si, instanteq_pga, batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, solarpresent, aftershockpresent, keepalivemessage, lowbattery, batterycharge, messageID, batterypower, loadpower, solarpower, test, testdescription"
             values = "%d, %d, %d, %d, %d,%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f, %d, %d, %d, %d,%d,%6.2f, %6.2f, %6.2f,\'%s\', \'%s\'" % (

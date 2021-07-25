@@ -614,5 +614,6 @@ def update_metrics(n_intervals, id, value):
 ##########################
 
 if __name__ == '__main__':
+    print("dash_app running on port 8050")
     #app.run_server(debug=True, host='0.0.0.0')
     app.run_server(host='0.0.0.0')

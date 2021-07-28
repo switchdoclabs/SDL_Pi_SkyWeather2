@@ -8,6 +8,15 @@ import pandas as pd
 import MySQLdb as mdb
 import datetime
 
+import readJSON
+import json
+
+
+
+# read JSON
+
+readJSON.readJSON("../")
+
 import plotly.graph_objs as go
 # from dash.dependencies import Input, Output, MATCH, ALL, State
 
@@ -59,7 +68,11 @@ def updateLightningLines():
     print("queryD=", query)
     records = cur.fetchall()
     if (len(records) > 0):
-        LLJSON["LastLightningDistance"] = str(records[0][1]) + "km"
+        English_Metric = readJSON.getJSONValue("English_Metric")
+        if (English_Metric == False):
+            LLJSON["LastLightningDistance"] = str(records[0][2])*0.6214 + "miles"
+        else:
+            LLJSON["LastLightningDistance"] = str(records[0][2]) + "km"
     else:
         LLJSON["LastLightningDistance"]= "N/A"
 
@@ -80,7 +93,7 @@ def updateLightningLines():
 
          
     if (len(records) > 0):
-            LLJSON["TotalLightningCount"]= str(records[0][1])
+            LLJSON["TotalLightningCount"]= str(records[0][2])
     else: 
             LLJSON["TotalLightningCount"]= "N/A" 
 
@@ -137,15 +150,41 @@ def build_graphLightning_figure():
     df2 = pd.read_sql(query, con )
     df2['present'] = pd.Series([0 for x in range(len(df2.index))]) 
 
+    query = "SELECT timestamp, deviceid, interruptcount, lightningcount, irqsource, lightninglastdistance  FROM TB433MHZ WHERE (TimeStamp > '%s') AND (irqsource = 0) AND (deviceid = %d) ORDER BY timestamp"% (before, WSLGHTID)
+    df3 = pd.read_sql(query, con )
+    df3['present'] = pd.Series([0 for x in range(len(df3.index))])
+    
+    English_Metric = readJSON.getJSONValue("English_Metric")
+    if (English_Metric == False):
+        trace1 = go.Scatter(x=df.timestamp, y=df.lightninglastdistance*0.6214, name='Lightning Distance', mode="markers", marker=dict(size=10, color="blue"))
+       
+    else:
+        trace1 = go.Scatter(x=df.timestamp, y=df.lightninglastdistance, name='Lightning Distance', mode="markers", marker=dict(size=10, color="blue"))
+
     trace1 = go.Scatter(x=df.timestamp, y=df.lightninglastdistance, name='Lightning Distance', mode="markers", marker=dict(size=10, color="blue"))
+
     trace2 = go.Scatter(x=df.timestamp, y=df.present, name='Lightning Stroke', mode="markers", marker=dict(size=15, color = "red" ))
 
-    trace3 = go.Scatter(x=df2.timestamp, y=df2.present, name='Disruptor', mode="markers", marker=dict(size=15, color = "black" ))
+    trace3 = go.Scatter(x=df2.timestamp, y=df2.present, name='Disruptor', mode="markers", marker=dict(size=15, color = "orange" ), showlegend=True)
+
+    trace4 = go.Scatter(x=df3.timestamp, y=df3.present, name='KeepAlive', mode="markers", marker=dict(size=10, color = "black" ))
+    
+    if (English_Metric == False):
+       myTitle =  "Lightning Distance (miles)"
+    else:
+       myTitle =  "Lightning Distance (km)"
+
 
     figure={
-    'data': [trace1, trace2, trace3 ],
+    'data': [trace1, trace2, trace3, trace4 ],
     'layout':
-    go.Layout(title='WeatherSense Lightning', xaxis_title="Updated at: "+nowTime) }
+    go.Layout(title='WeatherSense Lightning', xaxis_title="Updated at: "+nowTime,
+        yaxis_range=[0,30],
+        showlegend= True,
+        yaxis_title=myTitle
+ 
+    
+    ) }
     con.close()
 
     return figure
@@ -174,7 +213,7 @@ def build_graph1_figure():
     figure={
     'data': [trace1, trace2, trace3, trace4],
     'layout':
-    go.Layout(title='WeatherSense Lightning Solar Voltages', xaxis_title="Updated at: "+nowTime) }
+    go.Layout(title='WeatherSense Lightning Solar Voltages', xaxis_title="Updated at: "+nowTime, yaxis_title="Voltage (V)") }
     con.close()
 
     return figure
@@ -198,7 +237,7 @@ def build_graph2_figure():
     figure={
     'data': [trace1c, trace2c, trace3c],
     'layout':
-    go.Layout(title='WeatherSense Lightning Solar Currents', xaxis_title="Updated at: "+nowTime) }
+    go.Layout(title='WeatherSense Lightning Solar Currents', xaxis_title="Updated at: "+nowTime , yaxis_title="Current (mA)") }
 
     con.close()
 

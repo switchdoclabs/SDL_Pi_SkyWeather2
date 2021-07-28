@@ -35,6 +35,16 @@ import MySQLdb as mdb
 ################
 # Weather Status
 ################
+def calc_wind_quadrant(wind_dir):
+    quadrants = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", "N"]
+    quadrant_size = 22.5
+
+    quadrant_num = round(wind_dir/quadrant_size, 0)
+    quadrant_str = quadrants[int(quadrant_num)]
+
+    return quadrant_str
+
+
 
 def returnCardinalBucket(windDirection):
       if (windDirection >= 337.5) or (windDirection < 22.5):
@@ -406,7 +416,7 @@ def fetchWindData(timeDelta):
                 con.commit()
                 records = cur.fetchall()
                 #print ("Query records=", records)
-                print ("number of Records =",len(records))
+                #print ("number of Records =",len(records))
                 totalRecords = len(records)
                 # now calculate buckets
                 # 8 cardinal directions 0 - 360
@@ -1109,17 +1119,7 @@ def WeatherPage():
     subtextcolor = "green"
     maintextcolor = "black"
 
-    Cols = []
-
-
-    Cols.append(buildOutdoorTemperature_Humidity_Graph())
-    Cols.append(buildSunlight_UVIndex_Graph())
-    Cols.append(buildPB_Graph())
-    if(config.USEWSAQI):
-        Cols.append(buildAQI_Graph())
-    Cols.append(buildCPU_Graph()) 
-
-    print("WP-CWSJON=", CWJSON)
+    #print("WP-CWSJON=", CWJSON)
     Row1 = html.Div(
         [ 
         #dbc.Row( dbc.Col(html.Div(id="Weather Instruments"))),
@@ -1179,7 +1179,9 @@ def WeatherPage():
                          ], id="ot1", className="mini_container",),
                      html.Div(
                          [html.H1(id={'type' : 'WPdynamic', 'index' : "WindDirection"},
-                            children=str(CWJSON["WindDirection"])+" deg", style={"font-size": maintextsize,"color":maintextcolor}), 
+                            #children=str(CWJSON["WindDirection"])+" deg", style={"font-size": maintextsize,"color":maintextcolor}), 
+
+                            children=str(CWJSON["WindDirection"]) + " deg " + calc_wind_quadrant(CWJSON["WindDirection"]), style={"font-size": maintextsize,"color":maintextcolor}),
                          html.P("Wind Direction", style={"color":subtextcolor})
                          ], id="ot1", className="mini_container",),
                      html.Div(

@@ -21,6 +21,7 @@ import status_page
 import log_page
 import weather_page
 import indoorth
+import aftershock_page
 import aqi_page
 import lightning_page
 import solarmax_page
@@ -28,6 +29,12 @@ import solarmax_page
 from non_impl import NotImplPage 
 
 from navbar import Navbar, Logo
+
+import logging
+
+
+
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
 UpdateCWJSONLock = threading.Lock()
 SGSDASHSOFTWAREVERSION = "006"
@@ -138,6 +145,9 @@ def display_page(pathname):
     if pathname == '/solarmax_page':
         myLayout = solarmax_page.SolarMAXPage()
         myLayout2 = ""
+    if pathname == '/aftershock_page':
+        myLayout = aftershock_page.AfterShockPage()
+        myLayout2 = ""
     
     #print("myLayout= ",myLayout)
     #print("myLayout2= ",myLayout2)
@@ -167,14 +177,6 @@ def logpageupdate(n_intervals, id, value):
         data = log_page.fetchSystemLog()
         fig = log_page.buildTableFig(data,"System Log")
     
-    if (id['index'] == "valvelog"):
-        data = log_page.fetchValveLog()
-        fig = log_page.buildTableFig(data,"Valve Log")
-        return fig
-    
-    if (id['index'] == "sensorlog"):
-        data = log_page.fetchSensorLog()
-        fig = log_page.buildTableFig(data,"Sensor Log")
 
     #print("<log_page table Update complete",id['index'])
     return fig
@@ -266,7 +268,7 @@ def updateWeatherImagePage(n_intervals,id, value):
     #print("+++++++++++++updateWImageP n_intervals", n_intervals)
     #print("+++++++++++++updateWImageP (n_intervals %6)", n_intervals% 6)
     if ((n_intervals % (1*6)) == 0) or (n_intervals ==0): # 1 minutes -10 second timer
-        print("--->>>updateSkyCamImage", datetime.datetime.now(), n_intervals)
+        #print("--->>>updateSkyCamImage", datetime.datetime.now(), n_intervals)
         try:
             '''
             # delete old file names
@@ -290,7 +292,7 @@ def updateWeatherImagePage(n_intervals,id, value):
                           #html.Figcaption("SkyWeather2 Cam"),
                           html.Figcaption(htmlname)
                           ])
-            print("+++++++value=", value)
+            #print("+++++++value=", value)
 
         except:
             print(traceback.format_exc())
@@ -331,7 +333,11 @@ def updateWeatherUpdate(n_intervals,id, value):
             value = "Weather Updated at:" + value
 
             return [value]
-        
+        elif id['index'] == 'WindDirection':
+            wind_dir = weather_page.CWJSON[id['index']]
+            wind_dir_str = weather_page.calc_wind_quadrant(wind_dir)
+            value = str(wind_dir) + weather_page.CWJSON[id['index']+'Units'] + " " + wind_dir_str
+            return [value] 
         UpdateCWJSONLock.acquire()
         value = str(weather_page.CWJSON[id['index']]) +" "+ weather_page.CWJSON[id['index']+'Units']
         UpdateCWJSONLock.release()
@@ -519,6 +525,69 @@ def update_metrics(n_intervals, id, value):
     return [figure]
 
 
+############
+# callbacks
+############
+# aftershock_page callbacks
+
+
+@app.callback(
+    [
+        Output({'type': 'AfterShockgraph', 'index': MATCH}, 'figure'),
+    ],
+    [Input('minute-interval-component', 'n_intervals'),
+     Input({'type': 'AfterShockgraph', 'index': MATCH}, 'id')],
+    [State({'type': 'AfterShockgraph', 'index': MATCH}, 'value')]
+)
+def update_metrics(n_intervals, id, value):
+    #print("n_intervals=", n_intervals)
+    myIndex = id['index']
+    # build figures
+    if (myIndex == '1'):
+        #print("GraphAfterShock figure")
+        figure = aftershock_page.build_graphAfterShock_figure()
+    if (myIndex == '2'):
+        #print("GraphAfterShock Solar Currents")
+        figure = aftershock_page.build_graph1_figure()
+    if (myIndex == '3'):
+        #print("GraphAfterShock Solar Voltages")
+        figure = aftershock_page.build_graph2_figure()
+
+    return [figure]
+
+
+@app.callback(
+    [
+        Output({'type': 'ASdynamic', 'index': MATCH}, 'children'),
+    ],
+    [Input('main-interval-component', 'n_intervals'),
+     Input({'type': 'ASdynamic', 'index': MATCH}, 'id')],
+    [State({'type': 'ASdynamic', 'index': MATCH}, 'value')]
+)
+def updateAfterShockUpdate(n_intervals, id, value):
+    if (True):
+        # if ((n_intervals % (1*2)) == 0) or (n_intervals ==0): # 5 minutes -10 second timer
+
+        # if ((n_intervals % (5*6)) == 0) or (n_intervals ==0): # 5 minutes -10 second timer
+        #print("--->>>updateAfterShockUpdate", datetime.datetime.now(), n_intervals)
+        #print("updateAfterShockUpdate n_intervals =", n_intervals, id['index'])
+        if (id['index'] == "StringTime"):
+            # weather_page.CWJSON = weather_page.generateCurrentWeatherJSON()
+            # value = str(weather_page.CWJSON[id['index']]) +" "+ weather_page.CWJSON[id['index']+'Units']
+            now = datetime.datetime.now()
+            nowString = now.strftime('%Y-%m-%d %H:%M:%S')
+            value = "AfterShock Updated at:" + nowString
+            aftershock_page.updateAfterShockLines()
+
+            return [value]
+
+        value = aftershock_page.ASJSON[id['index']]
+    else:
+        raise PreventUpdate
+    return [value]
+
+
+
 # solarmax_page callbacks
 
 @app.callback(
@@ -545,5 +614,6 @@ def update_metrics(n_intervals, id, value):
 ##########################
 
 if __name__ == '__main__':
+    print("dash_app running on port 8050")
     #app.run_server(debug=True, host='0.0.0.0')
     app.run_server(host='0.0.0.0')

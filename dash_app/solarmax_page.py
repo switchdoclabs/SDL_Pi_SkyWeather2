@@ -45,7 +45,7 @@ def build_graph1_figure():
     figure = {
         'data': [trace1, trace2, trace3, trace4],
         'layout':
-            go.Layout(title='SolarMAX Solar Voltages', xaxis_title="ID=%d Updated at: "%SolarMAXID + nowTime)}
+            go.Layout(title='WS SolarMAX2 Solar Voltages', xaxis_title="ID=%d Updated at: "%SolarMAXID + nowTime, yaxis_title="Voltage (V)")}
     con.close()
 
     return figure
@@ -71,7 +71,8 @@ def build_graph2_figure():
     figure = {
         'data': [trace1c, trace2c, trace3c],
         'layout':
-            go.Layout(title='SolarMAX Solar Currents', xaxis_title="ID=%d Updated at: "%SolarMAXID + nowTime)}
+            go.Layout(title='WS SolarMAX2 Solar Currents', xaxis_title="ID=%d Updated at: "%SolarMAXID + nowTime, yaxis_title="Current (mA)")
+}
 
     con.close()
 
@@ -81,7 +82,7 @@ def build_graph2_figure():
 def SolarMAXPage():
     layout = html.Div(children=[
 
-        html.H1("SolarMAX Charts", style={'textAlign': 'center'}),
+        html.H1("WeatherSense SolarMAX2 Charts", style={'textAlign': 'center'}),
 
         dcc.Graph(
             id={'type': 'SolarMAXgraph', 'index': "2"},

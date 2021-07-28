@@ -1,7 +1,7 @@
 #
 # wireless sensor routines
 
-
+import util
 import config
 
 import json
@@ -28,7 +28,7 @@ import MySQLdb as mdb
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147']
-cmd = ['/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147', '-R', '148', '-R', '150', '-R', '151']
+cmd = ['/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147', '-R', '148', '-R', '150', '-R', '151', '-R', '152']
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -179,6 +179,15 @@ def processF016TH(sLine):
         sys.stdout.write('This is the raw data: ' + sLine + '\n')
     
     var = json.loads(sLine)
+    
+    IT = round(((var["temperature_F"] - 32.0)/(9.0/5.0)),2)
+
+    # check for bad read (not caught by checksum for some reason)
+    # may be related to low battery
+    if ((IT > 100.00) or (IT < -35)):
+        # bad temperatures / Humidity
+        #skip read
+        return
 
     state.mainID = var["device"] + var["channel"]
     state.lastIndoorReading = nowStr()
@@ -193,7 +202,7 @@ def processF016TH(sLine):
         print("Indoor Weather Sensors Found")
         state.previousIndoorReading = state.lastIndoorReading
 
-    state.IndoorTemperature = round(((var["temperature_F"] - 32.0)/(9.0/5.0)),2)
+    state.IndoorTemperature = IT 
     state.IndoorHumidity = var["humidity"]
     state.lastIndoorReading = var["time"]
     state.insideID = var["channel"]
@@ -254,7 +263,7 @@ def processWeatherSenseTB(sLine):
             batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])/1000.0
             loadPower  =  float(state["loadcurrent"])* float(state["loadvoltage"])/1000.0
             solarPower =  float(state["solarpanelcurrent"])* float(state["solarpanelvoltage"])/1000.0
-            batteryCharge = 0.0
+            batteryCharge = util.returnPercentLeftInBattery(batteryvoltage, 13.2) 
 
             fields = "deviceid, protocolversion, softwareversion, weathersenseprotocol,irqsource, previousinterruptresult, lightninglastdistance, sparebyte, lightningcount, interruptcount,  batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, batterycharge, messageID, batterypower, loadpower, solarpower, test, testdescription"
             values = "%d, %d, %d, %d, %d, %d, %d, %d,%d, %d,%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%d,%6.2f, %6.2f, %6.2f,\'%s\', \'%s\'" % (
@@ -311,7 +320,8 @@ def processWeatherSenseAQI(sLine):
             batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])/1000.0
             loadPower  =  float(state["loadcurrent"])* float(state["loadvoltage"])/1000.0
             solarPower =  float(state["solarpanelcurrent"])* float(state["solarpanelvoltage"])/1000.0
-            batteryCharge = 0.0
+            batteryCharge = util.returnPercentLeftInBattery(state["batteryvoltage"], 4.2)
+ 
             # calculate AQI 24 Hour
             timeDelta = datetime.timedelta(days=1)
             now = datetime.datetime.now()
@@ -417,7 +427,7 @@ def processSolarMAX(sLine):
                 batteryPower =  float(myState["batterycurrent"])* float(myState["batteryvoltage"])/1000.0
                 loadPower  =  float(myState["loadcurrent"])* float(myState["loadvoltage"])/1000.0
                 solarPower =  float(myState["solarpanelcurrent"])* float(myState["solarpanelvoltage"])/1000.0
-                batteryCharge = 0.0
+                batteryCharge = util.returnPercentLeftInBattery(myState["batteryvoltage"], 4.2)
 
                 fields = "deviceid, protocolversion, softwareversion, weathersenseprotocol, batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, internaltemperature,internalhumidity, batterycharge, messageID, batterypower, loadpower, solarpower, test, testdescription"
                 values = "%d, %d, %d, %d, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%d,%6.2f, %6.2f, %6.2f,\'%s\', \'%s\'" % (
@@ -459,6 +469,70 @@ def processSolarMAX(sLine):
 
                 del cur
                 del con
+
+    return
+
+
+# processes AfterShock Packets 
+def processWeatherSenseAfterShock(sLine):
+
+    # weathersense protocol 18
+    state = json.loads(sLine)
+    myProtocol = state['weathersenseprotocol']
+    if (config.SWDEBUG):
+        sys.stdout.write("processing AfterShock Data\n")
+        sys.stdout.write('This is the raw data: ' + sLine + '\n')
+
+    if (config.MQTT_Enable == True):
+        mqtt_publish_single(sLine, "WSAfterShock")
+
+
+    if (config.enable_MySQL_Logging == True):
+        # open mysql database
+        # write log
+        # commit
+        # close
+        try:
+            myTEST = ""
+            myTESTDescription = ""
+
+            con = mdb.connect(
+                    "localhost",
+                    "root",
+                    config.MySQL_Password,
+                    "WeatherSenseWireless"
+            )
+
+            cur = con.cursor()
+            batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])
+            loadPower  =  float(state["loadcurrent"])* float(state["loadvoltage"])
+            solarPower =  float(state["solarpanelcurrent"])* float(state["solarpanelvoltage"])
+            batteryCharge = util.returnPercentLeftInBattery(state["batteryvoltage"], 4.2)
+
+            fields = "deviceid, protocolversion, softwareversion, weathersenseprotocol, eqcount, finaleq_si, finaleq_pga, instanteq_si, instanteq_pga, batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, solarpresent, aftershockpresent, keepalivemessage, lowbattery, batterycharge, messageID, batterypower, loadpower, solarpower, test, testdescription"
+            values = "%d, %d, %d, %d, %d,%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f, %d, %d, %d, %d,%d,%6.2f, %6.2f, %6.2f,\'%s\', \'%s\'" % (
+            state["deviceid"], state["protocolversion"], state["softwareversion"], state["weathersenseprotocol"],
+            state['eqcount'], state['finaleq_si'], state['finaleq_pga'], state['instanteq_si'],
+            state['instanteq_pga'], 
+            state["batteryvoltage"], state["batterycurrent"], state["loadvoltage"], state["loadcurrent"],
+            state["solarpanelvoltage"], state["solarpanelcurrent"], state["auxa"],state["solarpresent"],state["aftershockpresent"],state["keepalivemessage"],state["lowbattery"],     batteryCharge, state["messageid"],
+            batteryPower, loadPower, solarPower, myTEST, myTESTDescription)
+            query = "INSERT INTO AS433MHZ (%s) VALUES(%s )" % (fields, values)
+            # print("query=", query)
+            cur.execute(query)
+            con.commit()
+        except mdb.Error as e:
+            traceback.print_exc()
+            print("Error %d: %s" % (e.args[0], e.args[1]))
+            con.rollback()
+            # sys.exit(1)
+
+        finally:
+            cur.close()
+            con.close()
+
+            del cur
+            del con
 
     return
 
@@ -552,6 +626,9 @@ def readSensors():
 
             if (sLine.find('Generic') != -1):
                 processWeatherSenseGeneric(sLine)
+
+            if (sLine.find('AfterShock') != -1):
+                processWeatherSenseAfterShock(sLine)
 
 
         sys.stdout.flush()

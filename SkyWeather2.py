@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "026.4"
+config.SWVERSION = "026.5"
 # system imports
 
 import time
@@ -269,6 +269,11 @@ if (config.USEBLYNK):
 
 subjectText = "The "+ config.STATIONKEY + " SkyWeather2 Raspberry Pi has #rebooted."
 ipAddress = subprocess.check_output(['hostname',  '-I'])
+
+if (config.USEBLYNK):
+     updateBlynk.blynkEventUpdate("IPAddress: "+ipAddress.decode())
+     updateBlynk.blynkTerminalUpdate("IPAddress: "+ipAddress.decode()) 
+
 bodyText = "SkyWeather2 Version "+config.SWVERSION+ " Startup \n"+ipAddress.decode()+"\n"
 if (config.SunAirPlus_Present):
 	sampleSunAirPlus()

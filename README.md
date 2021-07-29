@@ -6,6 +6,7 @@ See full bug list and info on releases at:<BR>
 
 https://forum.switchdoc.com/thread/1452/skyweather2-software-releases
 
+July 28, 2021 - Version 026.6 - Second Typo in wirelessSensors.py fixed<BR>
 July 28, 2021 - Version 026.5 - Typo in wirelessSensors.py fixed<BR>
 July 24, 2021 - Version 026.4 - Various Small Bugs fixed and Blynk updated<BR>
 June 16, 2021 - Version 026.3 - On Board Dust Sensor Problem Fixed<BR>

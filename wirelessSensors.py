@@ -267,7 +267,7 @@ def processWeatherSenseTB(sLine):
             batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])/1000.0
             loadPower  =  float(state["loadcurrent"])* float(state["loadvoltage"])/1000.0
             solarPower =  float(state["solarpanelcurrent"])* float(state["solarpanelvoltage"])/1000.0
-            batteryCharge = util.returnPercentLeftInBattery(state["batteryvoltage", 4.2) 
+            batteryCharge = util.returnPercentLeftInBattery(state["batteryvoltage"], 4.2) 
 
             fields = "deviceid, protocolversion, softwareversion, weathersenseprotocol,irqsource, previousinterruptresult, lightninglastdistance, sparebyte, lightningcount, interruptcount,  batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, batterycharge, messageID, batterypower, loadpower, solarpower, test, testdescription"
             values = "%d, %d, %d, %d, %d, %d, %d, %d,%d, %d,%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%d,%6.2f, %6.2f, %6.2f,\'%s\', \'%s\'" % (

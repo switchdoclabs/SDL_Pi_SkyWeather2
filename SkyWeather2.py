@@ -69,7 +69,9 @@ def rebootPi(why):
    if (config.USEBLYNK):
      updateBlynk.blynkTerminalUpdate("Pi Rebooting: %s" % why)
    pclogging.systemlog(config.INFO, "Pi Rebooting: %s" % why)
-   os.system("sudo shutdown -r now")
+   #os.system("sudo shutdown -r now")
+   # more low level reboot
+   os.system("echo 1 | sudo tee /proc/sys/kernel/sysrq;echo s | sudo tee /proc/sysrq-trigger;echo u | sudo tee /proc/sysrq-trigger;echo b | sudo tee /proc/sysrq-trigger")
 
 
 import MySQLdb as mdb
@@ -319,7 +321,9 @@ scheduler.add_job(watchDog.patTheDog, 'interval', seconds=20)   # reset the Watc
 
 
 # every 5 days at 00:04, reboot
-scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day Reboot"]) 
+#scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day Reboot"]) 
+#TEC change to once a day
+scheduler.add_job(rebootPi, 'cron', day='*', hour=0, minute=4, args=["daily Reboot"]) 
 	
 #check for Barometric Trend (every 15 minutes)
 scheduler.add_job(util.barometricTrend, 'interval', seconds=15*60)

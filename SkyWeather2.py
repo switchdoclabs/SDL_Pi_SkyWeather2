@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "026.5"
+config.SWVERSION = "027"
 # system imports
 
 import time
@@ -39,6 +39,11 @@ import util
 from  bmp280 import BMP280
 import SkyCamera
 import os
+
+import SkyCamRemote
+import PictureManagement
+import ProcessPicture
+
 # Scheduler Helpers
 
 # print out faults inside events
@@ -357,9 +362,20 @@ scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=15*60)
 
 
 # sky camera
-if (config.USEWEATHERSTEM):
-    if (config.Camera_Present):
+if (config.Camera_Present):
         scheduler.add_job(SkyCamera.takeSkyPicture, 'interval', seconds=config.INTERVAL_CAM_PICS__SECONDS) 
+
+
+# process SkyCam Remote bi-directional messages 
+if (config.MQTT_Enable== True):
+    scheduler.add_job(SkyCamRemote.startMQTT)  # run in background
+
+# SkyCam Management Programs
+scheduler.add_job(PictureManagement.cleanPictures, 'cron', day='*', hour=3, minute=4, args=["Daily Picture Clean"])
+
+scheduler.add_job(PictureManagement.cleanTimeLapses, 'cron', day='*', hour=3, minute=10, args=["Daily Time Lapse Clean"])
+
+scheduler.add_job(PictureManagement.buildTimeLapse, 'cron', day='*', hour=5, minute=30, args=["Time Lapse Generation"])
 
 
 # start scheduler

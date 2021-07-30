@@ -18,6 +18,16 @@ MACADDRESS = hex(uuid.getnode())
 STATIONMAC = MACADDRESS
 STATIONHARDWARE=""
 
+############
+# SkyCam Remote configuration
+############
+#configure SkyCam Remote camera
+#default
+DefaultCameraRotation = 90
+SkyCamRotationArray = {}
+#SkyCamRotationArray["F329"] = 0
+SkyCamRotationArray["F329"] = 0
+
 
 ############
 # Blynk configuration

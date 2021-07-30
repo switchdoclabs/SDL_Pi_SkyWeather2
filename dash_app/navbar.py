@@ -17,6 +17,7 @@ def Navbar():
             dbc.NavItem(dbc.NavLink("SkyWeather Status", href="/status_page")),
             dbc.NavItem(dbc.NavLink("Weather", href="/weather_page")),
             dbc.NavItem(dbc.NavLink("Indoor T/H", href="/indoorth")),
+            dbc.NavItem(dbc.NavLink("SkyCam", href="/skycam_page")),
             dbc.NavItem(dbc.NavLink("WS Air Quality", href="/aqi_page")),
             dbc.NavItem(dbc.NavLink("WS Lightning", href="/lightning_page")),
             dbc.NavItem(dbc.NavLink("WS AfterShock", href="/aftershock_page")),

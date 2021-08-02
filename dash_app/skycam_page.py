@@ -124,12 +124,13 @@ def getTimeLapseList(cam):
         myFiles = os.listdir(dir_path) 
         myFiles = [os.path.join(dir_path, f) for f in myFiles] # add path to each file
         myFiles.sort(key=lambda x: os.path.getmtime(x), reverse=True)
-    
+        #print(myFiles) 
         if (len(myFiles) > 14):
-            myRange = range(1, 14)
+            myRange = range(0, 14)
         else:
-            myRange = range(1,len(myFiles))
-     
+            myRange = range(0,len(myFiles))
+    
+        #print(myRange)
         for i in myRange: 
             singleName = os.path.basename(myFiles[i-1])
             #output.append(html.P(singleName))

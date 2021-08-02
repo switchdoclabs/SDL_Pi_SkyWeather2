@@ -173,10 +173,10 @@ def buildTimeLapse(source):
 
                 fromPath = my_dir_path+device+"/"+dayname+"/"+recordname
                 toPath = dirpath+"/pic_"+addzeros(count)+"%d"%(count)+".jpg"
-                count = count +1 
                 print("cp %s %s" % (fromPath, toPath))
                 try:
                     shutil.copyfile(fromPath, toPath)
+                    count = count +1 
                 except:
                     pass
 

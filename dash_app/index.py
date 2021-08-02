@@ -68,6 +68,14 @@ app.layout =  html.Div(
             interval=10*1000, # in milliseconds - leave as 10 seconds
             n_intervals=0
             ) ,
+
+        dcc.Interval(
+            id='minute-interval-component',
+            interval=60 * 1000,  # in milliseconds
+            n_intervals=0
+        ),
+
+
        #dcc.Interval(
        #     id='weather-update-interval-component',
        #     interval=5*1000, # in milliseconds
@@ -458,7 +466,7 @@ def updateIndoorTHUpdate(n_intervals,id, value):
     [State({'type': 'Lightninggraph', 'index': MATCH}, 'value')]
 )
 def update_metrics(n_intervals, id, value):
-    print("n_intervals=", n_intervals)
+    #print("n_intervals=", n_intervals)
     myIndex = id['index']
     # build figures
     if (myIndex == '1'):
@@ -632,7 +640,7 @@ def update_metrics(n_intervals, id, value):
     [State({'type': 'SkyCamGraphs', 'index': 0}, 'value')]
 )
 def update_sky_metrics(n_intervals, id, value):
-    #print("skycam_n_intervals=", n_intervals)
+    print("skycam_n_intervals=", n_intervals)
     myIndex = id['index']
     # build figures
     SkyCamList = skycam_page.getSkyCamList()
@@ -652,7 +660,7 @@ def update_sky_metrics(n_intervals, id, value):
     [State({'type': 'SkyCamPics', 'index': 0}, 'value')]
 )
 def update_skypic_metrics(n_intervals, id, value):
-    #print("skycampic_n_intervals=", n_intervals)
+    print("skycampic_n_intervals=", n_intervals)
     myIndex = id['index']
     # build pictures
     SkyCamList = skycam_page.getSkyCamList()

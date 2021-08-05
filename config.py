@@ -82,6 +82,8 @@ English_Metric = None
 Record_Weather_Frequency = None
 # use other than root user
 MySQL_User = None
+# provide custom smtp server
+mailServer = None
 
 ########
 # DB Schemas

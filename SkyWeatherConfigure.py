@@ -271,7 +271,8 @@ class SkyWeatherConfigure(App):
 	
         self.Record_Weather_Frequency = 15
         self.MySQL_User = "root"
-       
+        self.mailServer = "smtp.gmail.com"
+
        
         self.dataDefaults = {} 
 
@@ -319,7 +320,8 @@ class SkyWeatherConfigure(App):
 
         self.dataDefaults['Record_Weather_Frequency'] = self.Record_Weather_Frequency
         self.dataDefaults['MySQL_User'] = self.MySQL_User
-
+        self.dataDefaults['mailServer'] = self.mailServer
+    
     def getJSONValue(self, entry):
         try:
             returnData = self.JSONData[entry]
@@ -384,6 +386,7 @@ class SkyWeatherConfigure(App):
                 
                 self.Record_Weather_Frequency = self.getJSONValue('Record_Weather_Frequency')
                 self.MySQL_User = self.getJSONValue('MySQL_User')
+                self.mailServer = self.getJSONValue('mailServer')
 
         else:
             print ("SkyWeather2.JSON File does not exist")
@@ -445,7 +448,7 @@ class SkyWeatherConfigure(App):
 
         data['Record_Weather_Frequency'] = self.F_Record_Weather_Frequency.get_value()
         data['MySQL_User'] = self.F_MySQL_User.get_value()
-
+        data['mailServer'] = self.F_mailServer.get_value()
         
         json_data = json.dumps(data)        
         
@@ -617,6 +620,13 @@ class SkyWeatherConfigure(App):
         self.F_mailPassword = gui.TextInput(width=300, height=30, style="margin:5px")
         self.F_mailPassword.set_value(self.mailPassword)
         vbox.append(self.F_mailPassword,'mailPassword') 
+
+        p2label = gui.Label("Mail Host Name", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
+        vbox.append(p2label,'p2label') 
+        
+        self.F_mailServer = gui.TextInput(width=300, height=30, style="margin:5px")
+        self.F_mailServer.set_value(self.mailServer)
+        vbox.append(self.F_mailServer,'mailServer') 
 
         p3label = gui.Label("Notify Address", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
         vbox.append(p3label,'p3label') 

@@ -47,6 +47,7 @@ def setDefaults():
         # TEC
         config.Record_Weather_frequency = 15
         config.MySQL_User = "root"
+        config.mailServer = "smtp.gmail.com"
 
 def getJSONValue(entry):
         try:
@@ -110,6 +111,7 @@ def readJSON(addPath):
                 config.English_Metric = getJSONValue('English_Metric')
                 config.Record_Weather_Frequency = getJSONValue('Record_Weather_Frequency')
                 config.MySQL_User = getJSONValue('MySQL_User')
+                config.mailServer = getJSONValue('mailServer')
 
         else:
             print ("SkyWeather2.JSON File does not exist")

@@ -45,7 +45,7 @@ def sendEmail(source, message, subject, toaddress, fromaddress, filename):
             if (config.SWDEBUG):
                 pclogging.systemlog(config.INFO, "--->sending mail<---")    
             # open up a line with the server
-            s = smtplib.SMTP("smtp.gmail.com", 587)
+            s = smtplib.SMTP(config.mailServer, 587)
             s.ehlo()
             s.starttls()
             s.ehlo()

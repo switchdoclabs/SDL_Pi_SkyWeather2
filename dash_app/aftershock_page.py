@@ -7,6 +7,7 @@ import dash_html_components as html
 import pandas as pd
 import MySQLdb as mdb
 import datetime
+import util
 
 import plotly.graph_objs as go
 # from dash.dependencies import Input, Output, MATCH, ALL, State
@@ -29,12 +30,7 @@ ASJSON["LastMessageID"]= "N/A"
 
 def updateAfterShockLines():
 
-    con = mdb.connect(
-        "localhost",
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless"
-    )
+    con = util.getWeatherSenseConnection()
 
     cur = con.cursor()
     # build the data array
@@ -121,14 +117,7 @@ def updateAfterShockLines():
 
 
 def build_graphAfterShock_figure():
-    con = mdb.connect(
-        "localhost",
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless"
-    )
-
-
+    con = util.getWeatherSenseConnection()
 
     #last 14 days
     timeDelta = datetime.timedelta(days=14)
@@ -162,12 +151,7 @@ def build_graphAfterShock_figure():
     return figure
 
 def build_graph1_figure():
-    con = mdb.connect(
-        "localhost",
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless"
-    )
+    con = util.getWeatherSenseConnection()
 
     #last 14 days
     timeDelta = datetime.timedelta(days=7)
@@ -196,12 +180,7 @@ def build_graph1_figure():
     return figure
 
 def build_graph2_figure():
-    con = mdb.connect(
-        "localhost",
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless"
-    )
+    con = util.getWeatherSenseConnection()
 
     #last 14 days
     timeDelta = datetime.timedelta(days=14)

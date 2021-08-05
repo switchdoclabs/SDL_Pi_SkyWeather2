@@ -159,7 +159,7 @@ def getWSAfterShockStatus():
    
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                con = util.getWeatherSenseConnection()
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 timeDelta = datetime.timedelta(minutes=180)
@@ -773,13 +773,6 @@ def updateGauges(id):
         myValue = CPUTemperature
         
         return myValue
-
-    # update Pi cpu temp
-    if (id['GaugeType'] == "pi-cpu"):
-        print("cpu temp=",int(CPUTemperature().temperature))
-        myValue = int(CPUTemperature().temperature)
-        return myValue
-
 
 def updateIndicators(id):    # update indicators
 

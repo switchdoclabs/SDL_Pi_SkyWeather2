@@ -1294,12 +1294,18 @@ def WeatherPage():
     [
             dbc.Row(
             [
-                dbc.Col(Cols,width = 12)
+                dbc.Col(
+                [
+                    buildOutdoorTemperature_Humidity_Graph(),
+                    buildSunlight_UVIndex_Graph(),
+                    buildAQI_Graph(),
+                ],
+                width = 12,
+                )
             ]
-            )
+            ),
    ]
    )
-
 
 
 #########

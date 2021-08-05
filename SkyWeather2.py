@@ -321,7 +321,7 @@ scheduler.add_job(watchDog.patTheDog, 'interval', seconds=20)   # reset the Watc
 
 
 # every 5 days at 00:04, reboot
-#scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day Reboot"]) 
+#scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=6, minute=4, args=["5 day Reboot"]) 
 #TEC change to once a day
 scheduler.add_job(rebootPi, 'cron', day='*', hour=0, minute=4, args=["daily Reboot"]) 
 	

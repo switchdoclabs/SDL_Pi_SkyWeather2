@@ -109,12 +109,3 @@ INFO=20
 JSON=15
 DEBUG=10
 NOTSET=0
-
-# TEC centralize connection creation
-import MySQLdb as mdb
-
-def getSkyWeatherConnection():
-    return mdb.connect('localhost', MySQL_User, MySQL_Password, SCHEMA_SKYWEATHER)
-
-def getWeatherSenceConnection():
-    return mdb.connect('localhost', MySQL_User, MySQL_Password, SCHEMA_WEATHERSENCE_WIRELESS)

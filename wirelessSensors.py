@@ -496,12 +496,7 @@ def processWeatherSenseAfterShock(sLine):
             myTEST = ""
             myTESTDescription = ""
 
-            con = mdb.connect(
-                    "localhost",
-                    "root",
-                    config.MySQL_Password,
-                    "WeatherSenseWireless"
-            )
+            con = util.getWeatherSenseConnection()
 
             cur = con.cursor()
             batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])

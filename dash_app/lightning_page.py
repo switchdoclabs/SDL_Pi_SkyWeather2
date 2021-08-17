@@ -73,9 +73,9 @@ def updateLightningLines():
     if (len(records) > 0):
         English_Metric = readJSON.getJSONValue("English_Metric")
         if (English_Metric == False):
-            LLJSON["LastLightningDistance"] = str(records[0][2]*0.6214) + "miles"
+            LLJSON["LastLightningDistance"] = str(round(records[0][2]*0.6214),1) + "miles"
         else:
-            LLJSON["LastLightningDistance"] = str(records[0][2]) + "km"
+            LLJSON["LastLightningDistance"] = str(round(records[0][2]),1) + "km"
     else:
         LLJSON["LastLightningDistance"]= "N/A"
 

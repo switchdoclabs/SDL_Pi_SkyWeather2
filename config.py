@@ -27,6 +27,7 @@ DefaultCameraRotation = 90
 SkyCamRotationArray = {}
 #SkyCamRotationArray["F329"] = 0
 SkyCamRotationArray["F329"] = 0
+SkyCamRotationArray["26FD"] = 270
 
 
 ############

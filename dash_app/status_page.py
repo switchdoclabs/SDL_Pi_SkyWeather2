@@ -10,6 +10,7 @@ import dash_core_components as dcc
 import dash_daq as daq
 import plotly.express as px 
 import plotly.graph_objs as go
+import skycam_page
 
 import datetime
 import traceback
@@ -188,6 +189,7 @@ def getWSAfterShockStatus():
 
             return "red"
 
+
 def getWSSolarMAXStatus():
    
         try:
@@ -205,6 +207,8 @@ def getWSSolarMAXStatus():
                 cur.execute(query)
                 con.commit()
                 records = cur.fetchall()
+                #print("records=",records)
+                #print("lenrecords=",len(records))
                 if (len(records) == 0):
                     return "gray"
                     
@@ -218,7 +222,50 @@ def getWSSolarMAXStatus():
                 cur.close()
                 con.close()
 
-        if (float(records[0][0]) > 11.2):
+        if (float(records[0][0]) > 2.2):
+            return GREEN
+        else:
+
+            return "red"
+
+def getWSSkyCamStatus(myIndex):
+        mySkyCamList = skycam_page.getSkyCamList()
+        #print("mySkyCamList=", mySkyCamList)
+        #print("myIndex=", myIndex)
+        try:
+            myCam = mySkyCamList[myIndex-31]
+        except:
+            myCam = "NA"
+
+        try:
+                #print("trying database")
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                cur = con.cursor()
+                now = datetime.datetime.now()
+                timeDelta = datetime.timedelta(minutes=10)
+
+
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                query = "SELECT picturesize FROM SkyCamPictures WHERE (timestamp > '%s' AND cameraID = '%s') ORDER BY timestamp DESC LIMIT 1" % (before, myCam)
+                #print("query=", query)
+                cur.execute(query)
+                con.commit()
+                records = cur.fetchall()
+                if (len(records) == 0):
+                    return "gray"
+                    
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+        finally:
+                cur.close()
+                con.close()
+
+        if (float(records[0][0]) > 0):
             return GREEN
         else:
 
@@ -314,7 +361,7 @@ def returnOutdoorIndicator():
      myColor = getWSAfterShockStatus() 
      myIndicatorLayout.append( 
             daq.Indicator(
-                        id = {'type' : 'SPdynamic', 'index': 13}  , 
+                        id = {'type' : 'SPdynamic', 'index': 12}  , 
                         color = myColor,
                         label="WS AfterShock",
                         value=True,
@@ -327,7 +374,7 @@ def returnOutdoorIndicator():
      myColor = getWSSolarMAXStatus() 
      myIndicatorLayout.append( 
             daq.Indicator(
-                        id = {'type' : 'SPdynamic', 'index': 12}  , 
+                        id = {'type' : 'SPdynamic', 'index': 13}  , 
                         color = myColor,
                         label="WS SolarMAX2",
                         value=True,
@@ -336,7 +383,24 @@ def returnOutdoorIndicator():
                         }
                     )
                     )
-   
+    
+     mySkyCamList = skycam_page.getSkyCamList()
+     count = 1
+     for cam in mySkyCamList:
+        myColor = getWSSkyCamStatus(count+30) 
+        myIndicatorLayout.append( 
+            daq.Indicator(
+                        id = {'type' : 'SPdynamic', 'index': 30+count}  , 
+                        color = myColor,
+                        label="SkyCam "+cam,
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
+        count = count + 1
+
      totalLayout.append(dbc.Row( myLabelLayout))
      totalLayout.append(dbc.Row(myIndicatorLayout))
 
@@ -785,6 +849,8 @@ def updateIndicators(id):    # update indicators
         color = getWSAfterShockStatus()
     if (id['index'] == 13):
         color = getWSSolarMAXStatus()
+    if (id['index'] > 30):
+        color = getWSSkyCamStatus(id['index'])
     if ((id['index'] > 0) and (id['index'] < 10)):
         color = getIndoorStatus(id['index'])
          

@@ -191,10 +191,10 @@ def logpageupdate(n_intervals, id, value):
     if (id['index'] == "systemlog"):
         data = log_page.fetchSystemLog()
         fig = log_page.buildTableFig(data,"System Log")
-    
+ 
 
-    #print("<log_page table Update complete",id['index'])
-    return fig
+        #print("<log_page table Update complete",id['index'])
+        return fig
    else:
     raise PreventUpdate
 

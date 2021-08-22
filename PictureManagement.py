@@ -47,6 +47,16 @@ def cleanPictures(source):
                     print(f"threshold = {time.ctime(threshold)} ")
                     print(f"{myFilePath} is created on {time.ctime(creation_time)} and will be deleted")
                     os.remove(myFilePath)
+            # check for no files left
+            files = os.listdir(day_dir_path)
+            if (len(files) == 0):
+                print("delete empty directory ", day_dir_path)
+                os.rmdir(day_dir_path)
+
+        files = os.listdir(device_dir_path)
+        if (len(files) == 0):
+            print("delete empty directory ", device_dir_path)
+            os.rmdir(device_dir_path)
 
     return
 

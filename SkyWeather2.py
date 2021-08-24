@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "027RC1"
+config.SWVERSION = "027RC2"
 # system imports
 
 import time
@@ -130,7 +130,7 @@ if (config.enable_MySQL_Logging):
           "WeatherSenseWireless"
           )
         cur = con.cursor()
-        query = "SELECT * FROM AS433MHZ"
+        query = "SELECT * FROM SkyCamPictures"
         cur.execute(query)
     except:
         #print(traceback.format_exc())
@@ -284,8 +284,12 @@ if (config.SunAirPlus_Present):
 	sampleSunAirPlus()
 	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (state.batteryVoltage, state.batteryCurrent, state.solarVoltage, state.solarCurrent)
 
-sendemail.sendEmail("test", bodyText, subjectText ,config.notifyAddress,  config.fromAddress, "");
+try:
+    sendemail.sendEmail("test", bodyText, subjectText ,config.notifyAddress,  config.fromAddress, "");
+except:
 
+    print(traceback.format_exc())
+    print("Email Exception - not sent - probably not configured")
 
 if (config.USEBLYNK):
      updateBlynk.blynkInit()

@@ -175,10 +175,10 @@ def display_page(pathname):
 ##################
 # Log Page 
 ##################
-@app.callback(Output({'type' : 'LPdynamic', 'index' : MATCH}, 'figure' ),
+@app.callback(Output({'type' : 'LOGPdynamic', 'index' : MATCH}, 'figure' ),
               [Input('main-interval-component','n_intervals'),
-                  Input({'type' : 'LPdynamic', 'index' : MATCH}, 'id' )],
-              [State({'type' : 'LPdynamic', 'index' : MATCH}, 'value'  )]
+                  Input({'type' : 'LOGPdynamic', 'index' : MATCH}, 'id' )],
+              [State({'type' : 'LOGPdynamic', 'index' : MATCH}, 'value'  )]
               )
 
 def logpageupdate(n_intervals, id, value):

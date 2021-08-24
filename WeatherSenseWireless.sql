@@ -30,7 +30,7 @@ USE `WeatherSenseWireless`;
 -- Table structure for table `AQI433MHZ`
 --
 
-CREATE TABLE `AQI433MHZ` (
+CREATE TABLE IF NOT EXISTS `AQI433MHZ` (
   `ID` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `messageID` int(11) NOT NULL,
@@ -67,9 +67,9 @@ CREATE TABLE `AQI433MHZ` (
 -- Table structure for table `Generic`
 --
 
-CREATE TABLE `Generic` (
+CREATE TABLE IF NOT EXISTS  `Generic` (
   `id` int(11) NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `messageID` int(11) NOT NULL,
   `deviceid` int(11) NOT NULL,
   `protocolversion` int(11) NOT NULL,
@@ -84,9 +84,9 @@ CREATE TABLE `Generic` (
 -- Table structure for table `IndoorTHSensors`
 --
 
-CREATE TABLE `IndoorTHSensors` (
+CREATE TABLE IF NOT EXISTS `IndoorTHSensors` (
   `id` int(11) NOT NULL,
-  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `DeviceID` int(11) NOT NULL,
   `ChannelID` int(11) NOT NULL,
   `Temperature` float NOT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE `IndoorTHSensors` (
 -- Table structure for table `SolarMax433MHZ`
 --
 
-CREATE TABLE `SolarMax433MHZ` (
+CREATE TABLE IF NOT EXISTS `SolarMax433MHZ` (
   `ID` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `messageID` int(11) NOT NULL,
@@ -133,7 +133,7 @@ CREATE TABLE `SolarMax433MHZ` (
 -- Table structure for table `TB433MHZ`
 --
 
-CREATE TABLE `TB433MHZ` (
+CREATE TABLE IF NOT EXISTS `TB433MHZ` (
   `ID` int(11) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `messageID` int(11) NOT NULL,
@@ -168,9 +168,9 @@ CREATE TABLE `TB433MHZ` (
 -- Table structure for table `WeatherData`
 --
 
-CREATE TABLE `WeatherData` (
+CREATE TABLE IF NOT EXISTS `WeatherData` (
   `ID` int(11) NOT NULL,
-  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp(),
   `OutdoorTemperature` float NOT NULL,
   `OutdoorHumidity` float NOT NULL,
   `IndoorTemperature` float NOT NULL,
@@ -189,17 +189,79 @@ CREATE TABLE `WeatherData` (
   `BatteryOK` text NOT NULL,
   `CPUTemperature` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Table structure for table `AS433MHZ`
+--
+
+CREATE TABLE IF NOT EXISTS `AS433MHZ` (
+  `ID` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `messageID` int(11) NOT NULL,
+  `deviceid` int(11) NOT NULL,
+  `protocolversion` int(11) NOT NULL,
+  `softwareversion` int(11) NOT NULL,
+  `weathersenseprotocol` int(11) NOT NULL,
+  `eqcount` int(11) NOT NULL,
+  `finaleq_si` float NOT NULL,
+  `finaleq_pga` float NOT NULL,
+  `instanteq_si` float NOT NULL,
+  `instanteq_pga` float NOT NULL,
+  `batteryvoltage` float NOT NULL,
+  `batterycurrent` float NOT NULL,
+  `loadvoltage` float NOT NULL,
+  `loadcurrent` float NOT NULL,
+  `solarvoltage` float NOT NULL,
+  `solarcurrent` float NOT NULL,
+  `auxa` int(11) NOT NULL,
+  `solarpresent` int(11) NOT NULL,
+  `aftershockpresent` int(11) NOT NULL,
+  `keepalivemessage` int(11) NOT NULL,
+  `lowbattery` int(11) NOT NULL,
+  `batterycharge` float NOT NULL,
+  `batterypower` float NOT NULL,
+  `loadpower` float NOT NULL,
+  `solarpower` float NOT NULL,
+  `test` text NOT NULL,
+  `testdescription` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
 
 --
 -- Indexes for dumped tables
 --
 
 --
+-- Indexes for table `AS433MHZ`
+--
+ALTER TABLE `AS433MHZ` ADD PRIMARY KEY (`ID`);
+
+--
 -- Indexes for table `AQI433MHZ`
 --
 ALTER TABLE `AQI433MHZ`
   ADD PRIMARY KEY (`ID`);
-
 --
 -- Indexes for table `Generic`
 --
@@ -272,6 +334,63 @@ ALTER TABLE `WeatherData`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `SkyCamPictures`
+--
+
+CREATE TABLE IF NOT EXISTS `SkyCamPictures` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `messageID` int(11) NOT NULL DEFAULT -1,
+  `cameraID` varchar(10) NOT NULL,
+  `picturename` varchar(100) NOT NULL,
+  `picturesize` int(11) NOT NULL,
+  `resends` int(11) NOT NULL,
+  `resolution` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `SkyCamSensors`
+--
+
+CREATE TABLE IF NOT EXISTS `SkyCamSensors` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `cameraID` varchar(11) NOT NULL,
+  `messageID` int(11) NOT NULL,
+  `softwareversion` int(11) NOT NULL,
+  `messagetype` int(11) NOT NULL,
+  `rssi` int(11) NOT NULL,
+  `internaltemperature` float NOT NULL,
+  `internalhumidity` int(11) NOT NULL,
+  `batteryvoltage` float NOT NULL,
+  `batterycurrent` float NOT NULL,
+  `loadvoltage` float NOT NULL,
+  `loadcurrent` float NOT NULL,
+  `solarvoltage` float NOT NULL,
+  `solarcurrent` float NOT NULL,
+  `batterypower` float NOT NULL,
+  `loadpower` float NOT NULL,
+  `solarpower` float NOT NULL,
+  `gndrreboots` int(11) DEFAULT 0,
+  `batterycharge` float DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+

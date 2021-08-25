@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "027RC1"
+config.SWVERSION = "027RC3"
 # system imports
 
 import time
@@ -76,7 +76,9 @@ def rebootPi(why):
 
 import MySQLdb as mdb
 
-# Program Requirement Checking
+# Program Requirement Checking and new directories
+os.makedirs("static/SkyCam", exist_ok=True)
+
 
 if (config.enable_MySQL_Logging):
     # SkyWeather2 SQL Database

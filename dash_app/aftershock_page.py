@@ -52,7 +52,7 @@ def updateAfterShockLines():
     cur.execute(query)
     records = cur.fetchall()
     if (len(records) > 0):
-        ASJSON["LastEarthquake"] = records[0][0].strftime("%d-%b-%Y %H:%M:%S")
+        ASJSON["LastEarthquake"] = records[0][0].strftime('%Y-%m-%d %H:%M:%S')
         ASJSON["EQCount"] = records[0][1]
     else:
         ASJSON["LastEarthquake"]= "N/A" 
@@ -115,7 +115,7 @@ def updateAfterShockLines():
     cur.execute(query)
     records = cur.fetchall()
     if (len(records) > 0):
-        ASJSON["LastMessageID"] = "ID: "+str(records[0][1]) + " Timestamp: " + records[0][0].strftime("%d-%b-%Y %H:%M:%S")
+        ASJSON["LastMessageID"] = "ID: "+str(records[0][1]) + " Timestamp: " + records[0][0].strftime('%Y-%m-%d %H:%M:%S')
     else:
         ASJSON["LastMessageID"]= "N/A"
 

@@ -8,7 +8,7 @@ https://forum.switchdoc.com/thread/1452/skyweather2-software-releases
 
 August 25, 2021 - Version 027 - Full support of Solar SkyCam and Time Lapse<BR>
 
-do this:
+to install on SDL SD Card do this:
 
 sudo pip3 install python-aqi<BR>
 sudo pip3 install ffmpeg<BR>

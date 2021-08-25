@@ -60,7 +60,7 @@ def updateLightningLines():
     cur.execute(query)
     records = cur.fetchall()
     if (len(records) > 0):
-        LLJSON["LastLightning"] = records[0][0].strftime("%d-%b-%Y %H:%M:%S")
+        LLJSON["LastLightning"] = records[0][0].strftime('%Y-%m-%d %H:%M:%S')
     else:
         LLJSON["LastLightning"]= "N/A" 
          

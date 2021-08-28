@@ -24,7 +24,7 @@ def getStateJSON():
         data['IndoorHumidity'] = state.IndoorHumidity
         data['Rain60Minutes'] = state.Rain60Minutes
         data['SunlightVisible'] = state.SunlightVisible
-        data['SunlightUVIndex '] = state.SunlightUVIndex 
+        data['SunlightUVIndex'] = state.SunlightUVIndex 
         data['WindSpeed'] = state.WindSpeed
         data['WindGust'] = state.WindGust 
         data['WindDirection'] = state.WindDirection 

@@ -6,7 +6,7 @@ See full bug list and info on releases at:<BR>
 
 https://forum.switchdoc.com/thread/1452/skyweather2-software-releases
 
-August 25, 2021 - Version 027 - Full support of Solar SkyCam and Time Lapse<BR>
+August 28, 2021 - Version 027.1 - MQTT typo fixes, split indoor T/H to seperate channels - thanks Zara<BR>
 
 to install on SDL SD Card do this:
 
@@ -14,6 +14,7 @@ sudo pip3 install python-aqi<BR>
 sudo pip3 install ffmpeg<BR>
 
 
+August 25, 2021 - Version 027 - Full support of Solar SkyCam and Time Lapse<BR>
 July 28, 2021 - Version 026.6 - Second Typo in wirelessSensors.py fixed<BR>
 July 28, 2021 - Version 026.5 - Typo in wirelessSensors.py fixed<BR>
 July 24, 2021 - Version 026.4 - Various Small Bugs fixed and Blynk updated<BR>

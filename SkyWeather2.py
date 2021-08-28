@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "027"
+config.SWVERSION = "027.1"
 # system imports
 
 import time
@@ -186,7 +186,7 @@ try:
         time.sleep(3)
         myData = DustSensor.get_data()
         #print ("data=",myData)
-
+        
         config.DustSensor_Present = True
 
 except:

@@ -155,7 +155,7 @@ print ("Program Started at:"+ time.strftime("%Y-%m-%d %H:%M:%S"))
 print ("##########################################################")
 print ("")
 
-#
+
 if (config.SWDEBUG):
     print("Starting pigpio daemon")
 
@@ -185,11 +185,13 @@ try:
         DustSensor.powerOnDustSensor()
         time.sleep(3)
         myData = DustSensor.get_data()
-        #print ("data=",myData)
-        
+        print ("data=",myData)
+        DustSensor.powerOffDustSensor()
+
         config.DustSensor_Present = True
 
 except:
+        print(traceback.format_exc())
 
         config.DustSensor_Present = False
 
@@ -303,6 +305,8 @@ import paho.mqtt.client as mqtt
 # set up MQTT
 if (config.MQTT_Enable):
     state.mqtt_client = mqtt.Client(client_id="SkyWeather2") 
+    if (config.MQTT_Authentication):
+        state.mqtt_client.username_pw_set(config.MQTT_Username, config.MQTT_Password)
     state.mqtt_client.connect(config.MQTT_Server_URL, port=config.MQTT_Port_Number)
 
 import publishMQTT

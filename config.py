@@ -87,6 +87,9 @@ MQTT_Enable = None
 MQTT_Server_URL = None
 MQTT_Port_Number = None
 MQTT_Send_Seconds = None
+MQTT_Authentication = None
+MQTT_Username = None
+MQTT_Password = None
 English_Metric = None
 
 import readJSON

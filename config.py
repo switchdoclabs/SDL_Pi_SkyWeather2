@@ -25,6 +25,7 @@ STATIONHARDWARE=""
 #default
 DefaultCameraRotation = 90
 SkyCamRotationArray = {}
+SkyCamRotationArray["DE45"] = 0
 #SkyCamRotationArray["F329"] = 0
 SkyCamRotationArray["F329"] = 0
 SkyCamRotationArray["26FD"] = 270

@@ -118,6 +118,7 @@ def processFT020T(sLine, lastFT020TTimeStamp ):
     ucHumi = var["humidity"]
 
 
+
     wTemp = (wTemp - 400)/10.0
     # deal with error condtions
     if (wTemp > 140.0):
@@ -161,6 +162,8 @@ def processFT020T(sLine, lastFT020TTimeStamp ):
         state.BatteryOK = "OK"
     else:
         state.BatteryOK = "LOW"
+
+    state.SerialNumber = var['id']
 
     #print("looking for buildJSONSemaphore acquire")
     state.buildJSONSemaphore.acquire()

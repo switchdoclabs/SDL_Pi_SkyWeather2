@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "027.1"
+config.SWVERSION = "027.2"
 # system imports
 
 import time
@@ -143,7 +143,27 @@ if (config.enable_MySQL_Logging):
         print("SkyWeather2 Stopped")
         print("--------")
         sys.exit("SkyWeather2 Requirements Error Exit")
+    # update weather table 27.2 update
+    try:
 
+        con = mdb.connect(
+          "localhost",
+          "root",
+          config.MySQL_Password,
+          "SkyWeather2"
+          )
+        cur = con.cursor()
+        query = "SELECT SerialNumber FROM WeatherData"
+        cur.execute(query)
+    except:
+        print("--------")
+        print("MySQL Database SkyWeather2 Updates Not Installed.")
+        print("Run this command:")
+        print("sudo mysql -u root -p SkyWeather2 < 27.2.DataBaseUpdate.sql")
+        print("SkyWeather2 Stopped")
+        print("--------")
+        sys.exit("SkyWeather2 Requirements Error Exit")
+        
 
 # main program
 print ("")
@@ -343,7 +363,7 @@ scheduler.add_job(watchDog.patTheDog, 'interval', seconds=20)   # reset the Watc
 
 
 # every 5 days at 00:04, reboot
-scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day Reboot"]) 
+#scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day Reboot"]) 
 	
 #check for Barometric Trend (every 15 minutes)
 scheduler.add_job(util.barometricTrend, 'interval', seconds=15*60)

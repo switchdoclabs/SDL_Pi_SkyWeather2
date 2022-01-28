@@ -147,16 +147,16 @@ def sendMessage(client, cameraID, messageType):
 # main program
 
 # what ID to test
-cameraID = "3BAD"
+#cameraID = "3BAD"
 #cameraID = "F329"
-#cameraID = "DE45"
+cameraID = "DE45"
 #cameraID = "26FD"
 #cameraID = "+"   #sends to all cameras
 # this command will be sent after an INFO messagetype 4  from cameraID
-sendWhatCommand = MQTTERASEMEMORY
+#sendWhatCommand = MQTTERASEMEMORY
 #sendWhatCommand = MQTTCYCLECHANGE
 #sendWhatCommand = MQTTRESOLUTION 
-#sendWhatCommand = MQTTBLINKXTIMES 
+sendWhatCommand = MQTTBLINKXTIMES 
 #sendWhatCommand = MQTTUPDATEPARAM 
 #sendWhatCommand = MQTTSTARTDELAY 
 #sendWhatCommand =  MQTTREBOOT 

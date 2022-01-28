@@ -6,6 +6,17 @@ See full bug list and info on releases at:<BR>
 
 https://forum.switchdoc.com/thread/1452/skyweather2-software-releases
 
+January 27, 2022 - Version 027.2 - Fixed Multiple WeatherRack2 Use Case - Serial Number stored in database<BR>
+
+To update SkyWeather2 database, run the following command:<BR>
+<BR>
+sudo mysql -u root -p SkyWeather2 < 27.2.DataBaseUpdate.sql<BR>
+<BR>
+
+You also need to go into your https://github.com/switchdoclabs/rtl_433<BR>
+directory, do a git pull and then rebuild rtl_433 as shown in the README.md<BR>
+
+
 August 28, 2021 - Version 027.1 - MQTT typo fixes, split indoor T/H to seperate channels - thanks Zara<BR>
 
 to install on SDL SD Card do this:

@@ -101,6 +101,7 @@ WS_Hour24_AQI = 0.0
 
 BatteryOK = "OK"
 CPUTemperature = 0.0
+SerialNumber = 0
 
 # Indoor Temperature Sensor Array
 

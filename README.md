@@ -15,7 +15,7 @@ sudo mysql -u root -p SkyWeather2 < 27.2.DataBaseUpdate.sql<BR>
 
 You also need to go into your https://github.com/switchdoclabs/rtl_433<BR>
 directory, do a git pull and then rebuild rtl_433 as shown in the README.md<BR>
-
+On the SDL SDCard, this is under /home/pi/SDR<BR>
 
 August 28, 2021 - Version 027.1 - MQTT typo fixes, split indoor T/H to seperate channels - thanks Zara<BR>
 

@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "027.2"
+config.SWVERSION = "027.3"
 # system imports
 
 import time
@@ -143,6 +143,7 @@ if (config.enable_MySQL_Logging):
         print("SkyWeather2 Stopped")
         print("--------")
         sys.exit("SkyWeather2 Requirements Error Exit")
+
     # update weather table 27.2 update
     try:
 
@@ -160,6 +161,27 @@ if (config.enable_MySQL_Logging):
         print("MySQL Database SkyWeather2 Updates Not Installed.")
         print("Run this command:")
         print("sudo mysql -u root -p SkyWeather2 < 27.2.DataBaseUpdate.sql")
+        print("SkyWeather2 Stopped")
+        print("--------")
+        sys.exit("SkyWeather2 Requirements Error Exit")
+
+    # update weather table 27.3 update
+    try:
+
+        con = mdb.connect(
+          "localhost",
+          "root",
+          config.MySQL_Password,
+          "SkyWeather2"
+          )
+        cur = con.cursor()
+        query = "SELECT RSSI FROM WeatherData"
+        cur.execute(query)
+    except:
+        print("--------")
+        print("MySQL Database SkyWeather2 Updates for 27.3 Not Installed.")
+        print("Run this command:")
+        print("sudo mysql -u root -p SkyWeather2 < 27.3.DataBaseUpdate.sql")
         print("SkyWeather2 Stopped")
         print("--------")
         sys.exit("SkyWeather2 Requirements Error Exit")
@@ -379,7 +401,7 @@ if (config.USEWSAQI):
 
 # weather sensors
 
-#scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=3*60)
+#scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=2*60)
 scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=15*60)
 
 scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=15*60)

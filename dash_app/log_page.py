@@ -135,7 +135,7 @@ def updateLogs():
 
       data = fetchSystemLog()
       fig = buildTableFig(data,"System Log")
-      layout.append(dcc.Graph(id={"type": "LPdynamic", "index": "systemlog"},figure=fig))	
+      layout.append(dcc.Graph(id={"type": "LOGPdynamic", "index": "systemlog"},figure=fig))	
 
       return layout
 

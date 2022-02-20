@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "026.5"
+config.SWVERSION = "027.3"
 # system imports
 
 import time
@@ -39,6 +39,11 @@ import util
 from  bmp280 import BMP280
 import SkyCamera
 import os
+
+import SkyCamRemote
+import PictureManagement
+import ProcessPicture
+
 # Scheduler Helpers
 
 # print out faults inside events
@@ -76,7 +81,9 @@ def rebootPi(why):
 
 import MySQLdb as mdb
 
-# Program Requirement Checking
+# Program Requirement Checking and new directories
+os.makedirs("static/SkyCam", exist_ok=True)
+
 
 if (config.enable_MySQL_Logging):
     # SkyWeather2 SQL Database
@@ -113,7 +120,7 @@ if (config.enable_MySQL_Logging):
 
         con = util.getWeatherSenseConnection()      
         cur = con.cursor()
-        query = "SELECT * FROM AS433MHZ"
+        query = "SELECT * FROM SkyCamPictures"
         cur.execute(query)
 
     except:
@@ -126,6 +133,48 @@ if (config.enable_MySQL_Logging):
         print("--------")
         sys.exit("SkyWeather2 Requirements Error Exit")
 
+    # update weather table 27.2 update
+    try:
+
+        con = mdb.connect(
+          "localhost",
+          "root",
+          config.MySQL_Password,
+          "SkyWeather2"
+          )
+        cur = con.cursor()
+        query = "SELECT SerialNumber FROM WeatherData"
+        cur.execute(query)
+    except:
+        print("--------")
+        print("MySQL Database SkyWeather2 Updates Not Installed.")
+        print("Run this command:")
+        print("sudo mysql -u root -p SkyWeather2 < 27.2.DataBaseUpdate.sql")
+        print("SkyWeather2 Stopped")
+        print("--------")
+        sys.exit("SkyWeather2 Requirements Error Exit")
+
+    # update weather table 27.3 update
+    try:
+
+        con = mdb.connect(
+          "localhost",
+          "root",
+          config.MySQL_Password,
+          "SkyWeather2"
+          )
+        cur = con.cursor()
+        query = "SELECT RSSI FROM WeatherData"
+        cur.execute(query)
+    except:
+        print("--------")
+        print("MySQL Database SkyWeather2 Updates for 27.3 Not Installed.")
+        print("Run this command:")
+        print("sudo mysql -u root -p SkyWeather2 < 27.3.DataBaseUpdate.sql")
+        print("SkyWeather2 Stopped")
+        print("--------")
+        sys.exit("SkyWeather2 Requirements Error Exit")
+        
 
 # main program
 print ("")
@@ -168,7 +217,7 @@ try:
         time.sleep(3)
         myData = DustSensor.get_data()
         #print ("data=",myData)
-
+        
         config.DustSensor_Present = True
 
 except:
@@ -268,8 +317,12 @@ bodyText = "SkyWeather2 Version "+config.SWVERSION+ " Startup \n"+ipAddress.deco
 #	sampleSunAirPlus()
 #	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (state.batteryVoltage, state.batteryCurrent, state.solarVoltage, state.solarCurrent)
 
-sendemail.sendEmail("test", bodyText, subjectText ,config.notifyAddress,  config.fromAddress, "");
+try:
+    sendemail.sendEmail("test", bodyText, subjectText ,config.notifyAddress,  config.fromAddress, "");
+except:
 
+    print(traceback.format_exc())
+    print("Email Exception - not sent - probably not configured")
 
 if (config.USEBLYNK):
      updateBlynk.blynkInit()
@@ -336,24 +389,29 @@ if (config.USEWSAQI):
     wirelessSensors.WSread_AQI() # get current value
     scheduler.add_job(wirelessSensors.WSread_AQI, 'interval', seconds=60*20)
    
-
 # weather sensors
 # TEC changed to 5 minute intervals
 # TODO externalize
 print("setting data record frequency = ", config.Record_Weather_Frequency)
 scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=int(config.Record_Weather_Frequency)*60)
-#scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=15*60)
 
-#scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=5*60)
 scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=15*60)
 
-        
-
-
 # sky camera
-if (config.USEWEATHERSTEM):
-    if (config.Camera_Present):
+if (config.Camera_Present):
         scheduler.add_job(SkyCamera.takeSkyPicture, 'interval', seconds=config.INTERVAL_CAM_PICS__SECONDS) 
+
+
+# process SkyCam Remote bi-directional messages 
+if (config.MQTT_Enable== True):
+    scheduler.add_job(SkyCamRemote.startMQTT)  # run in background
+
+# SkyCam Management Programs
+scheduler.add_job(PictureManagement.cleanPictures, 'cron', day='*', hour=3, minute=4, args=["Daily Picture Clean"])
+
+scheduler.add_job(PictureManagement.cleanTimeLapses, 'cron', day='*', hour=3, minute=10, args=["Daily Time Lapse Clean"])
+
+scheduler.add_job(PictureManagement.buildTimeLapse, 'cron', day='*', hour=5, minute=30, args=["Time Lapse Generation"])
 
 
 # start scheduler

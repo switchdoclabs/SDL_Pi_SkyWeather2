@@ -25,6 +25,7 @@ import aftershock_page
 import aqi_page
 import lightning_page
 import solarmax_page
+import skycam_page
 
 from non_impl import NotImplPage 
 
@@ -39,6 +40,9 @@ logging.getLogger('werkzeug').setLevel(logging.ERROR)
 UpdateCWJSONLock = threading.Lock()
 SGSDASHSOFTWAREVERSION = "006"
 
+STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+
+print (STATIC_PATH)
 
 
 newValveState = ""
@@ -64,6 +68,14 @@ app.layout =  html.Div(
             interval=10*1000, # in milliseconds - leave as 10 seconds
             n_intervals=0
             ) ,
+
+        dcc.Interval(
+            id='minute-interval-component',
+            interval=60 * 1000,  # in milliseconds
+            n_intervals=0
+        ),
+
+
        #dcc.Interval(
        #     id='weather-update-interval-component',
        #     interval=5*1000, # in milliseconds
@@ -133,6 +145,9 @@ def display_page(pathname):
     if pathname == '/weather_page':
         myLayout = weather_page.WeatherPage()
         myLayout2 = ""
+    if pathname == '/skycam_page':
+        myLayout = skycam_page.SkyCamPage()
+        myLayout2 = ""
     if pathname == '/indoorth':
         myLayout = indoorth.IndoorTHPage()
         myLayout2 = ""
@@ -160,10 +175,10 @@ def display_page(pathname):
 ##################
 # Log Page 
 ##################
-@app.callback(Output({'type' : 'LPdynamic', 'index' : MATCH}, 'figure' ),
+@app.callback(Output({'type' : 'LOGPdynamic', 'index' : MATCH}, 'figure' ),
               [Input('main-interval-component','n_intervals'),
-                  Input({'type' : 'LPdynamic', 'index' : MATCH}, 'id' )],
-              [State({'type' : 'LPdynamic', 'index' : MATCH}, 'value'  )]
+                  Input({'type' : 'LOGPdynamic', 'index' : MATCH}, 'id' )],
+              [State({'type' : 'LOGPdynamic', 'index' : MATCH}, 'value'  )]
               )
 
 def logpageupdate(n_intervals, id, value):
@@ -176,10 +191,10 @@ def logpageupdate(n_intervals, id, value):
     if (id['index'] == "systemlog"):
         data = log_page.fetchSystemLog()
         fig = log_page.buildTableFig(data,"System Log")
-    
+ 
 
-    #print("<log_page table Update complete",id['index'])
-    return fig
+        #print("<log_page table Update complete",id['index'])
+        return fig
    else:
     raise PreventUpdate
 
@@ -451,7 +466,7 @@ def updateIndoorTHUpdate(n_intervals,id, value):
     [State({'type': 'Lightninggraph', 'index': MATCH}, 'value')]
 )
 def update_metrics(n_intervals, id, value):
-    print("n_intervals=", n_intervals)
+    #print("n_intervals=", n_intervals)
     myIndex = id['index']
     # build figures
     if (myIndex == '1'):
@@ -612,6 +627,59 @@ def update_metrics(n_intervals, id, value):
     return [figure]
 
 ##########################
+
+
+# skycam_page callbacks
+
+@app.callback(
+    [
+        Output({'type': 'SkyCamGraphs', 'index': 0}, 'children'),
+    ],
+    [Input('minute-interval-component', 'n_intervals'),
+     Input({'type': 'SkyCamGraphs', 'index': 0}, 'id')],
+    [State({'type': 'SkyCamGraphs', 'index': 0}, 'value')]
+)
+def update_sky_metrics(n_intervals, id, value):
+    print("skycam_n_intervals=", n_intervals)
+    myIndex = id['index']
+    # build figures
+    SkyCamList = skycam_page.getSkyCamList()
+    output = skycam_page.build_solar_graphs(SkyCamList)
+    #print("output=", output)
+    return [output]
+
+
+
+
+@app.callback(
+    [
+        Output({'type': 'SkyCamPics', 'index': 0}, 'children'),
+    ],
+    [Input('minute-interval-component', 'n_intervals'),
+     Input({'type': 'SkyCamPics', 'index': 0}, 'id')],
+    [State({'type': 'SkyCamPics', 'index': 0}, 'value')]
+)
+def update_skypic_metrics(n_intervals, id, value):
+    print("skycampic_n_intervals=", n_intervals)
+    myIndex = id['index']
+    # build pictures
+    SkyCamList = skycam_page.getSkyCamList()
+    output = skycam_page.buildPics(SkyCamList)
+    #print("picoutput=", output)
+    return [output]
+
+
+
+
+
+
+
+@app.server.route('/static/<resource>')
+def serve_static(resource):
+        return flask.send_from_directory(STATIC_PATH, resource)
+
+
+
 
 if __name__ == '__main__':
     print("dash_app running on port 8050")

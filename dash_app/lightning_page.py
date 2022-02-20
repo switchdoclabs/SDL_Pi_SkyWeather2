@@ -56,7 +56,7 @@ def updateLightningLines():
     cur.execute(query)
     records = cur.fetchall()
     if (len(records) > 0):
-        LLJSON["LastLightning"] = records[0][0].strftime("%d-%b-%Y %H:%M:%S")
+        LLJSON["LastLightning"] = records[0][0].strftime('%Y-%m-%d %H:%M:%S')
     else:
         LLJSON["LastLightning"]= "N/A" 
          
@@ -69,9 +69,9 @@ def updateLightningLines():
     if (len(records) > 0):
         English_Metric = readJSON.getJSONValue("English_Metric")
         if (English_Metric == False):
-            LLJSON["LastLightningDistance"] = str(records[0][2])*0.6214 + "miles"
+            LLJSON["LastLightningDistance"] = str(round(records[0][2]*0.6214,1)) + "miles"
         else:
-            LLJSON["LastLightningDistance"] = str(records[0][2]) + "km"
+            LLJSON["LastLightningDistance"] = str(round(records[0][2]),1) + "km"
     else:
         LLJSON["LastLightningDistance"]= "N/A"
 

@@ -10,7 +10,6 @@ import random
 import sys
 from subprocess import PIPE, Popen, STDOUT
 from threading  import Thread
-#import json
 import datetime
 import buildJSON
 
@@ -23,13 +22,17 @@ import time
 import os
 import signal
 import traceback
+sys.path.append('./SDP_Pi_HM3301/aqi')
+import aqi
+
+import WeatherRack2Array
 
 import MySQLdb as mdb
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147']
-cmd = ['/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147', '-R', '148', '-R', '150', '-R', '151', '-R', '152']
 
+cmd = ['/usr/local/bin/rtl_433', '-q', '-M', 'level', '-F', 'json', '-R', '146', '-R', '147', '-R', '148', '-R', '150', '-R', '151', '-R', '152']
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 #   A few helper functions...
@@ -76,7 +79,7 @@ def mqtt_publish_single(message, topic):
 
 # process functions
 
-def processFT020T(sLine, lastFT020TTimeStamp ):
+def processFT020T(sLine, lastFT020TTimeStamp, UpdateWR2 ):
 
     if (config.SWDEBUG):
         sys.stdout.write("processing FT020T Data\n")
@@ -115,6 +118,7 @@ def processFT020T(sLine, lastFT020TTimeStamp ):
     wTemp = var["temperature"]
 
     ucHumi = var["humidity"]
+
 
 
     wTemp = (wTemp - 400)/10.0
@@ -161,9 +165,20 @@ def processFT020T(sLine, lastFT020TTimeStamp ):
     else:
         state.BatteryOK = "LOW"
 
+    state.SerialNumber = var['id']
+    state.RSSI = var['rssi']
+    state.SNR = var['snr']
+    state.NOISE = var['noise']
+
+
+
+
     #print("looking for buildJSONSemaphore acquire")
     state.buildJSONSemaphore.acquire()
     #print("buildJSONSemaphore acquired")
+    if (UpdateWR2):
+        # now add to MWR2Array
+        WeatherRack2Array.addWR2Reading(var)
     state.StateJSON = buildJSON.getStateJSON()
     #if (config.SWDEBUG):
     #    print("currentJSON = ", state.StateJSON)
@@ -193,7 +208,7 @@ def processF016TH(sLine):
     state.lastIndoorReading = nowStr()
 
     if (config.MQTT_Enable == True):
-        mqtt_publish_single(sLine, "F016TH")
+         mqtt_publish_single(sLine, f"F016TH/{var['channel']}")
 
 
 
@@ -263,7 +278,7 @@ def processWeatherSenseTB(sLine):
             batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])/1000.0
             loadPower  =  float(state["loadcurrent"])* float(state["loadvoltage"])/1000.0
             solarPower =  float(state["solarpanelcurrent"])* float(state["solarpanelvoltage"])/1000.0
-            batteryCharge = util.returnPercentLeftInBattery(batteryvoltage, 13.2) 
+            batteryCharge = util.returnPercentLeftInBattery(state["batteryvoltage"], 4.2) 
 
             fields = "deviceid, protocolversion, softwareversion, weathersenseprotocol,irqsource, previousinterruptresult, lightninglastdistance, sparebyte, lightningcount, interruptcount,  batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, batterycharge, messageID, batterypower, loadpower, solarpower, test, testdescription"
             values = "%d, %d, %d, %d, %d, %d, %d, %d,%d, %d,%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%d,%6.2f, %6.2f, %6.2f,\'%s\', \'%s\'" % (
@@ -339,6 +354,19 @@ def processWeatherSenseAQI(sLine):
                 AQI24Hour = (myAQITotal + float(state['AQI'])) / (len(myAQIRecords) + 1)
             else:
                 AQI24Hour = 0.0
+
+
+            # HOTFIX for AQI problem from the wireless AQI sensor
+            # recalculate AQI from RAW values and write in database
+
+            myaqi = aqi.to_aqi([
+                (aqi.POLLUTANT_PM25, state['PM2.5A']),
+                (aqi.POLLUTANT_PM10, state['PM10A'])
+                ])
+            if (myaqi > 500):
+                myaqi = 500
+            print("myaqi=", myaqi)
+            state['AQI'] = myaqi
 
             fields = "deviceid, protocolversion, softwareversion, weathersenseprotocol, PM1_0S, PM2_5S, PM10S, PM1_0A, PM2_5A, PM10A, AQI, AQI24Hour, batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, batterycharge, messageID, batterypower, loadpower, solarpower, test, testdescription"
             values = "%d, %d, %d, %d, %d, %d, %d, %d, %d,%d, %d, %6.2f,%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f,%6.2f,%6.2f,%d,%6.2f, %6.2f, %6.2f,\'%s\', \'%s\'" % (
@@ -609,7 +637,7 @@ def readSensors():
                 if (( sLine.find('F007TH') != -1) or ( sLine.find('F016TH') != -1)): 
                     processF016TH(sLine)
                 if (( sLine.find('FT0300') != -1) or ( sLine.find('FT020T') != -1)): 
-                    lastFT020TTimeStamp = processFT020T(sLine, lastFT020TTimeStamp)
+                    lastFT020TTimeStamp = processFT020T(sLine, lastFT020TTimeStamp, True)
             if (sLine.find('SolarMAX') != -1):
                 processSolarMAX(sLine)
 

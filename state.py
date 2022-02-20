@@ -101,10 +101,20 @@ WS_Hour24_AQI = 0.0
 
 BatteryOK = "OK"
 CPUTemperature = 0.0
+SerialNumber = 0
+RSSI = 0.0
+SNR = 0.0
+NOISE = 0.0
+
+# Multiple WeatherRack2 Array
+
+MWR2Array = []
 
 # Indoor Temperature Sensor Array
 
 IndoorTH = []
+
+
 
 
 # status Values
@@ -192,6 +202,10 @@ def printState():
     print ("WS_Hour24_AQI = ",  WS_Hour24_AQI )
     print ("Main Battery Status = ",  BatteryOK )
     print ("CPU Temperature = ",  CPUTemperature )
+    print ("Serial Number = ",  SerialNumber )
+    print ("RSSI = ",  RSSI )
+    print ("SNR = ",  SNR )
+    print ("NOISE = ",  NOISE )
 
     
     print ("-------------")

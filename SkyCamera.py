@@ -6,14 +6,15 @@ import picamera
 import state
 
 import hashlib
-
-
+import glob
+import datetime
+import os
 
 from PIL import ImageFont, ImageDraw, Image
 import traceback
 import util
 import datetime as dt
-
+import MySQLdb as mdb
 
 import config
 import pclogging
@@ -102,6 +103,67 @@ def takeSkyPicture():
         pil_im.save('dash_app/assets/skycamera.jpg', format= 'JPEG')
         pil_im.save('static/skycamera.jpg', format= 'JPEG')
         pil_im.save('static/skycameraprocessed.jpg', format= 'JPEG')
+
+        cameraID = "SkyCamPi"
+        currentpicturefilename = "static/CurrentPicture/"+cameraID+".jpg"
+        currentpicturedashfilename = "dash_app/assets/"+cameraID+"_1.jpg"
+        for name in glob.glob("dash_app/assets/"+cameraID+"_*.jpg"):
+            os.remove(name)
+        
+        # put together the file name
+        fileDate = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        fileDay = datetime.datetime.now().strftime("%Y-%m-%d")
+
+        singlefilename =cameraID+"_1_"+fileDate+".jpg"
+        dirpathname="static/SkyCam/" + cameraID+ "/"+fileDay
+
+        os.makedirs(dirpathname, exist_ok=True)
+        os.makedirs("static/CurrentPicture", exist_ok=True)
+        filename = dirpathname+"/"+singlefilename
+
+
+        pil_im.save(filename, format= 'JPEG')
+        pil_im.save(currentpicturefilename, format= 'JPEG')
+        pil_im.save(currentpicturedashfilename, format= 'JPEG')
+
+        FileSize =os.path.getsize(currentpicturefilename)
+
+        if (config.enable_MySQL_Logging == True):
+            # open mysql database
+            # write log
+            # commit
+            # close
+            try:
+    
+                con = mdb.connect(
+                    "localhost",
+                    "root",
+                    config.MySQL_Password,
+                    "WeatherSenseWireless" 
+                )
+
+                cur = con.cursor()
+    
+                fields = "cameraID, picturename, picturesize, messageID, resends,resolution"
+
+                values = "\'%s\', \'%s\', %d, %d, %d, %d" % (cameraID, singlefilename, FileSize, 1, 0, 0)  
+                query = "INSERT INTO SkyCamPictures (%s) VALUES(%s )" % (fields, values)
+                print("query=", query)
+                cur.execute(query)
+                con.commit()
+            except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0], e.args[1]))
+                con.rollback()
+                # sys.exit(1)
+    
+            finally:
+                cur.close()
+                con.close()
+    
+                del cur
+                del con
+
 
         time.sleep(2)
 

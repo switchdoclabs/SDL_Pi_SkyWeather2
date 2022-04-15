@@ -78,7 +78,7 @@ def sendMessage(client, cameraID, messageType):
             myMessage = {
                 "messagetype": MQTTCYCLECHANGE,
                 "myip": myIP,
-                "timetosleep": 170
+                "timetosleep": 60
                 }
 
             myMessage = json.dumps(myMessage)
@@ -149,14 +149,14 @@ def sendMessage(client, cameraID, messageType):
 # what ID to test
 #cameraID = "3BAD"
 #cameraID = "F329"
-cameraID = "DE45"
-#cameraID = "26FD"
+#cameraID = "DE45"
+cameraID = "26FD"
 #cameraID = "+"   #sends to all cameras
 # this command will be sent after an INFO messagetype 4  from cameraID
 #sendWhatCommand = MQTTERASEMEMORY
-#sendWhatCommand = MQTTCYCLECHANGE
+sendWhatCommand = MQTTCYCLECHANGE
 #sendWhatCommand = MQTTRESOLUTION 
-sendWhatCommand = MQTTBLINKXTIMES 
+#sendWhatCommand = MQTTBLINKXTIMES 
 #sendWhatCommand = MQTTUPDATEPARAM 
 #sendWhatCommand = MQTTSTARTDELAY 
 #sendWhatCommand =  MQTTREBOOT 

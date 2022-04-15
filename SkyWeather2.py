@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "027.3"
+config.SWVERSION = "027.4"
 # system imports
 
 import time
@@ -385,7 +385,7 @@ scheduler.add_job(watchDog.patTheDog, 'interval', seconds=20)   # reset the Watc
 
 
 # every 5 days at 00:04, reboot
-scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day Reboot"]) 
+#scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day Reboot"]) 
 	
 #check for Barometric Trend (every 15 minutes)
 scheduler.add_job(util.barometricTrend, 'interval', seconds=15*60)

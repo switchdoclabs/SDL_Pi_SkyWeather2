@@ -190,6 +190,43 @@ def getWSAfterShockStatus():
             return "red"
 
 
+def getWSRadSenseStatus():
+   
+        try:
+                #print("trying database")
+                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                cur = con.cursor()
+                now = datetime.datetime.now()
+                timeDelta = datetime.timedelta(minutes=180)
+
+
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                query = "SELECT batteryvoltage FROM RAD433MHZ WHERE timestamp > '%s' ORDER BY timestamp DESC LIMIT 1" % (before)
+                #print("query=", query)
+                cur.execute(query)
+                con.commit()
+                records = cur.fetchall()
+                if (len(records) == 0):
+                    return "gray"
+                    
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+        finally:
+                cur.close()
+                con.close()
+
+        if (float(records[0][0]) > 2.9):
+            return GREEN
+        else:
+
+            return "red"
+
+
 def getWSSolarMAXStatus():
    
         try:
@@ -370,11 +407,24 @@ def returnOutdoorIndicator():
                         }
                     )
                     )
+
+     myColor = getWSRadSenseStatus() 
+     myIndicatorLayout.append( 
+            daq.Indicator(
+                        id = {'type' : 'SPdynamic', 'index': 13}  , 
+                        color = myColor,
+                        label="WS Radiation",
+                        value=True,
+                        style={
+                            'margin': '10px'
+                        }
+                    )
+                    )
    
      myColor = getWSSolarMAXStatus() 
      myIndicatorLayout.append( 
             daq.Indicator(
-                        id = {'type' : 'SPdynamic', 'index': 13}  , 
+                        id = {'type' : 'SPdynamic', 'index': 14}  , 
                         color = myColor,
                         label="WS SolarMAX2",
                         value=True,
@@ -848,6 +898,8 @@ def updateIndicators(id):    # update indicators
     if (id['index'] == 12):
         color = getWSAfterShockStatus()
     if (id['index'] == 13):
+        color = getWSRadSenseStatus()
+    if (id['index'] == 14):
         color = getWSSolarMAXStatus()
     if (id['index'] > 30):
         color = getWSSkyCamStatus(id['index'])

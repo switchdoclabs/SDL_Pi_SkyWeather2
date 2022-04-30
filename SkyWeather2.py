@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import config
 
-config.SWVERSION = "027.4"
+config.SWVERSION = "027.5"
 # system imports
 
 import time
@@ -133,6 +133,8 @@ if (config.enable_MySQL_Logging):
           )
         cur = con.cursor()
         query = "SELECT * FROM SkyCamPictures"
+        cur.execute(query)
+        query = "SELECT * FROM RAD433MHZ"
         cur.execute(query)
     except:
         #print(traceback.format_exc())

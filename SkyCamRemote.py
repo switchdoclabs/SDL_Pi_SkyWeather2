@@ -57,7 +57,7 @@ def MTon_connect(client, userdata, flags, rc):
     global GoodMessage, Resends
     GoodMessage = 0
     Resends = 0
-    print("Connected with result code "+str(rc))
+    #print("Connected with result code "+str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe("SKYCAM/+/PICTURECHUNKS")

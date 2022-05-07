@@ -8,6 +8,8 @@ https://forum.switchdoc.com/thread/1452/skyweather2-software-releases
 
 May 7, 2022 - Version 027.6 - add required updateWeb files <BR> 
 
+Run sudo pip3 install SafecastPy
+
 Run SkyWeather2.py from the command line to test<BR>
 sudo python3 SkyWeather2.py<BR>
 

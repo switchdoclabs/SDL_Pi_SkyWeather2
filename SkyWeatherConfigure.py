@@ -267,6 +267,9 @@ class SkyWeatherConfigure(App):
         self.MQTT_Server_URL = "localhost" 
         self.MQTT_Port_Number = 1883 
         self.MQTT_Send_Seconds = 500 
+        self.MQTT_Authentication = False
+        self.MQTT_Username = 'username'
+        self.MQTT_Password = 'password'
         self.English_Metric = False
        
        
@@ -312,6 +315,9 @@ class SkyWeatherConfigure(App):
         self.dataDefaults['MQTT_Server_URL'] = self.MQTT_Server_URL 
         self.dataDefaults['MQTT_Port_Number'] = self.MQTT_Port_Number 
         self.dataDefaults['MQTT_Send_Seconds'] = self.MQTT_Send_Seconds 
+        self.dataDefaults['MQTT_Authentication'] = self.MQTT_Authentication
+        self.dataDefaults['MQTT_Username'] = self.MQTT_Username 
+        self.dataDefaults['MQTT_Password'] = self.MQTT_Password 
         self.dataDefaults['English_Metric'] = self.English_Metric 
 
     def getJSONValue(self, entry):
@@ -374,6 +380,9 @@ class SkyWeatherConfigure(App):
                 self.MQTT_Server_URL = self.getJSONValue('MQTT_Server_URL')
                 self.MQTT_Port_Number = self.getJSONValue('MQTT_Port_Number')
                 self.MQTT_Send_Seconds = self.getJSONValue('MQTT_Send_Seconds')
+                self.MQTT_Authentication = self.getJSONValue('MQTT_Authentication')
+                self.MQTT_Username = self.getJSONValue('MQTT_Username')
+                self.MQTT_Password = self.getJSONValue('MQTT_Password')
                 self.English_Metric = self.getJSONValue('English_Metric')
 
         else:
@@ -432,6 +441,9 @@ class SkyWeatherConfigure(App):
         data['MQTT_Server_URL'] = self.F_MQTT_Server_URL.get_value()
         data['MQTT_Port_Number'] = self.F_MQTT_Port_Number.get_value()
         data['MQTT_Send_Seconds'] = self.F_MQTT_Send_Seconds.get_value()
+        data['MQTT_Authentication'] = self.F_MQTT_Authentication.get_value()
+        data['MQTT_Username'] = self.F_MQTT_Username.get_value()
+        data['MQTT_Password'] = self.F_MQTT_Password.get_value()
         data['English_Metric'] = self.F_English_Metric.get_value()
 
         json_data = json.dumps(data)        
@@ -960,7 +972,7 @@ class SkyWeatherConfigure(App):
     def buildScreen7(self):
         #screen 7
 
-        vbox = VBox(width=600, height=510, style="background: LightGray; border: 5px solid red")
+        vbox = VBox(width=600, height=600, style="background: LightGray; border: 5px solid red")
 
         vbox.style['justify-content'] = 'flex-start'
         vbox.style['align-items'] = 'flex-start'
@@ -1035,6 +1047,22 @@ class SkyWeatherConfigure(App):
         self.F_MQTT_Send_Seconds.set_value(str(self.MQTT_Send_Seconds))
         vbox.append(self.F_MQTT_Send_Seconds,'MQTT_Send_Seconds') 
 
+        self.F_MQTT_Authentication = gui.CheckBoxLabel( 'MQTT Authentication', self.MQTT_Authentication, height=30, style='margin:5px; background: LightGray ')
+        vbox.append(self.F_MQTT_Authentication,'self.F_MQTT_Authentication') 
+
+        p1label = gui.Label("MQTT Username", style='position:absolute; left:5px; top:40px;'+shortlabelstyle)
+        vbox.append(p1label,'p1label') 
+
+        self.F_MQTT_Username = gui.TextInput(width=200, height=30, style="margin:5px")
+        self.F_MQTT_Username.set_value(str(self.MQTT_Username))
+        vbox.append(self.F_MQTT_Username,'MQTT_Username') 
+
+        p0label = gui.Label("MQTT Password", style='position:absolute; left:5px; top:40px;'+shortlabelstyle)
+        vbox.append(p0label,'p0label') 
+
+        self.F_MQTT_Password = gui.TextInput(width=200, height=30, style="margin:5px")
+        self.F_MQTT_Password.set_value(str(self.MQTT_Password))
+        vbox.append(self.F_MQTT_Password,'MQTT_Password') 
 
         return vbox
 

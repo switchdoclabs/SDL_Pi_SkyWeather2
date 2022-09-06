@@ -69,12 +69,14 @@ def randomadd(value, spread):
 # MQTT Publish Line
 def mqtt_publish_single(message, topic):
     topic = '{0}/{1}'.format("skyweather2", topic)
-    #print ("topic=", topic)
+    if (config.SWDEBUG):
+      print ("topic=", topic)
+      print ("message=", message)
     try:
-            state.mqtt_client.publish(topic, message)
+      state.mqtt_client.publish(topic, message)
     except:
-        traceback.print_exc()
-        print('Mosquitto not available')
+      traceback.print_exc()
+      print('Mosquitto not available')
 
 
 
@@ -209,7 +211,7 @@ def processF016TH(sLine):
     state.lastIndoorReading = nowStr()
 
     if (config.MQTT_Enable == True):
-         mqtt_publish_single(sLine, f"F016TH/{var['channel']}")
+        mqtt_publish_single(sLine, f"F016TH/{var['channel']}")
 
 
 

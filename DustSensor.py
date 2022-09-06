@@ -22,30 +22,36 @@ import config
 #print("config.DustSensorSDA=", config.DustSensorSDA)
 
 import state
-GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
-GPIO.output(config.DustSensorPowerPin, True)
+#GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
+#GPIO.output(config.DustSensorPowerPin, True)
 
 def powerOnDustSensor():
-        GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
-        GPIO.output(config.DustSensorPowerPin, False)
-        GPIO.output(config.DustSensorPowerPin, True)
-        time.sleep(1)
-
-def powerOffDustSensor():
-        GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
-        GPIO.output(config.DustSensorPowerPin, True)
-        GPIO.output(config.DustSensorPowerPin, False)
-        time.sleep(1)
-
-myPi = pigpio.pi()
-
-try:
+  global hm3301, myPi
+  GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
+  GPIO.output(config.DustSensorPowerPin, True)
+  time.sleep(1)
+  myPi = pigpio.pi()
+  try:
     hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL, pi=myPi)
-except:
+  except:
     myPi.bb_i2c_close(config.DustSensorSDA)
     myPi.stop() 
-    
     hm3301 = SDL_Pi_HM3301.SDL_Pi_HM3301(SDA= config.DustSensorSDA, SCL = config.DustSensorSCL, pi=myPi)
+  time.sleep(1)
+
+def powerOffDustSensor():
+  global hm3301, myPi
+  try:
+    hm3301.close()
+  except:
+    myPi.bb_i2c_close(config.DustSensorSDA)
+    myPi.stop() 
+  time.sleep(1)
+  GPIO.setup(config.DustSensorPowerPin, GPIO.OUT)
+  GPIO.output(config.DustSensorPowerPin, False)
+  time.sleep(1)
+
+
 
 def read_AQI():
 
@@ -58,12 +64,8 @@ def read_AQI():
           print ("Turning Dust Power On")
       powerOnDustSensor()
 
-
-
       # delay for 30 seconds for calibrated reading
-
       time.sleep(30)
-      time.sleep(0.1)
 
       try:
               myData = hm3301.get_data()
@@ -89,7 +91,8 @@ def read_AQI():
         hm3301.print_data()
         print ("AQI=", myAQI)
 
-      #hm3301.close()
+      if (config.SWDEBUG):
+          print ("Turning Dust Power Off")
       powerOffDustSensor()
       state.AQI = myAQI
 

@@ -130,6 +130,48 @@ CREATE TABLE IF NOT EXISTS `SkyCamSensors` (
   `batterycharge` float DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `RAD433MHZ`
+--
+
+CREATE TABLE IF NOT EXISTS `RAD433MHZ` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `messageID` int(11) NOT NULL,
+  `deviceid` int(11) NOT NULL,
+  `protocolversion` int(11) NOT NULL,
+  `softwareversion` int(11) NOT NULL,
+  `weathersenseprotocol` int(11) NOT NULL,
+  `CPM` int(11) NOT NULL,
+  `nSVh` int(11) NOT NULL,
+  `uSVh` float NOT NULL,
+  `uSVh24Hour` float NOT NULL,
+  `batteryvoltage` float NOT NULL,
+  `batterycurrent` float NOT NULL,
+  `loadvoltage` float NOT NULL,
+  `loadcurrent` float NOT NULL,
+  `solarvoltage` float NOT NULL,
+  `solarcurrent` float NOT NULL,
+  `auxa` int(11) NOT NULL,
+  `keepalivemessage` int(11) NOT NULL,
+  `lowbattery` int(11) NOT NULL,
+  `solarpresent` int(11) NOT NULL,
+  `radiationpresent` int(11) NOT NULL,
+  `batterycharge` float NOT NULL,
+  `batterypower` float NOT NULL,
+  `loadpower` float NOT NULL,
+  `solarpower` float NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

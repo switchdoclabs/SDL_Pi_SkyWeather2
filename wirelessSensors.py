@@ -25,6 +25,8 @@ import traceback
 sys.path.append('./SDP_Pi_HM3301/aqi')
 import aqi
 
+import updateWeb
+
 import WeatherRack2Array
 
 import MySQLdb as mdb
@@ -32,7 +34,7 @@ import MySQLdb as mdb
 
 #cmd = [ '/usr/local/bin/rtl_433', '-q', '-F', 'json', '-R', '146', '-R', '147']
 
-cmd = ['/usr/local/bin/rtl_433', '-q', '-M', 'level', '-F', 'json', '-R', '146', '-R', '147', '-R', '148', '-R', '150', '-R', '151', '-R', '152']
+cmd = ['/usr/local/bin/rtl_433', '-q', '-M', 'level', '-F', 'json', '-R', '146', '-R', '147', '-R', '148', '-R', '150', '-R', '151', '-R', '152', '-R', '153']
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 #   A few helper functions...
@@ -150,8 +152,8 @@ def processFT020T(sLine, lastFT020TTimeStamp, UpdateWR2 ):
     state.TotalRain  = round(var["cumulativerain"]/10.0,1)
 
     wLight = var["light"]
-    if (wLight >= 0x1fffa):
-        wLight = wLight | 0x7fff0000
+    #if (wLight >= 0x1fffa):
+    #    wLight = wLight | 0x7fff0000
 
     wUVI =var["uv"]
     if (wUVI >= 0xfa):
@@ -501,6 +503,94 @@ def processSolarMAX(sLine):
     return
 
 
+
+# processes Radiation Detector Packets 
+def processWeatherSenseRadiation(sLine):
+    # WeatherSense Protocol 19
+    state = json.loads(sLine)
+    myProtocol = state['weathersenseprotocol']
+    if (config.SWDEBUG):
+        sys.stdout.write("processing Radiation Data\n")
+        sys.stdout.write('This is the raw data: ' + sLine + '\n')
+
+    if (config.MQTT_Enable == True):
+        mqtt_publish_single(sLine, "WSRadiation")
+
+
+    if (config.enable_MySQL_Logging == True):
+        # open mysql database
+        # write log
+        # commit
+        # close
+        try:
+
+            con = mdb.connect(
+                    "localhost",
+                    "root",
+                    config.MySQL_Password,
+                    "WeatherSenseWireless"
+            )
+            
+            # calculate Radiation 24 Hour
+            timeDelta = datetime.timedelta(days=1)
+            now = datetime.datetime.now()
+            before = now - timeDelta
+            before = before.strftime('%Y-%m-%d %H:%M:%S')
+            query = "SELECT uSVh, TimeStamp FROM RAD433MHZ WHERE (TimeStamp > '%s') ORDER BY TimeStamp " % (before)
+
+            cur = con.cursor()
+            cur.execute(query)
+            myRADRecords = cur.fetchall()
+            myRADTotal = 0.0
+            if (len(myRADRecords) > 0):
+                for i in range(0, len(myRADRecords)):
+                    myRADTotal = myRADTotal + myRADRecords[i][0]
+
+                RAD24Hour = (myRADTotal + float(state['uSVh'])) / (len(myRADRecords) + 1)
+            else:
+                RAD24Hour = 0.0
+
+            batteryPower =  float(state["batterycurrent"])* float(state["batteryvoltage"])
+            loadPower  =  float(state["loadcurrent"])* float(state["loadvoltage"])
+            solarPower =  float(state["solarpanelcurrent"])* float(state["solarpanelvoltage"])
+            batteryCharge = util.returnPercentLeftInBattery(state["batteryvoltage"], 4.2)
+
+            fields = "uSVh24Hour, deviceid, protocolversion, softwareversion, weathersenseprotocol, CPM, nSVh, uSVh, batteryvoltage, batterycurrent, loadvoltage, loadcurrent, solarvoltage, solarcurrent, auxa, solarpresent, radiationpresent, keepalivemessage, lowbattery, batterycharge, messageID, batterypower, loadpower, solarpower "
+            values = "%6.2f, %d, %d, %d, %d, %d,%d,  %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %d, %d, %d,%d,%d,%6.2f, %d,%6.2f, %6.2f, %6.3f" % ( RAD24Hour, state["deviceid"], state["protocolversion"], state["softwareversion"], state["weathersenseprotocol"],
+            state['CPM'], state['nSVh'], state['uSVh'], 
+            state["batteryvoltage"], state["batterycurrent"], state["loadvoltage"], state["loadcurrent"],
+            state["solarpanelvoltage"], state["solarpanelcurrent"], state["auxa"],state["solarpresent"],state["radBoardPresent"],state["keepalivemessage"],state["lowbattery"],     batteryCharge, state["messageid"],
+            batteryPower, loadPower, solarPower )
+            query = "INSERT INTO RAD433MHZ (%s) VALUES(%s )" % (fields, values)
+            # print("query=", query)
+            cur.execute(query)
+            con.commit()
+        except mdb.Error as e:
+            traceback.print_exc()
+            print("Error %d: %s" % (e.args[0], e.args[1]))
+            con.rollback()
+            # sys.exit(1)
+
+        finally:
+            cur.close()
+            con.close()
+
+            del cur
+            del con
+            
+            CPM = state['CPM']
+            uSVh = state['uSVh']
+            # update web maps
+            updateWeb.update_SafeCast(CPM, uSVh)
+            updateWeb.update_RadMon(CPM)
+            updateWeb.update_GMCMap(CPM, uSVh)
+
+            
+
+
+
+    return
+
 # processes AfterShock Packets 
 def processWeatherSenseAfterShock(sLine):
 
@@ -652,6 +742,9 @@ def readSensors():
 
             if (sLine.find('AfterShock') != -1):
                 processWeatherSenseAfterShock(sLine)
+
+            if (sLine.find('Radiation') != -1):
+                processWeatherSenseRadiation(sLine)
 
 
         sys.stdout.flush()

@@ -26,6 +26,7 @@ import aqi_page
 import lightning_page
 import solarmax_page
 import skycam_page
+import radiation_page
 
 from non_impl import NotImplPage 
 
@@ -163,7 +164,10 @@ def display_page(pathname):
     if pathname == '/aftershock_page':
         myLayout = aftershock_page.AfterShockPage()
         myLayout2 = ""
-    
+    if pathname == '/radiation_page':
+        myLayout = radiation_page.RadiationPage()
+        myLayout2 = ""
+ 
     #print("myLayout= ",myLayout)
     #print("myLayout2= ",myLayout2)
     #print("page-content= ",app.layout)
@@ -539,6 +543,33 @@ def update_metrics(n_intervals, id, value):
 
     return [figure]
 
+############
+# callbacks
+############
+# radiation_page  callbacks
+@app.callback(
+    [
+        Output({'type': 'RADgraph', 'index': MATCH}, 'figure'),
+    ],
+    [Input('main-interval-component', 'n_intervals'),
+     Input({'type': 'RADgraph', 'index': MATCH}, 'id')],
+    [State({'type': 'RADgraph', 'index': MATCH}, 'value')]
+)
+def update_metrics(n_intervals, id, value):
+    print("n_intervals=", n_intervals)
+    myIndex = id['index']
+    # build figures
+    if (myIndex == '1'):
+        print("GraphRAD figure")
+        figure = radiation_page.build_graphRAD_figure()
+    if (myIndex == '2'):
+        print("GraphRAD Solar Currents")
+        figure = radiation_page.build_graph1_figure()
+    if (myIndex == '3'):
+        print("GraphRAD Solar Voltages")
+        figure = radiation_page.build_graph2_figure()
+
+    return [figure]
 
 ############
 # callbacks

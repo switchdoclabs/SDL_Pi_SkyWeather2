@@ -25,6 +25,7 @@ import traceback
 import WeatherUnderground
 import wirelessSensors
 
+import util
 
 def systemlog(level,  message):
 

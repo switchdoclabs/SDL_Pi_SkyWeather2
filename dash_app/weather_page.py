@@ -22,7 +22,7 @@ import state
 import config
 import readJSON
 import json
-
+import util
 
 
 # read JSON
@@ -169,12 +169,7 @@ def getWSAQIs():
         # commit
         # close
         try:
-            con = mdb.connect(
-                "localhost",
-                "root",
-                config.MySQL_Password,
-                "WeatherSenseWireless"
-            )
+            con = util.getWeatherSenseConnection()      
             cur = con.cursor()
 
             query = "SELECT timestamp, AQI, AQI24Hour FROM AQI433MHZ ORDER BY timestamp DESC LIMIT 1;"
@@ -199,7 +194,7 @@ def getWSAQIs():
 
 def generateCurrentWeatherJSON():
         try:
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()      
                 cur = con.cursor()
                 query = "SELECT * FROM `WeatherData` ORDER BY id DESC LIMIT 1" 
                 #print("query=", query)
@@ -410,7 +405,7 @@ def generateCurrentWeatherJSON():
 def fetchWindData(timeDelta):
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -542,8 +537,6 @@ def buildCompassRose():
       layout.append(dcc.Graph(id={"type": "WPRdynamic", "index": "compassrose"},figure=fig))	
       return layout
 
-
-
 ###################
 #### OTH Graph ####
 ###################
@@ -552,7 +545,7 @@ def fetchOTH(timeDelta):
 
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -660,6 +653,220 @@ def buildOutdoorTemperature_Humidity_Graph():
     return graph
 
 ###################
+#### BP Graph ####
+###################
+
+def fetchBP(timeDelta):
+
+        try:
+                #print("trying database")
+                con = util.getSkyWeatherConnection()      
+                cur = con.cursor()
+                now = datetime.datetime.now()
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                query = "SELECT BarometricPressure, BarometricPressureSeaLevel, TimeStamp FROM `WeatherData` WHERE (TimeStamp > '%s') ORDER BY id ASC" % (before)
+                #print("query=", query)
+                cur.execute(query)
+                con.commit()
+                records = cur.fetchall()
+                #print ("Query records=", records)
+                return records
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+        finally:
+                cur.close()
+                con.close()
+
+
+def buildBP_Graph_Figure():
+    
+    timeDelta = datetime.timedelta(days=7)
+    records = fetchBP(timeDelta)
+
+    Time = []
+    BP = []
+    BPSL = []
+    # TODO bad data needs cleanup
+    for record in records:
+        Time.append(record[2])
+        if (record[0] > 900):
+            BP.append(record[0])
+        else:     
+            BP.append(record[0] * 10)
+        if (record[1] > 900):
+            BPSL.append(record[1])
+        else:    
+            BPSL.append(record[1] * 10)
+
+    if (len(records) == 0):
+        fig = go.Figure()
+        fig.update_layout(
+            height=800,
+            title_text='No Weather Data Available')
+        return fig
+
+    # TODO set units
+    # English_Metric = readJSON.getJSONValue("English_Metric")
+    
+    # Create figure with secondary y-axis
+    fig = go.Figure()
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    # Add traces
+    fig.add_trace(
+        go.Scatter(x=Time, y=BP, name="Barometric Pressure",
+        line = dict(
+                    color = ('red'),
+                    width = 2,
+                    ),
+       ), 
+                    secondary_y = False,
+    )
+
+    fig.add_trace(
+        go.Scatter(x=Time, y=BPSL, name="Barometric Pressure SL", 
+        line = dict(
+                    color = ('blue'),
+                    width = 2,
+                    ),
+        ),
+                    secondary_y = True
+    )
+
+    # Add figure title
+    fig.update_layout(
+        title_text="Barometric Pressure", height=400
+    )
+
+    # Set x-axis title
+    fig.update_xaxes(title_text="Time")
+   
+    minBP = min(BP)*0.95
+    maxBP = max(BP)*1.05
+    # Set y-axes titles
+    fig.update_yaxes(title_text="<b>Barometric Pressure (hPa)</b>", range = (minBP, maxBP), secondary_y=False, side='left')
+    fig.update_yaxes(title_text="<b>Barometric Pressure SL (hPa)</b>", range = (minBP,maxBP), secondary_y=True, side='right')
+    
+    return fig
+
+def buildPB_Graph():
+
+    fig = buildBP_Graph_Figure()
+
+    graph =  dcc.Graph(
+                    id = {'type' : 'WPGdynamic', 'index': 'graph-oth' },
+                    figure=fig,
+                    animate = False
+                    )
+    return graph
+
+###################
+### CPU Graph ####
+###################
+
+def fetchCPU(timeDelta):
+
+        try:
+                #print("trying database")
+                con = util.getSkyWeatherConnection()      
+                cur = con.cursor()
+                now = datetime.datetime.now()
+                before = now - timeDelta
+                before = before.strftime('%Y-%m-%d %H:%M:%S')
+                query = "SELECT CPUTemperature, TimeStamp FROM `WeatherData` WHERE (TimeStamp > '%s') ORDER BY id ASC" % (before)
+                #print("query=", query)
+                cur.execute(query)
+                con.commit()
+                records = cur.fetchall()
+                #print ("Query records=", records)
+                return records
+        except mdb.Error as e:
+                traceback.print_exc()
+                print("Error %d: %s" % (e.args[0],e.args[1]))
+                con.rollback()
+                #sys.exit(1)
+
+        finally:
+                cur.close()
+                con.close()
+
+def buildCPU_Figure():
+    
+    timeDelta = datetime.timedelta(days=7)
+    records = fetchCPU(timeDelta)
+
+    Time = []
+    Temperature = []
+    for record in records:
+        Time.append(record[1])
+        Temperature.append(record[0])
+ 
+    if (len(records) == 0):
+        fig = go.Figure()
+        fig.update_layout(
+            height=800,
+            title_text='No Weather Data Available')
+        return fig
+
+    # set units
+    English_Metric = readJSON.getJSONValue("English_Metric")
+
+    if (English_Metric == False):  # english units
+        for i in range(0, len(Temperature)):
+            Temperature[i] = (9.0/5.0 * Temperature[i]) +32.0
+        units = "F"
+    else:
+        units = "C"
+    
+    # Create figure
+    fig = go.Figure()
+    fig = make_subplots(specs=[[{"secondary_y": False}]])
+    
+    # Add traces
+    fig.add_trace(
+        go.Scatter(x=Time, y=Temperature, name="CPU Temperature",
+        line = dict(
+                    color = ('red'),
+                    width = 2,
+                    ),
+       ), 
+                    secondary_y = False,
+    )
+
+ 
+    # Add figure title
+    fig.update_layout(
+        title_text="CPU Temperature", height=400
+    )
+
+    # Set x-axis title
+    fig.update_xaxes(title_text="Time")
+   
+    minTemp = min(Temperature)*0.9
+    maxTemp = max(Temperature)*1.10
+    # Set y-axes titles
+    fig.update_yaxes(title_text="<b>CPU Temperature ("+units+")</b>", range = (minTemp, maxTemp), secondary_y=False, side='left')
+    
+    return fig
+
+def buildCPU_Graph():
+
+    fig = buildCPU_Figure()
+
+    graph =  dcc.Graph(
+                    id = {'type' : 'WPGdynamic', 'index': 'graph-oth' },
+                    figure=fig,
+                    animate = False
+                    )
+    return graph
+
+###################
 ####  AQI Graph ####
 ###################
 
@@ -668,7 +875,7 @@ def fetchAQI(timeDelta):
     if (config.USEWSAQI):
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                con = util.getWeatherSenseConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -693,7 +900,7 @@ def fetchAQI(timeDelta):
     else:
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -800,7 +1007,7 @@ def fetchSUV(timeDelta):
 
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 before = now - timeDelta
@@ -1082,7 +1289,6 @@ def WeatherPage():
         ]
     )
 
-
 # graphs
     Row3 = html.Div(
     [
@@ -1102,7 +1308,6 @@ def WeatherPage():
    )
 
 
-
 #########
 # combined layout
 #########
@@ -1116,7 +1321,3 @@ def WeatherPage():
 
 
 CWJSON = generateCurrentWeatherJSON()
-
-
-
-

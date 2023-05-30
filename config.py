@@ -89,6 +89,20 @@ MQTT_Server_URL = None
 MQTT_Port_Number = None
 MQTT_Send_Seconds = None
 English_Metric = None
+# TEC
+# how often to record weathee data, in minutes
+Record_Weather_Frequency = None
+# use other than root user
+MySQL_User = None
+# provide custom smtp server
+mailServer = None
+
+########
+# DB Schemas
+########
+
+SCHEMA_SKYWEATHER = "SkyWeather2"
+SCHEMA_WEATHERSENSE_WIRELESS = "WeatherSenseWireless"
 
 import readJSON
 
@@ -97,10 +111,6 @@ import readJSON
 # read JSON and put it it into the config variables
 
 readJSON.readJSON('./')
-
-
-
-
 
 ########
 #Logging

@@ -5,7 +5,6 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
-import MySQLdb as mdb
 import datetime
 
 import readJSON
@@ -23,6 +22,8 @@ import plotly.graph_objs as go
 sys.path.append("../")
 
 import config
+import util
+
 WSLGHTID = 1
 
 LLJSON={}
@@ -37,12 +38,7 @@ LLJSON["LastMessageID"]= "N/A"
 
 def updateLightningLines():
 
-    con = mdb.connect(
-        "localhost",
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless"
-    )
+    con = util.getWeatherSenseConnection()      
 
     cur = con.cursor()
     # build the data array
@@ -134,12 +130,7 @@ def updateLightningLines():
 
 
 def build_graphLightning_figure():
-    con = mdb.connect(
-        "localhost",
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless"
-    )
+    con = util.getWeatherSenseConnection()      
 
     #last 7 days
     timeDelta = datetime.timedelta(days=7)
@@ -198,12 +189,7 @@ def build_graphLightning_figure():
     return figure
 
 def build_graph1_figure():
-    con = mdb.connect(
-        "localhost",
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless"
-    )
+    con = util.getWeatherSenseConnection()      
 
     #last 7 days
     timeDelta = datetime.timedelta(days=7)
@@ -232,12 +218,7 @@ def build_graph1_figure():
     return figure
 
 def build_graph2_figure():
-    con = mdb.connect(
-        "localhost",
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless"
-    )
+    con = util.getWeatherSenseConnection()      
 
     #last 7 days
     timeDelta = datetime.timedelta(days=7)

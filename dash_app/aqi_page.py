@@ -13,15 +13,11 @@ WSAQIID = 1
 # build the path to import config.py from the parent directory
 sys.path.append('../')
 import config
-
+import util
 
 def build_graphAQI_figure():
-    con = mdb.connect(
-        "localhost", 
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless" 
-    )
+    con = util.getWeatherSenseConnection()      
+    
     #last 7 days 
     timeDelta = datetime.timedelta(days=7)
     now = datetime.datetime.now()
@@ -46,12 +42,7 @@ def build_graphAQI_figure():
 
 
 def build_graph1_figure():
-    con = mdb.connect(
-        "localhost", 
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless" 
-    )
+    con = util.getWeatherSenseConnection()      
 
     #last 7 days 
     timeDelta = datetime.timedelta(days=7)
@@ -81,13 +72,7 @@ def build_graph1_figure():
 
 
 def build_graph2_figure():
-    con = mdb.connect(
-        "localhost", 
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless" 
-
-    )
+    con = util.getWeatherSenseConnection()      
 
     #last 7 days 
     timeDelta = datetime.timedelta(days=7)

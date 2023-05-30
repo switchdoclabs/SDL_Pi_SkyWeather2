@@ -1,39 +1,10 @@
--- phpMyAdmin SQL Dump
--- version 4.9.1
--- https://www.phpmyadmin.net/
---
--- Host: localhost:3306
--- Generation Time: Nov 27, 2020 at 03:41 PM
--- Server version: 10.3.25-MariaDB-0+deb10u1
--- PHP Version: 7.3.19-1~deb10u1
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-CREATE DATABASE IF NOT EXISTS SkyWeather2;
-
-USE SkyWeather2;
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `SkyWeather2`
---
-
--- --------------------------------------------------------
-
 --
 -- Table structure for table `IndoorTHSensors`
 --
 
 CREATE TABLE `IndoorTHSensors` (
   `id` int(11) NOT NULL,
-  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp(), 
+  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `DeviceID` int(11) NOT NULL,
   `ChannelID` int(11) NOT NULL,
   `Temperature` float NOT NULL,
@@ -50,7 +21,7 @@ CREATE TABLE `IndoorTHSensors` (
 
 CREATE TABLE `PowerSystem` (
   `ID` int(11) NOT NULL,
-  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `batteryVoltage` float NOT NULL,
   `batteryCurrent` float NOT NULL,
   `solarVoltage` float NOT NULL,
@@ -73,7 +44,7 @@ CREATE TABLE `SystemLog` (
   `ID` int(11) NOT NULL,
   `Level` int(11) NOT NULL,
   `SystemText` text NOT NULL,
-  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp()
+  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -84,7 +55,7 @@ CREATE TABLE `SystemLog` (
 
 CREATE TABLE `WeatherData` (
   `ID` int(11) NOT NULL,
-  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp() ,
+  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `OutdoorTemperature` float NOT NULL,
   `OutdoorHumidity` float NOT NULL,
   `IndoorTemperature` float NOT NULL,
@@ -159,17 +130,3 @@ ALTER TABLE `SystemLog`
 --
 ALTER TABLE `WeatherData`
   MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
--- TEC trap and log errors
-CREATE TABLE `error_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp(),
-  `error` text NOT NULL,
-  PRIMARY KEY (`id`)  
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -49,6 +49,9 @@ import ProcessPicture
 # print out faults inside events
 def ap_my_listener(event):
         if event.exception:
+            try:
+                pclogging.errorlog(event.exception, event.traceback) 
+            except:     
               print (event.exception)
               print (event.traceback)
 
@@ -71,7 +74,9 @@ def rebootPi(why):
    if (config.USEBLYNK):
      updateBlynk.blynkTerminalUpdate("Pi Rebooting: %s" % why)
    pclogging.systemlog(config.INFO, "Pi Rebooting: %s" % why)
-   os.system("sudo shutdown -r now")
+   #os.system("sudo shutdown -r now")
+   # more low level reboot
+   os.system("echo 1 | sudo tee /proc/sys/kernel/sysrq;echo s | sudo tee /proc/sysrq-trigger;echo u | sudo tee /proc/sysrq-trigger;echo b | sudo tee /proc/sysrq-trigger")
 
 
 import MySQLdb as mdb
@@ -85,12 +90,7 @@ if (config.enable_MySQL_Logging):
 
     try:
 
-        con = mdb.connect(
-          "localhost",
-          "root",
-          config.MySQL_Password,
-          "SkyWeather2"
-          )
+        con = util.getSkyWeatherConnection()      
 
     except:
         print("--------")
@@ -102,16 +102,9 @@ if (config.enable_MySQL_Logging):
         sys.exit("SkyWeather2 Requirements Error Exit")
 
 
-
-    # WeatherSense SQL Database
     try:
 
-        con = mdb.connect(
-          "localhost",
-          "root",
-          config.MySQL_Password,
-          "WeatherSenseWireless"
-          )
+        con = util.getWeatherSenseConnection()      
 
     except:
         print("--------")
@@ -125,12 +118,7 @@ if (config.enable_MySQL_Logging):
     # Check for updates having been applied
     try:
 
-        con = mdb.connect(
-          "localhost",
-          "root",
-          config.MySQL_Password,
-          "WeatherSenseWireless"
-          )
+        con = util.getWeatherSenseConnection()      
         cur = con.cursor()
         query = "SELECT * FROM SkyCamPictures"
         cur.execute(query)
@@ -326,9 +314,9 @@ if (config.USEBLYNK):
      updateBlynk.blynkTerminalUpdate("IPAddress: "+ipAddress.decode()) 
 
 bodyText = "SkyWeather2 Version "+config.SWVERSION+ " Startup \n"+ipAddress.decode()+"\n"
-if (config.SunAirPlus_Present):
-	sampleSunAirPlus()
-	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (state.batteryVoltage, state.batteryCurrent, state.solarVoltage, state.solarCurrent)
+#if (config.SunAirPlus_Present):
+#	sampleSunAirPlus()
+#	bodyText = bodyText + "\n" + "BV=%0.2fV/BC=%0.2fmA/SV=%0.2fV/SC=%0.2fmA" % (state.batteryVoltage, state.batteryCurrent, state.solarVoltage, state.solarCurrent)
 
 try:
     sendemail.sendEmail("test", bodyText, subjectText ,config.notifyAddress,  config.fromAddress, "");
@@ -387,7 +375,9 @@ scheduler.add_job(watchDog.patTheDog, 'interval', seconds=20)   # reset the Watc
 
 
 # every 5 days at 00:04, reboot
-#scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=0, minute=4, args=["5 day Reboot"]) 
+#scheduler.add_job(rebootPi, 'cron', day='5-30/5', hour=6, minute=4, args=["5 day Reboot"]) 
+#TEC change to once a day
+scheduler.add_job(rebootPi, 'cron', day='*', hour=0, minute=4, args=["daily Reboot"]) 
 	
 #check for Barometric Trend (every 15 minutes)
 scheduler.add_job(util.barometricTrend, 'interval', seconds=15*60)
@@ -400,16 +390,13 @@ if (config.USEWSAQI):
     wirelessSensors.WSread_AQI() # get current value
     scheduler.add_job(wirelessSensors.WSread_AQI, 'interval', seconds=60*20)
    
-
 # weather sensors
-
-#scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=2*60)
-scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=15*60)
+# TEC changed to 5 minute intervals
+# TODO externalize
+print("setting data record frequency = ", config.Record_Weather_Frequency)
+scheduler.add_job(pclogging.writeWeatherRecord, 'interval', seconds=int(config.Record_Weather_Frequency)*60)
 
 scheduler.add_job(pclogging.writeITWeatherRecord, 'interval', seconds=15*60)
-
-        
-
 
 # sky camera
 if (config.Camera_Present):

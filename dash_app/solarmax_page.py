@@ -12,6 +12,7 @@ import plotly.graph_objs as go
 # build the path to import config.py from the parent directory
 sys.path.append('../')
 import config
+import util
 
 # from dash.dependencies import Input, Output, MATCH, ALL, State
 
@@ -21,12 +22,7 @@ import config
 SolarMAXID = 1
 
 def build_graph1_figure():
-    con = mdb.connect(
-        "localhost",
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless"
-    )
+    con = util.getWeatherSenseConnection()      
 
     # last 7 days
     timeDelta = datetime.timedelta(days=7)
@@ -56,12 +52,7 @@ def build_graph1_figure():
 
 
 def build_graph2_figure():
-    con = mdb.connect(
-        "localhost",
-        "root",
-        config.MySQL_Password,
-        "WeatherSenseWireless"
-    )
+    con = util.getWeatherSenseConnection()      
 
     # last 7 days
     timeDelta = datetime.timedelta(days=7)

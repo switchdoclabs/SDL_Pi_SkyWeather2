@@ -25,6 +25,7 @@ import traceback
 import WeatherUnderground
 import wirelessSensors
 
+import util
 
 def systemlog(level,  message):
 
@@ -47,7 +48,7 @@ def systemlog(level,  message):
                         updateBlynk.blynkTerminalUpdate(message) 
                     pass
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
                 #print("before query")
                 query = "INSERT INTO SystemLog(TimeStamp, Level, SystemText ) VALUES(LOCALTIMESTAMP(), %i, '%s')" % (level, message)
@@ -68,6 +69,27 @@ def systemlog(level,  message):
                 del con
 
 
+def errorlog(message, stacktrace):
+
+        try:
+                #print("trying database")
+                con = util.getSkyWeatherConnection()
+                cur = con.cursor()
+                #print("before query")
+                query = "INSERT INTO error_log (message, error) VALUES (%s, %s)"
+                #print("query=%s" % query)
+                cur.execute(query, (message, stacktrace,))
+                con.commit()
+        except: 
+                traceback.print_exc()
+                con.rollback()
+                #sys.exit(1)
+        finally:
+                cur.close()
+                con.close()
+
+                del cur
+                del con
 
 
 def readLastHour24AQI():
@@ -82,7 +104,7 @@ def readLastHour24AQI():
                 # first calculate the 24 hour moving average for AQI
                 
                 print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
 
                 query = "SELECT id, AQI24Average FROM WeatherData ORDER BY id DESC Limit 1" 
@@ -121,7 +143,7 @@ def get60MinuteRain():
 
            
                 
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
                 timeDelta = datetime.timedelta(minutes=60)
                 now = datetime.datetime.now()
@@ -157,7 +179,7 @@ def getCalendarDayRain():
 
            
                 
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
                 # calendar day rain
                 query = "SELECT id, TotalRain, TimeStamp FROM WeatherData WHERE DATE(TimeStamp) = CURDATE() ORDER by id ASC"
@@ -178,6 +200,9 @@ def getCalendarDayRain():
  return 0.0 
 
 def writeWeatherRecord():
+ if (config.SWDEBUG):
+        systemlog(config.INFO,"--->recording weather<---")
+ 
  Rain24Hour = getCalendarDayRain()
  print("Rain24Hour=", Rain24Hour)
  WeatherUnderground.sendWeatherUndergroundData(Rain24Hour)
@@ -195,7 +220,7 @@ def writeWeatherRecord():
                 # first calculate the 24 hour moving average for AQI
                 
                 print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
 
                 timeDelta = datetime.timedelta(days=1)
@@ -260,7 +285,9 @@ def writeWeatherRecord():
 
 
 def writeITWeatherRecord():
-
+ if (config.SWDEBUG):
+         systemlog(config.INFO,"--->recording indoor metrics<---")
+ 
  if (config.enable_MySQL_Logging == True):	
 	# open mysql database
 	# write log
@@ -269,7 +296,7 @@ def writeITWeatherRecord():
         try:
 
                 print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()
                 cur = con.cursor()
 
 

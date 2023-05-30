@@ -17,6 +17,8 @@ import traceback
 import sys
 import psutil
 
+from gpiozero import CPUTemperature
+
 # imports
 sys.path.append("../")
 
@@ -24,6 +26,7 @@ import state
 import config
 import readJSON
 import json
+import util
 
 # demo mode
 useRandom = False
@@ -49,7 +52,7 @@ def getWR2Status():
    
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getSkyWeatherConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 timeDelta = datetime.timedelta(minutes=30)
@@ -85,7 +88,7 @@ def getWSAQIStatus():
    
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                con = util.getWeatherSenseConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 timeDelta = datetime.timedelta(minutes=60)
@@ -121,7 +124,7 @@ def getWSLightningStatus():
    
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                con = util.getWeatherSenseConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 timeDelta = datetime.timedelta(minutes=60)
@@ -157,7 +160,7 @@ def getWSAfterShockStatus():
    
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                con = util.getWeatherSenseConnection()
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 timeDelta = datetime.timedelta(minutes=180)
@@ -231,7 +234,7 @@ def getWSSolarMAXStatus():
    
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'WeatherSenseWireless');
+                con = util.getWeatherSenseConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 timeDelta = datetime.timedelta(minutes=60)
@@ -311,7 +314,7 @@ def getWSSkyCamStatus(myIndex):
 def getIndoorStatus(channel):
         try:
                 #print("trying database")
-                con = mdb.connect('localhost', 'root', config.MySQL_Password, 'SkyWeather2');
+                con = util.getWeatherSenseConnection()      
                 cur = con.cursor()
                 now = datetime.datetime.now()
                 timeDelta = datetime.timedelta(minutes=30)
@@ -871,7 +874,6 @@ def updateGauges(id):
     if (id['GaugeType'] == "pi-loading"):
         myValue = psutil.cpu_percent()
         return myValue
-
 
     # update Pi Memory usage
     if (id['GaugeType'] == "pi-memory"):

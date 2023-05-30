@@ -268,7 +268,11 @@ class SkyWeatherConfigure(App):
         self.MQTT_Port_Number = 1883 
         self.MQTT_Send_Seconds = 500 
         self.English_Metric = False
-       
+	
+        self.Record_Weather_Frequency = 15
+        self.MySQL_User = "root"
+        self.mailServer = "smtp.gmail.com"
+
        
         self.dataDefaults = {} 
 
@@ -314,6 +318,10 @@ class SkyWeatherConfigure(App):
         self.dataDefaults['MQTT_Send_Seconds'] = self.MQTT_Send_Seconds 
         self.dataDefaults['English_Metric'] = self.English_Metric 
 
+        self.dataDefaults['Record_Weather_Frequency'] = self.Record_Weather_Frequency
+        self.dataDefaults['MySQL_User'] = self.MySQL_User
+        self.dataDefaults['mailServer'] = self.mailServer
+    
     def getJSONValue(self, entry):
         try:
             returnData = self.JSONData[entry]
@@ -375,6 +383,10 @@ class SkyWeatherConfigure(App):
                 self.MQTT_Port_Number = self.getJSONValue('MQTT_Port_Number')
                 self.MQTT_Send_Seconds = self.getJSONValue('MQTT_Send_Seconds')
                 self.English_Metric = self.getJSONValue('English_Metric')
+                
+                self.Record_Weather_Frequency = self.getJSONValue('Record_Weather_Frequency')
+                self.MySQL_User = self.getJSONValue('MySQL_User')
+                self.mailServer = self.getJSONValue('mailServer')
 
         else:
             print ("SkyWeather2.JSON File does not exist")
@@ -434,6 +446,10 @@ class SkyWeatherConfigure(App):
         data['MQTT_Send_Seconds'] = self.F_MQTT_Send_Seconds.get_value()
         data['English_Metric'] = self.F_English_Metric.get_value()
 
+        data['Record_Weather_Frequency'] = self.F_Record_Weather_Frequency.get_value()
+        data['MySQL_User'] = self.F_MySQL_User.get_value()
+        data['mailServer'] = self.F_mailServer.get_value()
+        
         json_data = json.dumps(data)        
         
         with open('SkyWeather2.JSON', 'w') as outfile:
@@ -446,7 +462,7 @@ class SkyWeatherConfigure(App):
 
         #screen 1
 
-        vbox = VBox(width=600, height=510, style="background: LightGray")
+        vbox = VBox(width=600, height=700, style="background: LightGray")
 
         vbox.style['justify-content'] = 'flex-start'
         vbox.style['align-items'] = 'flex-start'
@@ -499,12 +515,26 @@ class SkyWeatherConfigure(App):
         self.F_enable_MySQL_Logging = gui.CheckBoxLabel('enable MySQL Logging ', self.enable_MySQL_Logging , height=30, style='margin:5px; background:LightGray')
         vbox.append(self.F_enable_MySQL_Logging,'enable_MySQL_Logging') 
 
-        plabel = gui.Label("MySQL Password", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
-        vbox.append(plabel,'plabel') 
+        plabel = gui.Label("MySQL User", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
+        vbox.append(plabel,'mulabel')
         
         self.F_MySQL_Password = gui.TextInput(width=300, height=30, style="margin:5px")
         self.F_MySQL_Password.set_value(self.MySQL_Password)
         vbox.append(self.F_MySQL_Password,'MySQLPassword') 
+
+        plabel = gui.Label("MySQL Password", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
+        vbox.append(plabel,'mplabel')
+
+        self.F_MySQL_User = gui.TextInput(width=300, height=30, style="margin:5px")
+        self.F_MySQL_User.set_value(self.MySQL_User)
+        vbox.append(self.F_MySQL_User,'MySQLUser')
+
+        plabel = gui.Label("Weather Data Record Frequency (minutes)", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
+        vbox.append(plabel,'flabel')
+
+        self.F_Record_Weather_Frequency = gui.TextInput(width=30, height=30, style="margin:5px")
+        self.F_Record_Weather_Frequency.set_value(str(self.Record_Weather_Frequency))
+        vbox.append(self.F_Record_Weather_Frequency,'RecordWeatherFrequency')
         
         #WLAN Configuration 
         WLheader = gui.Label("WLAN Check in SkyWeather2 ", style=self.headerstyle)
@@ -513,7 +543,7 @@ class SkyWeatherConfigure(App):
         vbox.append(self.F_enable_WLAN_Detection,'enable_WLAN_Detection') 
 
         plabel = gui.Label("Pingable Router Address ", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
-        vbox.append(plabel,'plabel') 
+        vbox.append(plabel,'prlabel') 
         
         self.F_PingableRouterAddress = gui.TextInput(width=300, height=30, style="margin:5px")
         self.F_PingableRouterAddress.set_value(self.PingableRouterAddress)
@@ -590,6 +620,13 @@ class SkyWeatherConfigure(App):
         self.F_mailPassword = gui.TextInput(width=300, height=30, style="margin:5px")
         self.F_mailPassword.set_value(self.mailPassword)
         vbox.append(self.F_mailPassword,'mailPassword') 
+
+        p2label = gui.Label("Mail Host Name", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
+        vbox.append(p2label,'p2label') 
+        
+        self.F_mailServer = gui.TextInput(width=300, height=30, style="margin:5px")
+        self.F_mailServer.set_value(self.mailServer)
+        vbox.append(self.F_mailServer,'mailServer') 
 
         p3label = gui.Label("Notify Address", style='position:absolute; left:5px; top:40px;'+self.labelstyle)
         vbox.append(p3label,'p3label') 
@@ -1136,7 +1173,7 @@ class SkyWeatherConfigure(App):
 
 
         widthBox = 700
-        heightBox = 800
+        heightBox = 900
         self.mainContainer = Container(width=widthBox, height=heightBox, margin='0px auto', style="position: relative")
         self.mainContainer.style['justify-content'] = 'flex-start'
         self.mainContainer.style['align-items'] = 'flex-start'
@@ -1151,8 +1188,8 @@ class SkyWeatherConfigure(App):
         cancel.onclick.do(self.onCancel)
         save = gui.Button('Save',style='position:absolute; left:400px; height: 30px; width:100px;  margin: 10px;  top:5px')
         save.onclick.do(self.onSave)
-        exit = gui.Button('Save and Exit',style='position:absolute; left:475px; height: 30px; width:100px;  margin: 10px;  top:95px')
-        exit.onclick.do(self.onExit)
+        restart = gui.Button('Save and Restart',style='position:absolute; left:475px; height: 30px; width:100px;  margin: 10px;  top:95px')
+        restart.onclick.do(self.onRestart)
         reset = gui.Button('Reset to Defaults',style='position:absolute; left:400px;height: 30px;   width:250px; margin: 10px; top:50px')
         reset.onclick.do(self.onReset)
         # appending a widget to another
@@ -1161,7 +1198,7 @@ class SkyWeatherConfigure(App):
         self.mainContainer.append(version)
         self.mainContainer.append(cancel)
         self.mainContainer.append(save)
-        self.mainContainer.append(exit)
+        self.mainContainer.append(restart)
         self.mainContainer.append(reset)
 
 
@@ -1260,14 +1297,13 @@ class SkyWeatherConfigure(App):
         print("server stopped") 
         exit()
         
-    def onExit(self, widget, name='', surname=''):
-        # save and exit
-        print("onSaveExit clicked")
+    def onRestart(self, widget, name='', surname=''):
+        # save and restart the SkyWeather service
+        print("onSaveRestart clicked")
         self.saveJSON()
-        self.server.server_starter_instance._alive = False
-        self.server.server_starter_instance._sserver.shutdown()
-        print("server stopped") 
-        exit()
+        print("restarting skyWeather service")
+        # TODO should command be externalized? 
+        os.system("sudo systemctl restart skyweather.service")
 
     def onReset(self, widget, name='', surname=''):
         print("Reset clicked")
@@ -1303,4 +1339,3 @@ start(SkyWeatherConfigure, address=configuration['config_address'], port=configu
                         multiple_instance=configuration['config_multiple_instance'],
                         enable_file_cache=configuration['config_enable_file_cache'],
                         start_browser=configuration['config_start_browser'])
-

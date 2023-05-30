@@ -17,6 +17,7 @@ import datetime as dt
 import MySQLdb as mdb
 
 import config
+import pclogging
 
 def SkyWeatherKeyGeneration(userKey):
 
@@ -27,11 +28,13 @@ def SkyWeatherKeyGeneration(userKey):
     return md5result.hexdigest()
 
 def takeSkyPicture():
-
+ 
     if (config.SWDEBUG):
+        pclogging.systemlog(config.INFO, "--->skyCamera taking pic<---")
         print ("--------------------")
         print ("SkyCam Picture Taken")
         print ("--------------------")
+    
     camera = picamera.PiCamera()
 
     camera.exposure_mode = "auto"
@@ -165,7 +168,9 @@ def takeSkyPicture():
         time.sleep(2)
 
     except:
-            if (config.SWDEBUG):
+        try:
+                pclogging.errorlog("skycam pic failed", traceback.format_exc()) 
+        except:     
                 print(traceback.format_exc()) 
                 print ("--------------------")
                 print ("SkyCam Picture Failed")
@@ -174,12 +179,15 @@ def takeSkyPicture():
 
     finally:
         try:
-            camera.close()
+                camera.close()
         except:
-            if (config.SWDEBUG):
-                print ("--------------------")
-                print ("SkyCam Close Failed ")
-                print ("--------------------")
+                try:
+                        pclogging.errorlog("skycam close failed", traceback.format_exc()) 
+                except:     
+                        print(traceback.format_exc()) 
+                        print ("--------------------")
+                        print ("SkyCam Close Failed ")
+                        print ("--------------------")
 
 
     if (config.USEWEATHERSTEM == True):
